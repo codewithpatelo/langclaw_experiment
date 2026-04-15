@@ -14,11 +14,16 @@ consistency rate (fraction of debates with delta_phi > 0) as tiebreaker.
 Cost estimate: ~15 ticks x ~5 LLM calls/tick = ~75 calls per run.
 15 runs x 75 calls x ~$0.001/call ≈ $1.10 total.
 
+Checkpoint/resume: after each micro-run, results are persisted to
+calibration_checkpoint.json. On restart, completed runs are skipped
+automatically. Use --clean to start fresh.
+
 Output: calibration_results.json with ranked configs and the best one.
 
 Usage:
     python calibrate_hyperparams.py
     python calibrate_hyperparams.py --ticks 20 --seed 42
+    python calibrate_hyperparams.py --clean   # discard checkpoint, start fresh
 """
 
 from __future__ import annotations
@@ -38,6 +43,49 @@ from langclaw.simulation import OrchestrationMode, SotopiaEnvironment
 
 load_dotenv()
 console = Console()
+
+
+def _checkpoint_key(w_name: str, alpha: float) -> str:
+    return f"{w_name}__alpha{alpha}"
+
+
+def _load_checkpoint(path: Path) -> dict[str, dict]:
+    """Load completed micro-run results from checkpoint file."""
+    if not path.exists():
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return {r["_checkpoint_key"]: r for r in data if "_checkpoint_key" in r}
+    except (json.JSONDecodeError, KeyError):
+        return {}
+
+
+def _save_checkpoint(path: Path, completed: dict[str, dict]) -> None:
+    """Persist all completed micro-run results to checkpoint file."""
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(list(completed.values()), f, indent=2, ensure_ascii=False)
+
+
+def _is_rate_limit_error(exc: Exception) -> bool:
+    """Heuristic detection for OpenAI quota/rate-limit failures."""
+    parts: list[str] = []
+    cur: BaseException | None = exc
+    hops = 0
+    while cur is not None and hops < 8:
+        parts.append(str(cur).lower())
+        cur = getattr(cur, "__cause__", None) or getattr(cur, "__context__", None)
+        hops += 1
+    msg = " | ".join(parts)
+    markers = [
+        "rate limit",
+        "insufficient_quota",
+        "quota",
+        "429",
+        "rpd",
+        "rpm",
+    ]
+    return any(m in msg for m in markers)
 
 WEIGHT_CONFIGS: dict[str, dict[str, float]] = {
     "equal": {
@@ -132,6 +180,10 @@ def main() -> None:
         "--log-level", default="WARNING",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
     )
+    parser.add_argument(
+        "--clean", action="store_true",
+        help="Discard checkpoint and start fresh.",
+    )
 
     args = parser.parse_args()
 
@@ -141,28 +193,60 @@ def main() -> None:
         datefmt="%H:%M:%S",
     )
 
-    results: list[dict] = []
+    checkpoint_path = Path(args.output).with_suffix(".checkpoint.json")
+
+    if args.clean and checkpoint_path.exists():
+        checkpoint_path.unlink()
+        console.print("[yellow]Checkpoint cleared — starting fresh[/yellow]")
+
+    completed = _load_checkpoint(checkpoint_path)
+    if completed:
+        console.print(
+            f"[green]Resuming: {len(completed)} micro-runs already completed, "
+            f"skipping them.[/green]"
+        )
+
+    results: list[dict] = list(completed.values())
     total = len(WEIGHT_CONFIGS) * len(ALPHA_VALUES)
     run_idx = 0
 
     for w_name, w_cfg in WEIGHT_CONFIGS.items():
         for alpha in ALPHA_VALUES:
             run_idx += 1
+            key = _checkpoint_key(w_name, alpha)
+
+            if key in completed:
+                console.print(
+                    f"  [dim]Run {run_idx}/{total}: weights={w_name}, "
+                    f"alpha={alpha} — already done, skipping[/dim]"
+                )
+                continue
+
             console.rule(
                 f"[bold cyan]Run {run_idx}/{total}: "
                 f"weights={w_name}, alpha={alpha}[/bold cyan]"
             )
 
-            metrics = _run_micro(
-                base_url=args.base_url,
-                model=args.model,
-                api_key=args.api_key,
-                ticks=args.ticks,
-                seed=args.seed,
-                stimulus_weights=w_cfg,
-                debate_alpha=alpha,
-                api_hard_limit=args.api_hard_limit,
-            )
+            try:
+                metrics = _run_micro(
+                    base_url=args.base_url,
+                    model=args.model,
+                    api_key=args.api_key,
+                    ticks=args.ticks,
+                    seed=args.seed,
+                    stimulus_weights=w_cfg,
+                    debate_alpha=alpha,
+                    api_hard_limit=args.api_hard_limit,
+                )
+            except Exception as exc:
+                _save_checkpoint(checkpoint_path, completed)
+                if _is_rate_limit_error(exc):
+                    console.print(
+                        "[yellow]Paused due to API rate/quota limit.[/yellow] "
+                        "Checkpoint saved. Re-run the same command to resume."
+                    )
+                    raise SystemExit(75) from exc
+                raise
 
             console.print(
                 f"  debates={metrics['n_debates']}, "
@@ -171,15 +255,20 @@ def main() -> None:
                 f"time={metrics['elapsed_s']:.1f}s"
             )
 
-            results.append({
+            entry = {
+                "_checkpoint_key": key,
                 "weight_config_name": w_name,
                 "stimulus_weights": w_cfg,
                 "debate_alpha": alpha,
                 **metrics,
-            })
+            }
+            results.append(entry)
+            completed[key] = entry
+            _save_checkpoint(checkpoint_path, completed)
 
-    results.sort(key=lambda r: (r["avg_dphi"], r["consistency"]), reverse=True)
-    best = results[0]
+    clean_results = [{k: v for k, v in r.items() if k != "_checkpoint_key"} for r in results]
+    clean_results.sort(key=lambda r: (r["avg_dphi"], r["consistency"]), reverse=True)
+    best = clean_results[0]
 
     table = Table(
         title="Calibration Results (ranked by avg delta-phi)",
@@ -193,7 +282,7 @@ def main() -> None:
     table.add_column("Avg dphi", justify="right", width=10)
     table.add_column("Consistency", justify="right", width=12)
 
-    for i, r in enumerate(results, 1):
+    for i, r in enumerate(clean_results, 1):
         style = "bold green" if i == 1 else ""
         table.add_row(
             str(i),
@@ -224,7 +313,7 @@ def main() -> None:
             "mode": "hrrl",
             "api_hard_limit": args.api_hard_limit,
         },
-        "all_configs": results,
+        "all_configs": clean_results,
     }
 
     output_path = Path(args.output)
@@ -232,6 +321,10 @@ def main() -> None:
         json.dump(output, f, indent=2, ensure_ascii=False)
 
     console.print(f"[green]Results saved to {output_path}[/green]")
+
+    if checkpoint_path.exists():
+        checkpoint_path.unlink()
+        console.print(f"[dim]Checkpoint {checkpoint_path} cleaned up[/dim]")
 
 
 if __name__ == "__main__":

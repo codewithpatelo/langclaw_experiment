@@ -26,10 +26,15 @@ Statistical test:
     H0: μ_HRRL ≤ μ_LG  vs  H1: μ_HRRL > μ_LG
   One-sided Welch's t-test, Bonferroni-corrected (alpha=0.05/3=0.0167).
 
+Checkpoint/resume: after each (mode, seed) combination completes, results are
+persisted to benchmark_checkpoint.json inside --output-dir. On restart, completed
+combinations are skipped automatically. Use --clean to start fresh.
+
 Usage
 -----
     python benchmark.py --model gpt-4o-mini --iterations 50 --seeds 7 17 42 123 256
     python benchmark.py --modes hrrl langgraph --output-dir results
+    python benchmark.py --clean   # discard checkpoint, start fresh
 """
 
 from __future__ import annotations
@@ -64,6 +69,49 @@ console = Console()
 
 DEFAULT_MODES = ["hrrl", "langgraph"]
 DEFAULT_SEEDS = [7, 17, 42, 123, 256]
+
+
+def _bm_checkpoint_key(mode: str, seed: int) -> str:
+    return f"{mode}__seed{seed}"
+
+
+def _load_bm_checkpoint(path: Path) -> dict[str, dict]:
+    """Load completed benchmark runs from checkpoint file."""
+    if not path.exists():
+        return {}
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        return {r["_ck"]: r for r in data if "_ck" in r}
+    except (json.JSONDecodeError, KeyError):
+        return {}
+
+
+def _save_bm_checkpoint(path: Path, completed: dict[str, dict]) -> None:
+    """Persist all completed benchmark runs to checkpoint file."""
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(list(completed.values()), f, indent=2, ensure_ascii=False)
+
+
+def _is_rate_limit_error(exc: Exception) -> bool:
+    """Heuristic detection for OpenAI quota/rate-limit failures."""
+    parts: list[str] = []
+    cur: BaseException | None = exc
+    hops = 0
+    while cur is not None and hops < 8:
+        parts.append(str(cur).lower())
+        cur = getattr(cur, "__cause__", None) or getattr(cur, "__context__", None)
+        hops += 1
+    msg = " | ".join(parts)
+    markers = [
+        "rate limit",
+        "insufficient_quota",
+        "quota",
+        "429",
+        "rpd",
+        "rpm",
+    ]
+    return any(m in msg for m in markers)
 
 # All agent IDs for PRR text-based computation (VSM structure)
 _AGENT_IDS = [
@@ -802,6 +850,10 @@ def main() -> None:
         "--log-level", default="WARNING",
         choices=["DEBUG", "INFO", "WARNING", "ERROR"],
     )
+    parser.add_argument(
+        "--clean", action="store_true",
+        help="Discard checkpoint and start fresh.",
+    )
 
     args = parser.parse_args()
 
@@ -814,35 +866,73 @@ def main() -> None:
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    checkpoint_path = output_dir / "benchmark_checkpoint.json"
+
+    if args.clean and checkpoint_path.exists():
+        checkpoint_path.unlink()
+        console.print("[yellow]Checkpoint cleared — starting fresh[/yellow]")
+
+    completed = _load_bm_checkpoint(checkpoint_path)
+    if completed:
+        console.print(
+            f"[green]Resuming: {len(completed)} seed/mode combos already completed, "
+            f"skipping them.[/green]"
+        )
+
     cal = _load_calibration_config(args.config)
     cal_stimulus_weights = cal.get("stimulus_weights")
     cal_debate_alpha = cal.get("debate_alpha", 2.0)
 
-    # Per-mode run accumulators
+    # Per-mode run accumulators (reload from checkpoint)
     mode_runs: dict[str, list[dict]] = {m: [] for m in args.modes}
     last_logs: dict[str, list[SimulationLog]] = {}
+
+    for ck_entry in completed.values():
+        m = ck_entry.get("_mode")
+        if m and m in mode_runs:
+            metrics = {k: v for k, v in ck_entry.items() if not k.startswith("_")}
+            mode_runs[m].append(metrics)
 
     for seed in args.seeds:
         console.rule(f"[bold yellow]Seed: {seed}[/bold yellow]")
 
         for mode in args.modes:
+            ck_key = _bm_checkpoint_key(mode, seed)
+
+            if ck_key in completed:
+                console.print(
+                    f"  [dim]{mode.upper()} seed={seed} — already done, skipping[/dim]"
+                )
+                continue
+
             console.rule(
                 f"[bold cyan]Running {mode.upper()} "
                 f"(T={args.iterations}, seed={seed})[/bold cyan]"
             )
 
-            logs, elapsed, env = _run_mode(
-                mode=mode,
-                base_url=args.base_url,
-                model=args.model,
-                api_key=args.api_key,
-                iterations=args.iterations,
-                seed=seed,
-                api_hard_limit=args.api_hard_limit,
-                initial_deficit=args.initial_deficit,
-                stimulus_weights=cal_stimulus_weights,
-                debate_alpha=cal_debate_alpha,
-            )
+            try:
+                logs, elapsed, env = _run_mode(
+                    mode=mode,
+                    base_url=args.base_url,
+                    model=args.model,
+                    api_key=args.api_key,
+                    iterations=args.iterations,
+                    seed=seed,
+                    api_hard_limit=args.api_hard_limit,
+                    initial_deficit=args.initial_deficit,
+                    stimulus_weights=cal_stimulus_weights,
+                    debate_alpha=cal_debate_alpha,
+                )
+            except Exception as exc:
+                _save_bm_checkpoint(checkpoint_path, completed)
+                if _is_rate_limit_error(exc):
+                    console.print(
+                        f"[yellow]Paused due to API rate/quota limit at mode={mode}, "
+                        f"seed={seed}.[/yellow] Checkpoint saved. Re-run the same "
+                        "command to resume."
+                    )
+                    raise SystemExit(75) from exc
+                raise
 
             metrics = _compute_metrics(logs, env.graph)
             temporal = _compute_temporal_metrics(logs, env.graph, n_windows=5)
@@ -866,6 +956,11 @@ def main() -> None:
             log_path = output_dir / f"logs_{safe_mode}_seed{seed}.json"
             with open(log_path, "w", encoding="utf-8") as f:
                 json.dump([e.model_dump() for e in logs], f, indent=2, ensure_ascii=False)
+
+            # Checkpoint after each (mode, seed) completes
+            ck_entry = {"_ck": ck_key, "_mode": mode, "_seed": seed, **metrics}
+            completed[ck_key] = ck_entry
+            _save_bm_checkpoint(checkpoint_path, completed)
 
     # Aggregate across seeds
     agg_all = {mode: _aggregate_multi_seed(runs) for mode, runs in mode_runs.items()}
@@ -907,6 +1002,10 @@ def main() -> None:
         json.dump(report, f, indent=2, ensure_ascii=False)
 
     _save_comparison_charts(agg_all, last_logs, output_dir)
+
+    if checkpoint_path.exists():
+        checkpoint_path.unlink()
+        console.print(f"[dim]Checkpoint {checkpoint_path} cleaned up[/dim]")
 
     console.print(f"\n[green]All results saved to {output_dir}/[/green]")
 

@@ -1,0 +1,31 @@
+services:
+  langclaw:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: langclaw:latest
+    working_dir: /app
+    env_file:
+      - .env
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PYTHONIOENCODING: "utf-8"
+      PYTHONUTF8: "1"
+    volumes:
+      - ./:/app
+    command: >
+      python run_full_experiment.py
+      --project-root /app
+      --calibration-ticks 10
+      --calibration-seed 42
+      --calibration-api-hard-limit 200
+      --iterations 80
+      --seeds 7 17 42 123 256
+      --benchmark-api-hard-limit 500
+      --benchmark-output-dir benchmark_results_v7
+      --status-file experiment_status.json
+      --log-file experiment_run.log
+      --events-file experiment_events.jsonl
+      --state-file experiment_state.txt
+      --log-level WARNING
+

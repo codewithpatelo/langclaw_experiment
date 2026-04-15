@@ -1,0 +1,18 @@
+[
+  {
+    "_checkpoint_key": "equal__alpha1.0",
+    "weight_config_name": "equal",
+    "stimulus_weights": {
+      "w_faction": 0.2,
+      "w_centrality": 0.2,
+      "w_memory": 0.2,
+      "w_novelty": 0.2,
+      "w_pressure": 0.2
+    },
+    "debate_alpha": 1.0,
+    "n_debates": 34,
+    "avg_dphi": 0.121035,
+    "consistency": 0.9706,
+    "elapsed_s": 734.4
+  }
+]

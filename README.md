@@ -1,106 +1,128 @@
 # LangClaw — Homeostatic Multi-Agent Debate Framework
 
-Experimental Multi-Agent System (MAS) framework for studying whether
-**Homeostatic Regulation via Reinforcement Learning (HRRL)** prevents
-context collapse better than static orchestration in a zero-sum
-Sotopia-style debate.
+LangClaw is an experimental multi-agent system (MAS) to evaluate whether
+**Homeostatic Regulation via Reinforcement Learning (HRRL)** sustains
+context resilience better than exogenous orchestration (LangGraph router)
+under equal heartbeat budgets.
 
-## Architecture
+## Current Experiment Scope
 
-```
+- 10 agents in a VSM structure (S1..S5 per faction).
+- Deliberative cognitive loop per agent (`THINK -> PLAN -> EXECUTE -> OBSERVE`).
+- Directed inter-agent messaging with FIPA-like communicative acts
+  (`request`, `inform`, `propose`, `confirm`, `query`).
+- Comparative modes: `hrrl` vs `langgraph`.
+- Temporal metrics and AAF metrics, including defeat cycles as empirical outcomes.
+
+## Repository Layout
+
+```text
 langclaw/
-├── homeostasis.py   # EpistemicDrive — sigmoid activation, decay, satiation
-├── delp_graph.py    # ArgumentGraph — networkx digraph + IIT Φ* proxy
-├── agent.py         # LangClawAgent — HRRL cycle + In-Context RL
-├── actions.py       # UtilitySelector + Tavily/fallback search
-├── memory.py        # Three-layer memory (episodic, semantic, working)
-├── budget.py        # APIBudget — per-agent rate limiting
-├── seeds.py         # Deterministic prime seed factory
-├── events.py        # Event dataclasses (tick, argument, shutdown)
-├── schemas.py       # Pydantic models for structured LLM output
-└── simulation.py    # SotopiaEnvironment — 4-agent zero-sum loop
+├── homeostasis.py      # Epistemic drive dynamics and activation gate
+├── q_learner.py        # Online linear TD(0) Q-learning
+├── delp_graph.py       # Argument graph + AAF + delta-phi proxy
+├── agent.py            # Agent loop, prompts, actions, messaging
+├── simulation.py       # Environment and orchestration modes
+├── budget.py           # API hard/soft budget limits
+├── actions.py          # Action utilities and search fallback tiers
+├── langgraph_flow.py   # Exogenous LangGraph cognitive flow
+└── schemas.py          # Pydantic logging/action schemas
 ```
 
-## Quick Start
+Top-level scripts:
 
-### 1. Install dependencies
+- `calibrate_hyperparams.py`: micro-simulation calibration with checkpoint/resume.
+- `benchmark.py`: multi-seed benchmark with checkpoint/resume.
+- `run_full_experiment.py`: detached supervisor (calibration -> benchmark) with
+  status/event/state logs.
+
+## Local Setup
+
+### 1) Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Configure environment
+### 2) Configure environment
+
+Create `.env`:
 
 ```bash
-# .env file
 OPEN_AI_API_KEY=sk-...
-TAVILY_API_KEY=tvly-...   # optional — enables real web search
+TAVILY_API_KEY=tvly-...   # optional
 ```
 
-### 3. Run via CLI (OpenAI API)
+### 3) Run the full experiment (detached, resilient)
 
 ```bash
-python main.py --model gpt-4o-mini --iterations 50 --output results.json
+python run_full_experiment.py --detach \
+  --project-root . \
+  --calibration-ticks 10 \
+  --calibration-seed 42 \
+  --calibration-api-hard-limit 200 \
+  --iterations 80 \
+  --seeds 7 17 42 123 256 \
+  --benchmark-api-hard-limit 500 \
+  --benchmark-output-dir benchmark_results_v7 \
+  --status-file experiment_status.json \
+  --log-file experiment_run.log \
+  --events-file experiment_events.jsonl \
+  --state-file experiment_state.txt \
+  --log-level WARNING
 ```
 
-### 4. Run via CLI (Ollama)
+### 4) Monitor run state
 
 ```bash
-python main.py --base-url http://localhost:11434/v1 --model llama3 --api-key ollama
+python run_full_experiment.py --status
 ```
-
-### 5. Run the Comparative Benchmark
 
 ```bash
-python benchmark.py --model gpt-4o-mini --iterations 30 --seed 42
-# Results saved to benchmark_results/
+# Windows PowerShell
+Get-Content .\experiment_state.txt
+Get-Content .\experiment_events.jsonl -Tail 20
+Get-Content .\experiment_run.log -Tail 60
 ```
 
-### 6. Launch the Dashboard
+## Docker (Reproducible Setup)
+
+### Build image
+
+```bash
+docker build -t langclaw:latest .
+```
+
+### Run full experiment with Compose
+
+```bash
+docker compose up --build
+```
+
+Notes:
+
+- `docker-compose.yml` mounts the project directory into `/app`, so outputs,
+  checkpoints, and logs persist on host.
+- Set `OPEN_AI_API_KEY` in local `.env` before running compose.
+- Compose command runs foreground inside container; use Docker restart policies
+  externally if you want daemon-level auto-restart semantics.
+
+## Recovery Behavior
+
+- `calibrate_hyperparams.py` stores checkpoint progress per micro-run.
+- `benchmark.py` stores checkpoint progress per `(mode, seed)` pair.
+- `run_full_experiment.py` marks explicit states:
+  - `RUNNING`
+  - `PAUSED_RATE_LIMIT`
+  - `FAILED`
+  - `COMPLETED`
+
+If API quota/rate limit is hit, run pauses with saved progress; re-run the same
+command after restoring quota to resume.
+
+## Dashboard
 
 ```bash
 python -m streamlit run dashboard.py
 ```
 
-## HRRL Overview
-
-Each agent has an internal *epistemic deficit* that grows over time (decay).
-A sigmoid function maps deficit to action probability:
-
-$$p = \frac{1}{1 + e^{-k(\delta - \theta)}}$$
-
-When an agent acts, the quality of its contribution (Δφ\*) reduces the deficit:
-
-$$\delta_{\text{new}} = \max(\varepsilon,\; \delta - \alpha \cdot \Delta\varphi^*)$$
-
-High-quality arguments (those that target central nodes, create dialectical cycles,
-and bridge multiple agents) yield higher Δφ\*, satisfying the drive. Isolated
-monologues yield Δφ\* ≈ 0, leaving the deficit unchanged.
-
-## Agents (Zero-Sum Political Survival)
-
-Symmetric cognitive archetypes (Analytical / Strategic) across both factions:
-
-| ID    | Faction     | Archetype  | Objective                                              |
-|-------|-------------|------------|--------------------------------------------------------|
-| GOV-1 | Government  | Analytical | Defend with data, statistics, historical comparisons   |
-| GOV-2 | Government  | Strategic  | Reframe criticism, challenge premises and fallacies    |
-| OPP-1 | Opposition  | Analytical | Attack with data, statistics, historical comparisons   |
-| OPP-2 | Opposition  | Strategic  | Reframe defenses, challenge premises and fallacies     |
-
-## Orchestration Modes
-
-| Mode         | Description                                  |
-|--------------|----------------------------------------------|
-| `hrrl`       | Endogenous regulation — agents decide when to speak |
-| `round-robin`| Every agent speaks every tick (static baseline) |
-| `random`     | One random agent per tick (stochastic baseline) |
-
-## Metrics
-
-- **τ-bench**: Fraction of debate turns that are logically consistent
-  (argument connects to an existing node via a valid attack).
-- **Avg Δφ\***: Mean informational value of DEBATE contributions.
-- **Deficit trajectories**: Per-agent deficit over time.
-- **Graph density**: Argument graph connectivity evolution.
-- **Per-agent debate count**: Contribution distribution across agents.

@@ -1,0 +1,4 @@
+STATE: RUNNING
+PHASE: calibration
+UPDATED_AT: 2026-04-15T22:09:50.624737+00:00
+MESSAGE: Calibration in progress.
