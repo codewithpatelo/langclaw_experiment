@@ -287,7 +287,7 @@ def main() -> None:
         st.header("Configuración")
         env_key = os.getenv("OPEN_AI_API_KEY", "")
         default_url = "https://api.openai.com/v1" if env_key else "http://localhost:11434/v1"
-        default_model = "gpt-4o-mini" if env_key else "llama3"
+        default_model = "gpt-5-nano" if env_key else "llama3"
 
         base_url = st.text_input("API Base URL", value=default_url)
         model = st.text_input("Modelo", value=default_model)

@@ -225,17 +225,6 @@ regulation in biological systems. To the best of our knowledge, this
 perspective has not been evaluated as an orchestration principle for
 LLM-based debate agents.
 
-In prior work, we introduced AopifyJS~\parencite{gerpe2023aopifyjs}, an
-agent-oriented programming framework that integrated multi-criteria
-decision-making methods with an event-based communication architecture.
-That work identified the need for ``more human-like abstractions for machine
-argumentation'' and ``integrations with machine learning algorithms, reward
-and utility functions.'' LangClaw is framed as a continuation of those open
-directions. Whereas AopifyJS used deterministic decision algorithms (AHP,
-TOPSIS) for agent behavior, LangClaw introduces a homeostatic drive
-regulated by reinforcement learning, avoiding predefined criteria
-weightings.
-
 More specifically, this paper makes four contributions.
 
 \begin{enumerate}
@@ -273,126 +262,36 @@ findings and limitations.
 \section{Related Work}
 \label{sec:related}
 
-\subsection{Multi-Agent LLM Systems}
-
-Frameworks such as AutoGen~\parencite{wu2023autogen},
+Multi-agent LLM frameworks such as AutoGen~\parencite{wu2023autogen},
 CAMEL~\parencite{li2023camel}, and MetaGPT~\parencite{hong2023metagpt}
-implement multi-agent collaboration through predefined roles and
-communication protocols. In practice, these frameworks rely on static
-orchestration.
+implement collaboration through predefined roles and static orchestration.
 \textcite{huang2024masresilience} demonstrate that linear-chain orchestration
 degrades $5\times$ faster than hierarchical structures under adversarial
-agents, suggesting that rigid schedulers can be sensitive to interaction
-stress.
+conditions. Work on desire-driven agents~\parencite{wang2025d2a} equips LLM
+agents with multidimensional desire vectors; unlike LangClaw, it does not
+define a closed homeostatic loop with an external structural quality signal.
 
-\subsection{Homeostatic Reinforcement Learning}
+\textcite{keramati2014homeostatic} introduced HRRL, establishing the equivalence
+between drive minimization and reward maximization; \textcite{laurencon2024ctcs}
+extended this to continuous time-space. To the best of our knowledge, HRRL
+has not previously been applied to LLM-based multi-agent orchestration. The
+inference-time compute literature~\parencite{snell2024scaling,deepseek2025r1}
+shows that RL shapes how reasoning effort is allocated; LangClaw applies this
+principle at the orchestration level, distributing compute across agents over
+time according to their internal regulatory state.
 
-\textcite{keramati2014homeostatic} introduced the HRRL framework, establishing the
-equivalence between drive minimization and reward maximization in discrete
-state spaces. \textcite{laurencon2024ctcs} extended this to continuous
-time-space, formalizing the drive function
-$d(\delta) = \sqrt{\varepsilon + \delta^\top\delta}$. We are not aware of
-previous studies applying HRRL to LLM-based cognitive agents. More broadly,
-reinforcement learning for multi-step LLM
-reasoning~\parencite{deepseek2025r1} has shown that RL can shape not only
-\emph{what} a model reasons about but \emph{how} it allocates reasoning
-effort. LangClaw applies this principle at the orchestration level: RL
-regulates the temporal conditions under which reasoning occurs, not the
-content of reasoning itself.
-
-\subsection{Inference-Time Compute Allocation}
-
-Recent work on scaling laws for test-time compute has established that
-investing additional computation at inference---through multi-sampling,
-verifier models, or extended reasoning chains---can improve LLM performance
-without changing model parameters~\parencite{snell2024scaling}. This has
-driven interest in ``deep thinking'' tokens and test-time scaling laws
-analogous to training scaling laws. LangClaw can be understood through this
-lens: the homeostatic mechanism acts as an adaptive inference-time compute
-allocator across agents, channeling LLM calls toward moments of high
-argumentative potential rather than distributing them uniformly. Where
-inference-time scaling asks \emph{how much compute per query}, LangClaw
-asks \emph{how should compute be distributed across agents over time}.
-
-\subsection{Desire-Driven Autonomous Agents}
-
-More recently, work on desire-driven and intrinsically motivated LLM agents
-has begun to explore internal states as a basis for action selection.
-\textcite{wang2025d2a} present D2A (ICLR~2025), which equips LLM agents with
-a multidimensional desire vector updated through reflexive reasoning. The
-main difference with our proposal is that D2A does not define a closed
-homeostatic loop with an external quality signal. Its desire update depends
-primarily on the LLM's self-assessment, whereas LangClaw introduces a formal
-sigmoid threshold, quality-proportional satiation, and an external signal
-($\Delta\varphi^*$) derived from the evolving argument graph.
-
-\subsection{Agent-Oriented Programming}
-
-\textcite{gerpe2023aopifyjs} proposed AopifyJS as a framework combining AOSE
-high-level abstractions with multi-criteria decision-making methods. That
-work showed that agent entities with self-contained memory and event-based
-communication provide a suitable architecture for modeling human-machine
-interaction. LangClaw preserves the event-driven design pattern---agents
-communicate through asynchronous event queues---but replaces deterministic
-MCDC algorithms with a homeostatic regulation loop and LLM-based reasoning.
-
-\subsection{The Heartbeat Paradigm and Its Limits}
-
-The most visible evolution of the agentic paradigm is the
-\emph{heartbeat} architecture, popularized by
-OpenClaw~\parencite{openclaw2026heartbeat}. In this design, a daemon fires
-a periodic signal---thirty minutes by default---that wakes the agent to
-inspect a task checklist, act if needed, and return to sleep. The pattern
-has genuine merits: it transforms a reactive chatbot into a persistent
-process with a sense of elapsed time, and it composes naturally with
-tool-using, memory-augmented agents. Combined with infrastructure layers
-such as LangGraph---which provides checkpointed state machines, persistent
-memory stores, and human-in-the-loop
-breakpoints~\parencite{wu2023autogen}---the heartbeat gives contemporary
-agents both temporal awareness and durable context.
-
-Yet the heartbeat remains, at its core, a \emph{fixed-interval timer}. The
-cadence is the same whether the discourse is calm or contentious; the agent
-evaluates what to do upon waking, but the decision \emph{to wake} is
-exogenous and invariant. OpenClaw's own documentation acknowledges the
-limitation: ``there is no built-in mechanism for the agent to adjust its
-own monitoring frequency based on urgency''~\parencite{openclaw2026heartbeat}.
-LangGraph, for its part, externalizes routing to a graph or an LLM
-selector, sharing the same structural assumption: the \emph{when} and
-\emph{who} of agent activation are decided outside the agent.
-
-LangClaw proposes a rupture from this paradigm. The heartbeat signal is
-retained---we call the periodic processing cycle a
-\emph{heartbeat}---but the activation decision is no longer a function of
-the timer alone. The agent's internal deficit integrates both basal
-temporal pressure and discourse-driven stimuli; the sigmoid gate
-modulates \emph{reactivity} to those stimuli rather than merely
-\emph{scheduling} wakeups. In other words, the heartbeat fires uniformly
-but the agent's propensity to act varies endogenously. This is the
-distinction between a clock and a pulse.
-
-\subsection{Other Relevant Work}
-
+The heartbeat architecture~\parencite{openclaw2026heartbeat} transforms a
+reactive agent into a persistent process with temporal awareness, but the
+activation decision remains exogenous: the agent evaluates what to do upon
+waking, not whether to wake. LangGraph externalizes routing to an LLM
+selector with the same constraint. The formal treatment of argumentation draws on Defeasible Logic
+Programming~\parencite{simari1992mathematical,chesnevar2000logically,garcia2004defeasible}---a
+line of research developed primarily in Argentina, where the foundational
+work on computational argumentation originated~\parencite{simari1992mathematical,chesnevar2000logically}---where
+arguments are defeasible derivations subject to undercut and rebuttal.
 The Sotopia framework~\parencite{zhou2024sotopia} evaluates LLM agents in
-social interactions. We adopt its zero-sum structure but focus on
+social interactions; we adopt its zero-sum structure but focus on
 argumentative coherence.
-
-The formal treatment of argumentation in this work draws on a long-standing
-research tradition in Argentina. Defeasible Logic Programming (DeLP) was
-introduced by \textcite{garcia2004defeasible} at the Universidad Nacional
-del Sur, building on earlier foundational work by Simari and Loui on
-defeasible reasoning~\parencite{simari1992mathematical}. This line of
-research established that arguments can be formally structured as
-defeasible derivations subject to attack (undercut) and counter-attack
-(rebuttal), producing dialectical trees that can be evaluated for warrant.
-The Argentine school of argumentation has since contributed extensively to
-abstract argumentation frameworks, structured argumentation, and their
-applications in multi-agent
-systems~\parencite{chesnevar2000logically}. LangClaw's argument graph,
-with its undercut and rebuttal relations, operationalizes this tradition
-in a computational setting: each node is a claim, each edge is a
-defeasible attack, and the graph structure determines argument quality
-through the $\Phi^*$ proxy.
 
 % ============================================================
 \section{Method}

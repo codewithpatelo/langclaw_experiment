@@ -1,46 +1,72 @@
-"""
-API Budget manager for LangClaw.
+"""API Budget manager for LangClaw.
 
 Two-tier rate limiting per agent:
-  - Hard limit: absolute ceiling on total API calls per run (budget protection)
-  - Soft limit: sliding-window cap that scales with the agent's epistemic deficit
-    (sated agents call less; hungry agents can call more within the hard ceiling)
+  - Hard limit: absolute ceiling on total API calls per run (functional
+    constraint — set by real API cost ceiling).
+  - Soft limit: sliding-window cap derived from the sigmoid activation
+    function, ensuring budget allocation is proportional to the agent's
+    activation probability.
+
+Soft-cap derivation
+-------------------
+The sigmoid gate p = σ(k·(δ − θ)) maps deficit to [0, 1].  We use this
+same function to determine how many API calls the agent may make per
+window, discretised into {1, 2, 3, 4}:
+
+    soft_cap(δ) = max(1, round(p(δ) · MAX_CALLS_PER_WINDOW))
+
+This ensures:
+  - The budget thresholds are derived from the same sigmoid parameters
+    (k=10, θ=0.7) used in the activation gate — no independent arbitrary
+    thresholds.
+  - A sated agent (p ≈ 0) gets 1 call/window (minimum to stay responsive).
+  - A maximally driven agent (p ≈ 1) gets MAX_CALLS_PER_WINDOW calls.
+  - The transition is smooth, not stepped.
 """
 
 from __future__ import annotations
+
+import math
 from collections import defaultdict, deque
 
 
+MAX_CALLS_PER_WINDOW: int = 4
+
+
 class APIBudget:
+    """Per-agent API call limiter with sigmoid-derived soft cap.
+
+    Parameters
+    ----------
+    hard_limit : int
+        Maximum total API calls per agent for the entire run.
+        Functional constraint: set to match real API cost ceiling.
+    window_size : int
+        Sliding window in ticks.  With 80 total ticks and 10 agents,
+        window=5 allows ~16 windows, giving enough granularity for
+        budget to respond to deficit changes.
+    k : float
+        Sigmoid steepness — must match homeostasis.py (default 10.0).
+    theta : float
+        Sigmoid midpoint — must match homeostasis.py (default 0.7).
     """
-    Per-agent API call limiter.
 
-    The soft cap is a function of the agent's current deficit δ:
-      δ < 0.3  → 1 call per window  (agent is sated, hold back)
-      δ < 0.7  → 2 calls per window (moderate drive)
-      δ >= 0.7 → 4 calls per window (high drive, agent is hungry)
-
-    The hard limit is a global ceiling regardless of δ.
-    """
-
-    def __init__(self, hard_limit: int = 200, window_size: int = 5) -> None:
-        """
-        Args:
-            hard_limit:  Maximum total API calls per agent for the entire run.
-            window_size: Number of ticks in the sliding window for soft-cap tracking.
-        """
+    def __init__(
+        self,
+        hard_limit: int = 200,
+        window_size: int = 5,
+        k: float = 10.0,
+        theta: float = 0.7,
+    ) -> None:
         self.hard_limit = hard_limit
         self.window_size = window_size
+        self._k = k
+        self._theta = theta
         self._total_calls: dict[str, int] = defaultdict(int)
-        # Stores the tick number of each call in the window
         self._window_calls: dict[str, deque[int]] = defaultdict(deque)
 
-    # ------------------------------------------------------------------
-    # Public API
-    # ------------------------------------------------------------------
-
     def can_call(self, agent_id: str, deficit: float, current_tick: int) -> bool:
-        """Return True if the agent is allowed to make an API call right now."""
+        """Return True if the agent is allowed to make an API call."""
         if self._total_calls[agent_id] >= self.hard_limit:
             return False
         self._evict_old(agent_id, current_tick)
@@ -61,10 +87,6 @@ class APIBudget:
     def summary(self) -> dict[str, int]:
         return dict(self._total_calls)
 
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
-
     def _evict_old(self, agent_id: str, current_tick: int) -> None:
         """Remove calls that have fallen outside the sliding window."""
         q = self._window_calls[agent_id]
@@ -72,8 +94,11 @@ class APIBudget:
             q.popleft()
 
     def _soft_cap(self, deficit: float) -> int:
-        if deficit < 0.3:
-            return 1
-        if deficit < 0.7:
-            return 2
-        return 4
+        """Sigmoid-derived soft cap: same function as the activation gate.
+
+        soft_cap = max(1, round(σ(k·(δ−θ)) · MAX_CALLS_PER_WINDOW))
+        """
+        exponent = -self._k * (deficit - self._theta)
+        exponent = max(-500.0, min(500.0, exponent))
+        p = 1.0 / (1.0 + math.exp(exponent))
+        return max(1, round(p * MAX_CALLS_PER_WINDOW))

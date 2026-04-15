@@ -39,7 +39,7 @@ def main() -> None:
         "https://api.openai.com/v1" if default_api_key != "ollama"
         else "http://localhost:11434/v1"
     )
-    default_model = "gpt-4o-mini" if default_api_key != "ollama" else "llama3"
+    default_model = "gpt-5-nano" if default_api_key != "ollama" else "llama3"
 
     parser = argparse.ArgumentParser(
         description="LangClaw — Homeostatic Multi-Agent Debate Simulation",

@@ -19,8 +19,8 @@ of argumentative integration:
 
 These features are conceptually related to — though formally distinct from —
 informational integration (Tononi et al.); no formal equivalence is claimed.
-Weights (0.35 / 0.35 / 0.30) reflect an equal-importance prior; optimisation
-is deferred to future work.
+Weights (1/3, 1/3, 1/3) use a maximum-entropy equal-importance prior (Jaynes
+1957); no domain evidence favours one component over another a priori.
 
 AAF metrics (Dung 1995)
 -----------------------
@@ -156,7 +156,7 @@ class ArgumentGraph:
             len(unique_agents) / total_agents_in_graph if total_agents_in_graph else 0.0
         )
 
-        w_c, w_cycle, w_div = 0.35, 0.35, 0.30
+        w_c, w_cycle, w_div = 1/3, 1/3, 1/3
         phi = w_c * centrality_score + w_cycle * cycle_bonus + w_div * diversity_score
         return min(1.0, max(0.0, phi))
 
@@ -253,7 +253,11 @@ class ArgumentGraph:
         return len(addressed) / n
 
     def get_recent_context(self, last_n: int = 5) -> str:
-        """Return a textual summary of the last *n* arguments for prompt injection."""
+        """Return a textual summary of the last *n* arguments for prompt injection.
+
+        Shows both outgoing attacks (A attacks B) and incoming attacks
+        (who is attacking A), enabling agents to identify undefended claims.
+        """
         recent = self._node_order[-last_n:]
         if not recent:
             return "No arguments have been made yet."
@@ -266,8 +270,12 @@ class ArgumentGraph:
             if targets:
                 edge_data = self._graph.edges[nid, targets[0]]
                 target_info = f" --[{edge_data.get('attack_type', '?')}]--> {targets[0]}"
+            attackers = list(self._graph.predecessors(nid))
+            attacked_by = ""
+            if attackers:
+                attacked_by = f" (ATTACKED BY: {', '.join(attackers)})"
             lines.append(
-                f"[{nid}] ({data['agent_id']}): \"{data['claim']}\"{target_info}"
+                f"[{nid}] ({data['agent_id']}): \"{data['claim']}\"{target_info}{attacked_by}"
             )
         return "\n".join(lines)
 
@@ -297,3 +305,32 @@ class ArgumentGraph:
     def valid_target_ids(self) -> list[str]:
         """Return node IDs available as attack targets."""
         return list(self._graph.nodes)
+
+    def get_undefended_attacks(self, faction_prefix: str) -> list[dict[str, str]]:
+        """Find opponent attacks on this faction's claims that have no counter-attack.
+
+        Returns a list of dicts with 'attacker_node', 'attacked_node', and
+        'attacker_claim' — these are high-priority targets for counter-attack,
+        which can produce defeat cycles (mutual refutation).
+        """
+        results = []
+        for nid in self._graph.nodes:
+            if not nid.startswith(faction_prefix):
+                attackers = list(self._graph.predecessors(nid))
+                continue
+            attackers = list(self._graph.predecessors(nid))
+            for attacker_nid in attackers:
+                if attacker_nid.startswith(faction_prefix):
+                    continue
+                counter_attacks = [
+                    pred for pred in self._graph.predecessors(attacker_nid)
+                    if pred.startswith(faction_prefix)
+                ]
+                if not counter_attacks:
+                    attacker_data = self._graph.nodes[attacker_nid]
+                    results.append({
+                        "attacker_node": attacker_nid,
+                        "attacked_node": nid,
+                        "attacker_claim": attacker_data.get("claim", "")[:120],
+                    })
+        return results

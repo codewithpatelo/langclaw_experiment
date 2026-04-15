@@ -23,6 +23,8 @@ paper should score at least 4 on every dimension.
 - Complex ideas are made accessible without being dumbed down.
 - The structure guides the reader from problem to question to method to
   evidence to implications without friction.
+- No vagueness. No ambiguity.
+- All text is coherent and cohesive. Nothing seems "off".
 
 
 ### 1.3 Impact Potential
@@ -47,10 +49,68 @@ paper should score at least 4 on every dimension.
 ### 1.6 Rigor
 - Are claims calibrated to the evidence? No overclaiming.
 - Are metrics justified (why this metric and not another)?
-- Are hyperparameters justified by a rigourous method (like 5-fold cross-validation and/or HPO methods)?
 - Are limitations discussed seriously, not as an afterthought?
 - Is the experimental design controlled for confounds?
 - No vagueness, precise language.
+
+#### 1.6.1 Hyperparameter & Constant Justification (CRITICAL)
+
+**No value in the experiment may be chosen arbitrarily.** Every numerical
+constant, threshold, weight, initial condition, and hyperparameter MUST be
+justified by at least one of the following:
+
+
+1. **Mathematical derivation** — the value follows from the model's
+   equations (e.g., setpoint ε derived from the drive function's
+   fixed-point condition).
+2. **Literature precedent** — cited from the original paper or a
+   well-established convention in the field (e.g., discount factor γ=0.95
+   is standard in TD-learning for episodic tasks; cite Sutton & Barto).
+3. **Empirical calibration** — chosen via a documented procedure (grid
+   search, sensitivity analysis, pilot runs) with results reported in a
+   table or appendix.
+4. **Principled prior** — an explicit uninformative or maximum-entropy
+   choice (e.g., equal weights 1/N when no domain knowledge favours one
+   component over another).
+5. **Functional constraint** — the value is determined by a system
+   requirement (e.g., budget hard-limit set by API cost ceiling).
+6. **Relevance to the problem addressed** — the metric, parameter, or
+   design decision is justified because it directly measures or controls
+   a phenomenon central to the research question (e.g., CORE is chosen
+   over generic perplexity because it operationalizes *conversational*
+   coherence degradation, which is precisely what context collapse means
+   in multi-agent discourse; or a satiation function is proportional to
+   informational contribution because the theory defines epistemic need
+   reduction as quality-dependent).
+
+**What counts as a violation:**
+- A constant appears in code with no comment, docstring, or paper
+  reference explaining why that specific value was chosen.
+- "It worked in testing" or "seemed reasonable" is NOT a justification.
+- Different components use inconsistent thresholds for the same
+  conceptual quantity (e.g., budget uses 0.3/0.7 while sigmoid uses θ=0.7
+  without acknowledging the coupling).
+
+**What must be documented (in code AND paper):**
+- For each hyperparameter: name, value, justification method (1–5 above),
+  and sensitivity (what happens if it changes ±50%).
+- Reward/satiation values for each action must be outcome-dependent, not
+  fixed constants — otherwise the RL component cannot learn which actions
+  are genuinely useful.
+- Warm-start weights for function approximators must use a documented
+  initialization strategy (e.g., zero-init, Xavier/He, or domain-informed
+  with explicit rationale).
+
+**Checklist (must all be YES before submission):**
+- [ ] Every constant in homeostasis.py has a justification
+- [ ] Every constant in q_learner.py has a justification
+- [ ] Every weight in actions.py (StimulusEvaluator) has a justification
+- [ ] Every threshold in budget.py has a justification
+- [ ] Every weight in delp_graph.py (Δφ*) has a justification
+- [ ] LLM parameters (temperature, max_tokens) have a justification
+- [ ] Satiation for all actions is outcome-dependent, not fixed
+- [ ] Q-learner has an exploration mechanism (ε-greedy, softmax, or UCB)
+- [ ] Sensitivity analysis is reported for critical hyperparameters
 
 ### 1.7 Reproducibility
 - Can an independent researcher reproduce the experiments from the paper

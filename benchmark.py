@@ -65,8 +65,37 @@ console = Console()
 DEFAULT_MODES = ["hrrl", "langgraph"]
 DEFAULT_SEEDS = [7, 17, 42, 123, 256]
 
-# All agent IDs for PRR text-based computation
-_AGENT_IDS = ["GOV-1", "GOV-2", "OPP-1", "OPP-2"]
+# All agent IDs for PRR text-based computation (VSM structure)
+_AGENT_IDS = [
+    "GOV-S1", "GOV-S2", "GOV-S3", "GOV-S4", "GOV-S5",
+    "OPP-S1", "OPP-S2", "OPP-S3", "OPP-S4", "OPP-S5",
+]
+
+
+def _load_calibration_config(path: str | None) -> dict:
+    """Load calibrated hyperparameters from calibration_results.json.
+
+    Returns a dict with 'stimulus_weights' and 'debate_alpha' keys,
+    or empty dict if no config file is provided.
+    """
+    if not path:
+        return {}
+    p = Path(path)
+    if not p.exists():
+        console.print(f"[yellow]Config file {path} not found, using defaults[/yellow]")
+        return {}
+    with open(p, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    best = data.get("best_config", {})
+    console.print(
+        f"[green]Loaded calibration config:[/green] "
+        f"weights={best.get('weight_config_name', 'custom')}, "
+        f"alpha={best.get('debate_alpha', 2.0)}"
+    )
+    return {
+        "stimulus_weights": best.get("stimulus_weights"),
+        "debate_alpha": best.get("debate_alpha", 2.0),
+    }
 
 
 def _run_mode(
@@ -78,9 +107,18 @@ def _run_mode(
     seed: int | None,
     api_hard_limit: int,
     initial_deficit: float,
-    max_debates: int | None = None,
+    stimulus_weights: dict[str, float] | None = None,
+    debate_alpha: float = 2.0,
 ) -> tuple[list[SimulationLog], float, SotopiaEnvironment]:
-    """Run simulation for the given mode. Returns (logs, elapsed_seconds, env)."""
+    """Run simulation for the given mode. Returns (logs, elapsed_seconds, env).
+
+    Both modes run the same number of heartbeats. The comparison is temporal
+    (same time horizon), not volumetric (same debate count).
+
+    stimulus_weights and debate_alpha are passed to all agents. For LangGraph
+    mode, debate_alpha has no effect (no satiation/Q-learner), but
+    stimulus_weights still affect stimulus evaluation for consistency.
+    """
     env = SotopiaEnvironment(
         base_url=base_url,
         model=model,
@@ -90,7 +128,8 @@ def _run_mode(
         orchestration_mode=OrchestrationMode(mode),
         api_hard_limit=api_hard_limit,
         initial_deficit=initial_deficit,
-        max_debates=max_debates,
+        stimulus_weights=stimulus_weights,
+        debate_alpha=debate_alpha,
     )
     t0 = time.perf_counter()
     logs = env.run()
@@ -229,22 +268,150 @@ def _compute_metrics(
     }
 
 
+def _compute_temporal_metrics(
+    logs: list[SimulationLog],
+    graph: ArgumentGraph,
+    n_windows: int = 5,
+) -> dict:
+    """Compute temporal resilience metrics: windowed delta-phi, AAF, and CORE slopes.
+
+    Divides debates into n_windows temporal windows and fits a linear
+    regression slope for each metric vs window index. Negative slopes
+    indicate degradation over time.
+    """
+    from scipy.stats import linregress as _linregress
+
+    debates = [l for l in logs if l.action == "DEBATE" and l.claim]
+    debates.sort(key=lambda l: l.tick)
+
+    if len(debates) < n_windows:
+        return {
+            "window_dphi": [],
+            "slope_dphi": 0.0,
+            "window_acceptance": [],
+            "slope_acceptance": 0.0,
+            "window_core": [],
+            "slope_core": 0.0,
+        }
+
+    window_size = len(debates) // n_windows
+
+    # --- Windowed delta-phi ---
+    window_dphi = []
+    for i in range(n_windows):
+        start = i * window_size
+        end = start + window_size if i < n_windows - 1 else len(debates)
+        window = debates[start:end]
+        if window:
+            mean_dphi = statistics.mean(l.delta_phi for l in window)
+            window_dphi.append(round(mean_dphi, 4))
+
+    slope_dphi = 0.0
+    if len(window_dphi) >= 2:
+        reg = _linregress(range(len(window_dphi)), window_dphi)
+        slope_dphi = round(reg.slope, 6)
+
+    # --- Windowed AAF acceptance ratio (graph replay) ---
+    window_acceptance = []
+    for i in range(n_windows):
+        end_idx = (i + 1) * window_size if i < n_windows - 1 else len(debates)
+        partial_debates = debates[:end_idx]
+        partial_graph = _replay_graph_from_debates(partial_debates)
+        acc = partial_graph.acceptance_ratio()
+        window_acceptance.append(round(acc, 4))
+
+    slope_acceptance = 0.0
+    if len(window_acceptance) >= 2:
+        reg = _linregress(range(len(window_acceptance)), window_acceptance)
+        slope_acceptance = round(reg.slope, 6)
+
+    # --- Windowed CORE (if embeddings available) ---
+    window_core: list[float] = []
+    slope_core = 0.0
+    try:
+        from langclaw.core_metric import compute_core
+        import numpy as np
+
+        for i in range(n_windows):
+            start = i * window_size
+            end = start + window_size if i < n_windows - 1 else len(debates)
+            window = debates[start:end]
+            utterances = [l.claim or "" for l in window]
+
+            embeddings = _get_embeddings_for_utterances(utterances)
+            if embeddings is not None:
+                score = compute_core(utterances, embeddings)
+                window_core.append(round(score, 6))
+
+        if len(window_core) >= 2:
+            reg = _linregress(range(len(window_core)), window_core)
+            slope_core = round(reg.slope, 6)
+    except ImportError:
+        pass
+
+    return {
+        "window_dphi": window_dphi,
+        "slope_dphi": slope_dphi,
+        "window_acceptance": window_acceptance,
+        "slope_acceptance": slope_acceptance,
+        "window_core": window_core,
+        "slope_core": slope_core,
+    }
+
+
+def _replay_graph_from_debates(debates: list[SimulationLog]) -> ArgumentGraph:
+    """Rebuild an ArgumentGraph from logged debate entries (for incremental AAF)."""
+    g = ArgumentGraph()
+    for d in debates:
+        if d.claim:
+            g.add_argument(
+                agent_id=d.agent_id,
+                claim=d.claim,
+                target_node_id=d.target_node_id,
+                attack_type=d.attack_type,
+                tick=d.tick,
+            )
+    return g
+
+
+def _get_embeddings_for_utterances(utterances: list[str]) -> "np.ndarray | None":
+    """Get embeddings for utterances using OpenAI API (if available)."""
+    import os
+    try:
+        import numpy as np
+        from openai import OpenAI
+
+        api_key = os.getenv("OPEN_AI_API_KEY", "")
+        if not api_key:
+            return None
+
+        client = OpenAI(api_key=api_key)
+        response = client.embeddings.create(
+            model="text-embedding-3-small",
+            input=utterances,
+        )
+        embeddings = np.array([d.embedding for d in response.data], dtype=np.float64)
+        return embeddings
+    except Exception:
+        return None
+
+
 def _run_statistical_tests(hrrl_runs: list[dict], lg_runs: list[dict]) -> dict:
-    """Run Welch's t-tests for H1-H3 + acceptance ratio (secondary).
+    """Run Welch's t-tests for temporal resilience hypotheses.
 
-    H1: μ_HRRL(defeat_cycles) != μ_LG(defeat_cycles)  [two-sided, reframed]
-    H2: μ_HRRL(prr_graph)     >  μ_LG(prr_graph)      [one-sided]
-    H3: μ_HRRL(avg_delta_phi) >= μ_LG(avg_delta_phi)   [non-inferiority]
+    H1 (Linguistic resilience): CORE slope HRRL > LG (one-sided)
+    H2 (Quality resilience): delta-phi slope HRRL > LG (one-sided)
+    H3 (Contestation resilience): acceptance-ratio slope HRRL more stable
 
-    Secondary: acceptance_ratio two-sided t-test.
-    Bonferroni corrected alpha = 0.05 / 4 = 0.0125
+    Bonferroni corrected alpha = 0.05 / 3 = 0.0167
+
+    Also includes legacy aggregate tests for backward compatibility.
     """
     import math
 
-    bonferroni_alpha = 0.05 / 4
+    bonferroni_alpha = 0.05 / 3
 
     def welch_t(a: list[float], b: list[float], one_sided: bool = True) -> dict:
-        """Welch's t-test. One-sided: H0: mu_a <= mu_b. Two-sided: H0: mu_a == mu_b."""
         n1, n2 = len(a), len(b)
         if n1 < 2 or n2 < 2:
             return {"t": None, "df": None, "p": None, "cohen_d": None, "significant": None}
@@ -258,9 +425,9 @@ def _run_statistical_tests(hrrl_runs: list[dict], lg_runs: list[dict]) -> dict:
 
         t_stat = (mean1 - mean2) / se
 
-        df = (var1 / n1 + var2 / n2) ** 2 / (
-            (var1 / n1) ** 2 / (n1 - 1) + (var2 / n2) ** 2 / (n2 - 1)
-        )
+        df_num = (var1 / n1 + var2 / n2) ** 2
+        df_den = (var1 / n1) ** 2 / (n1 - 1) + (var2 / n2) ** 2 / (n2 - 1)
+        df = df_num / df_den if df_den > 0 else 1.0
 
         p_upper = _t_dist_upper_tail(abs(t_stat), df)
         if one_sided:
@@ -280,32 +447,41 @@ def _run_statistical_tests(hrrl_runs: list[dict], lg_runs: list[dict]) -> dict:
             "bonferroni_alpha": bonferroni_alpha,
         }
 
-    h1 = welch_t(
-        [r["aaf_defeat_cycles"] for r in hrrl_runs],
-        [r["aaf_defeat_cycles"] for r in lg_runs],
+    # Primary hypotheses: temporal slopes
+    h1_core = welch_t(
+        [r.get("slope_core", 0.0) for r in hrrl_runs],
+        [r.get("slope_core", 0.0) for r in lg_runs],
+        one_sided=True,
+    )
+    h2_quality = welch_t(
+        [r.get("slope_dphi", 0.0) for r in hrrl_runs],
+        [r.get("slope_dphi", 0.0) for r in lg_runs],
+        one_sided=True,
+    )
+    h3_contestation = welch_t(
+        [r.get("slope_acceptance", 0.0) for r in hrrl_runs],
+        [r.get("slope_acceptance", 0.0) for r in lg_runs],
         one_sided=False,
     )
-    h2 = welch_t(
-        [r["prr_graph"] for r in hrrl_runs],
-        [r["prr_graph"] for r in lg_runs],
+
+    # Descriptive tests (not primary hypotheses)
+    participation_equity = welch_t(
+        [statistics.stdev(list(r["per_agent_debates"].values())) for r in hrrl_runs],
+        [statistics.stdev(list(r["per_agent_debates"].values())) for r in lg_runs],
         one_sided=True,
     )
-    h3 = welch_t(
-        [r["avg_delta_phi"] for r in hrrl_runs],
-        [r["avg_delta_phi"] for r in lg_runs],
-        one_sided=True,
-    )
-    acceptance = welch_t(
+    acceptance_ratio = welch_t(
         [r["aaf_acceptance_ratio"] for r in hrrl_runs],
         [r["aaf_acceptance_ratio"] for r in lg_runs],
         one_sided=False,
     )
 
     return {
-        "H1_defeat_cycles": h1,
-        "H2_prr_graph": h2,
-        "H3_avg_delta_phi": h3,
-        "acceptance_ratio": acceptance,
+        "H1_core_slope": h1_core,
+        "H2_quality_slope": h2_quality,
+        "H3_contestation_slope": h3_contestation,
+        "descriptive_participation": participation_equity,
+        "descriptive_acceptance": acceptance_ratio,
     }
 
 
@@ -473,11 +649,11 @@ def _print_comparison_table(all_metrics: dict) -> None:
 def _print_statistical_tests(tests: dict) -> None:
     """Print Welch's t-test results."""
     table = Table(
-        title="Statistical Tests (Welch's t, Bonferroni alpha=0.0125)",
+        title="Statistical Tests (Welch's t, Bonferroni alpha=0.0167)",
         show_lines=True,
         title_style="bold yellow",
     )
-    table.add_column("Hypothesis", style="cyan", width=38)
+    table.add_column("Hypothesis", style="cyan", width=46)
     table.add_column("t", justify="right", width=8)
     table.add_column("df", justify="right", width=6)
     table.add_column("p", justify="right", width=8)
@@ -485,10 +661,11 @@ def _print_statistical_tests(tests: dict) -> None:
     table.add_column("Significant", justify="center", width=12)
 
     labels = {
-        "H1_defeat_cycles": "H1: HRRL != LG (defeat cycles, 2-sided)",
-        "H2_prr_graph": "H2: HRRL > LG (PRR graph, 1-sided)",
-        "H3_avg_delta_phi": "H3: HRRL >= LG (avg delta-phi*)",
-        "acceptance_ratio": "Sec: accept. ratio (2-sided)",
+        "H1_core_slope": "H1: CORE slope HRRL > LG (ling. resilience)",
+        "H2_quality_slope": "H2: dphi slope HRRL > LG (quality resil.)",
+        "H3_contestation_slope": "H3: accept. slope HRRL vs LG (contest.)",
+        "descriptive_participation": "Desc: participation equity (design)",
+        "descriptive_acceptance": "Desc: acceptance ratio (2-sided)",
     }
     for key, label in labels.items():
         r = tests.get(key, {})
@@ -507,8 +684,8 @@ def _print_statistical_tests(tests: dict) -> None:
 
     console.print(table)
     console.print(
-        "  [dim]Note: n=5 seeds; results are exploratory, not confirmatory. "
-        "A post-hoc power analysis indicates n>=12 seeds for d=0.5 at 80% power.[/dim]"
+        "  [dim]Note: n=5 seeds; results are exploratory. "
+        "Primary hypotheses test temporal slopes (resilience), not aggregates.[/dim]"
     )
 
 
@@ -556,8 +733,10 @@ def _save_comparison_charts(all_metrics: dict, all_logs: dict, output_dir: Path)
         shared_yaxes=True,
     )
     agent_colors = {
-        "GOV-1": "#2ecc71", "GOV-2": "#27ae60",
-        "OPP-1": "#e74c3c", "OPP-2": "#c0392b",
+        "GOV-S1": "#2ecc71", "GOV-S2": "#27ae60", "GOV-S3": "#1abc9c",
+        "GOV-S4": "#16a085", "GOV-S5": "#0e6655",
+        "OPP-S1": "#e74c3c", "OPP-S2": "#c0392b", "OPP-S3": "#e67e22",
+        "OPP-S4": "#d35400", "OPP-S5": "#a93226",
     }
     for col_idx, mode in enumerate(modes, start=1):
         logs = all_logs.get(mode, [])
@@ -591,7 +770,7 @@ def main() -> None:
         "https://api.openai.com/v1" if default_api_key != "ollama"
         else "http://localhost:11434/v1"
     )
-    default_model = "gpt-4o-mini" if default_api_key != "ollama" else "llama3"
+    default_model = "gpt-5-nano" if default_api_key != "ollama" else "llama3"
 
     parser = argparse.ArgumentParser(
         description="LangClaw Benchmark -- HRRL vs LangGraph"
@@ -600,7 +779,7 @@ def main() -> None:
     parser.add_argument("--model", default=default_model)
     parser.add_argument("--api-key", default=default_api_key)
     parser.add_argument(
-        "--iterations", type=int, default=50,
+        "--iterations", type=int, default=80,
         help="Max ticks for HRRL. LangGraph runs until matching debate count.",
     )
     parser.add_argument(
@@ -612,16 +791,12 @@ def main() -> None:
         choices=["hrrl", "langgraph", "round-robin", "random"],
         help="Orchestration modes to benchmark.",
     )
-    parser.add_argument("--api-hard-limit", type=int, default=200)
+    parser.add_argument("--api-hard-limit", type=int, default=500)
     parser.add_argument("--initial-deficit", type=float, default=0.5)
     parser.add_argument("--output-dir", default="benchmark_results")
     parser.add_argument(
-        "--langgraph-tick-multiplier", type=float, default=4.0,
-        help=(
-            "LangGraph tick ceiling = HRRL_debates * multiplier. "
-            "Actual stop is when debate count matches HRRL (budget matching). "
-            "This is only a safety ceiling."
-        ),
+        "--config", default=None,
+        help="Path to calibration_results.json from calibrate_hyperparams.py",
     )
     parser.add_argument(
         "--log-level", default="WARNING",
@@ -639,6 +814,10 @@ def main() -> None:
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
 
+    cal = _load_calibration_config(args.config)
+    cal_stimulus_weights = cal.get("stimulus_weights")
+    cal_debate_alpha = cal.get("debate_alpha", 2.0)
+
     # Per-mode run accumulators
     mode_runs: dict[str, list[dict]] = {m: [] for m in args.modes}
     last_logs: dict[str, list[SimulationLog]] = {}
@@ -646,45 +825,29 @@ def main() -> None:
     for seed in args.seeds:
         console.rule(f"[bold yellow]Seed: {seed}[/bold yellow]")
 
-        hrrl_debates: int | None = None  # used for budget matching
-
         for mode in args.modes:
-            iterations = args.iterations
-            max_debates: int | None = None
-
-            if mode == "langgraph" and hrrl_debates is not None:
-                # Budget match: run until same debate count as HRRL
-                max_debates = hrrl_debates
-                # Ceiling: generous tick budget to avoid infinite loop
-                iterations = max(50, int(hrrl_debates * args.langgraph_tick_multiplier))
-                console.rule(
-                    f"[bold cyan]Running LangGraph "
-                    f"(target={hrrl_debates} debates, ceiling={iterations} ticks, "
-                    f"seed={seed})[/bold cyan]"
-                )
-            else:
-                console.rule(
-                    f"[bold cyan]Running {mode.upper()} "
-                    f"(T={iterations}, seed={seed})[/bold cyan]"
-                )
+            console.rule(
+                f"[bold cyan]Running {mode.upper()} "
+                f"(T={args.iterations}, seed={seed})[/bold cyan]"
+            )
 
             logs, elapsed, env = _run_mode(
                 mode=mode,
                 base_url=args.base_url,
                 model=args.model,
                 api_key=args.api_key,
-                iterations=iterations,
+                iterations=args.iterations,
                 seed=seed,
                 api_hard_limit=args.api_hard_limit,
                 initial_deficit=args.initial_deficit,
-                max_debates=max_debates,
+                stimulus_weights=cal_stimulus_weights,
+                debate_alpha=cal_debate_alpha,
             )
 
             metrics = _compute_metrics(logs, env.graph)
+            temporal = _compute_temporal_metrics(logs, env.graph, n_windows=5)
+            metrics.update(temporal)
             n_debates = metrics["total_debates"]
-
-            if mode == "hrrl":
-                hrrl_debates = n_debates
 
             if mode == "langgraph" and env._router is not None:
                 console.print(
@@ -738,6 +901,7 @@ def main() -> None:
         "per_seed": mode_runs,
         "statistical_tests": tests,
         "config": safe_config,
+        "calibration": cal if cal else {"note": "defaults (no calibration file)"},
     }
     with open(output_dir / "benchmark_report.json", "w", encoding="utf-8") as f:
         json.dump(report, f, indent=2, ensure_ascii=False)

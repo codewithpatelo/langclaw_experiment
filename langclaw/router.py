@@ -114,8 +114,7 @@ class LangGraphRouter:
             response = self._client.chat.completions.create(
                 model=self._model,
                 messages=[{"role": "user", "content": prompt}],
-                max_tokens=20,
-                temperature=0.0,  # deterministic selection given seed
+                max_completion_tokens=50000,
                 **extra,
             )
             self._router_call_count += 1

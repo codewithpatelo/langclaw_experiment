@@ -8,5 +8,8 @@ rich==14.3.3
 numpy==2.4.2
 python-dotenv==1.2.2
 tavily-python==0.7.23
+ddgs==9.13.1
 langgraph==1.1.6
 langchain-openai==1.1.13
+scikit-learn==1.6.1
+scipy==1.15.3

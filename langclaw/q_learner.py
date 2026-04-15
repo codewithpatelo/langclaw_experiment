@@ -3,13 +3,36 @@
 Implements the reinforcement learning component of the HRRL framework
 (Keramati & Gutkin, 2014) adapted to epistemic agents.  The Q-learner
 selects actions based on the agent's internal state (deficit, graph
-density, stimulus count) and updates its weights via TD(0) using
-homeostatic reward (drive reduction).
+density, stimulus count, message count) and updates its weights via
+semi-gradient TD(0) using homeostatic reward (drive reduction).
 
-State features  phi(s) = [deficit, deficit^2, graph_density, n_stimuli]
-Actions         DEBATE_STIMULUS, DEBATE_PROACTIVE, SEARCH, READ
-Q-function      Q(s, a) = w_a^T phi(s)   (linear in features)
-TD(0) update    w_a <- w_a + eta * [r + gamma * max_a' Q(s', a') - Q(s, a)] * phi(s)
+Design decisions and justifications
+------------------------------------
+State features  φ(s) = [deficit, deficit², graph_density, n_stimuli, n_messages]
+Actions         DEBATE_STIMULUS, DEBATE_PROACTIVE, SEARCH, READ, MESSAGE
+Q-function      Q(s, a) = wₐᵀ φ(s)   (linear in features)
+TD(0) update    wₐ ← wₐ + η · [r + γ · max_a' Q(s', a') − Q(s, a)] · φ(s)
+
+Hyperparameters:
+  η = 0.01   Learning rate.  Sutton & Barto (2018, §9.6) recommend
+             η ≈ 1/(10·E[‖x‖²]) for linear FA.  With 5 features whose
+             typical magnitude is O(1), E[‖x‖²] ≈ 5–10, giving
+             η ≈ 1/50–1/100 ≈ 0.01–0.02.  We use η=0.01 (conservative).
+
+  γ = 0.95   Discount factor.  Standard for continuing tasks with moderate
+             horizon (Sutton & Barto 2018, §10.3).  The agent plans ~20
+             steps ahead: 1/(1−γ) = 20, comparable to our 80-tick horizon.
+
+  ε = 0.1    Exploration rate for ε-greedy policy (Sutton & Barto 2018,
+             §2.3, §10.1).  With probability ε the agent selects a
+             uniformly random action, ensuring all actions are tried and
+             the Q-learner can discover which are genuinely useful.
+
+Initialization:
+  Weights are zero-initialized (Sutton & Barto 2018, §9.4).  This is
+  the standard uninformative prior for linear FA — it assigns equal
+  initial Q-value (0) to all actions, letting the reward signal alone
+  determine the learned policy.  No action is favoured a priori.
 """
 
 from __future__ import annotations
@@ -17,70 +40,60 @@ from __future__ import annotations
 import numpy as np
 
 
-ACTIONS = ("DEBATE_STIMULUS", "DEBATE_PROACTIVE", "SEARCH", "READ")
-N_FEATURES = 4
+ACTIONS = ("DEBATE_STIMULUS", "DEBATE_PROACTIVE", "SEARCH", "READ", "MESSAGE")
+N_FEATURES = 5
 
 
 def _build_features(
     deficit: float,
     graph_density: float,
     n_stimuli: int,
+    n_messages: int = 0,
 ) -> np.ndarray:
-    """Construct the state feature vector phi(s)."""
+    """Construct the state feature vector φ(s)."""
     return np.array([
         deficit,
         deficit ** 2,
         graph_density,
         float(n_stimuli),
+        float(n_messages),
     ], dtype=np.float64)
 
 
 class HomeostaticQLearner:
-    """Online Q-learner with linear function approximation.
+    """Online Q-learner with linear function approximation and ε-greedy.
 
     Parameters
     ----------
     eta : float
-        Learning rate for TD(0) updates.
+        Learning rate for semi-gradient TD(0).  Justified by
+        Sutton & Barto (2018, §9.6): η ≈ 1/(10·E[‖x‖²]).
     gamma : float
-        Temporal discount factor.  Keramati shows that discounting
-        motivates shortest-path behavior toward the homeostatic setpoint.
+        Temporal discount factor.  γ=0.95 → effective horizon ≈ 20 steps.
+    epsilon : float
+        Exploration rate for ε-greedy action selection (Sutton & Barto
+        2018, §2.3).  With probability ε, a uniformly random action is
+        chosen.
     """
 
-    def __init__(self, eta: float = 0.01, gamma: float = 0.95) -> None:
+    def __init__(
+        self,
+        eta: float = 0.01,
+        gamma: float = 0.95,
+        epsilon: float = 0.1,
+        rng_seed: int | None = None,
+    ) -> None:
         self.eta = eta
         self.gamma = gamma
+        self.epsilon = epsilon
+        self._rng = np.random.default_rng(rng_seed)
 
         self._weights: dict[str, np.ndarray] = {
             a: np.zeros(N_FEATURES, dtype=np.float64) for a in ACTIONS
         }
-        self._warm_start()
-
-    def _warm_start(self) -> None:
-        """Initialize weights so the Q-function produces sensible values
-        before any learning has occurred.
-
-        The heuristic: DEBATE actions should have moderate positive weight
-        on deficit (higher deficit -> more value in debating), and slight
-        negative weight on graph density (less value when graph is already
-        dense for proactive debate, more for stimulus debate).
-        SEARCH/READ have lower initial values.
-        """
-        self._weights["DEBATE_STIMULUS"] = np.array(
-            [0.4, 0.1, -0.05, 0.2], dtype=np.float64
-        )
-        self._weights["DEBATE_PROACTIVE"] = np.array(
-            [0.3, 0.1, -0.15, -0.05], dtype=np.float64
-        )
-        self._weights["SEARCH"] = np.array(
-            [0.1, 0.0, -0.1, -0.1], dtype=np.float64
-        )
-        self._weights["READ"] = np.array(
-            [0.05, 0.0, -0.05, -0.05], dtype=np.float64
-        )
 
     def q_value(self, features: np.ndarray, action: str) -> float:
-        """Compute Q(s, a) = w_a^T phi(s)."""
+        """Compute Q(s, a) = wₐᵀ φ(s)."""
         return float(self._weights[action] @ features)
 
     def get_q_values(self, features: np.ndarray) -> dict[str, float]:
@@ -88,7 +101,13 @@ class HomeostaticQLearner:
         return {a: self.q_value(features, a) for a in ACTIONS}
 
     def select_action(self, features: np.ndarray) -> str:
-        """Return the action with highest Q-value (greedy policy)."""
+        """ε-greedy action selection (Sutton & Barto 2018, §2.3).
+
+        With probability ε: uniform random action (exploration).
+        With probability 1−ε: argmax Q(s, a) (exploitation).
+        """
+        if self._rng.random() < self.epsilon:
+            return self._rng.choice(ACTIONS)
         q_vals = self.get_q_values(features)
         return max(q_vals, key=q_vals.get)  # type: ignore[arg-type]
 
@@ -99,10 +118,12 @@ class HomeostaticQLearner:
         reward: float,
         next_features: np.ndarray,
     ) -> None:
-        """TD(0) weight update.
+        """Semi-gradient TD(0) weight update.
 
-        w_a <- w_a + eta * [r + gamma * max_a' Q(s', a') - Q(s, a)] * phi(s)
+        wₐ ← wₐ + η · [r + γ · max_a' Q(s', a') − Q(s, a)] · φ(s)
         """
+        if action not in self._weights:
+            return
         q_current = self.q_value(features, action)
         q_next_max = max(self.q_value(next_features, a) for a in ACTIONS)
 
@@ -120,6 +141,7 @@ class HomeostaticQLearner:
         deficit: float,
         graph_density: float,
         n_stimuli: int,
+        n_messages: int = 0,
     ) -> np.ndarray:
         """Public interface to construct state features."""
-        return _build_features(deficit, graph_density, n_stimuli)
+        return _build_features(deficit, graph_density, n_stimuli, n_messages)

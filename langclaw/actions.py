@@ -6,9 +6,12 @@ Two systems coexist:
 
 SEARCH provider
 ───────────────
-Uses the Tavily Search API for real web search.  When TAVILY_API_KEY is not
-set, falls back to a small static knowledge pool so the simulation still
-runs offline.
+Three-tier search with guaranteed data return:
+  1. Tavily  (real web search, requires TAVILY_API_KEY)
+  2. DuckDuckGo (free web search, no key needed)
+  3. Static knowledge pool (curated facts, recycled when exhausted)
+
+At least one tier always succeeds — agents never get empty research.
 """
 
 from __future__ import annotations
@@ -28,19 +31,65 @@ logger = logging.getLogger(__name__)
 ActionType = Literal["DEBATE", "SEARCH", "READ", "PASS"]
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Fallback knowledge pool (used when TAVILY_API_KEY is not set)
+# Static knowledge pool (tier 3 fallback — always available)
 # ──────────────────────────────────────────────────────────────────────────────
 _FALLBACK_POOL: list[tuple[str, str]] = [
+    # Macroeconomic indicators
     ("PIB_caida", "El PIB cayó un 4.2% en el último trimestre según datos del banco central."),
     ("desempleo", "La tasa de desempleo alcanzó el 18.7%, la más alta en 15 años."),
     ("inflacion", "La inflación acumulada del año supera el 120%, erosionando el salario real."),
     ("deuda_publica", "La deuda pública representa el 89% del PIB, con vencimientos críticos en 6 meses."),
     ("reservas", "Las reservas internacionales cayeron a USD 2.100M, mínimo desde 2005."),
-    ("gasto_social", "El gasto social fue recortado un 23% en términos reales durante la gestión actual."),
-    ("corrupcion", "El índice de percepción de corrupción cayó 12 puntos en el último informe de Transparencia Internacional."),
+    ("riesgo_pais", "El riesgo país alcanzó 2.340 puntos básicos, cerrando el acceso a mercados internacionales."),
+    ("tipo_cambio", "La brecha cambiaria entre el dólar oficial y el paralelo supera el 150%."),
+    ("inversion_extranjera", "La inversión extranjera directa cayó un 67% en comparación con el promedio de la década anterior."),
+    # Social indicators
     ("pobreza", "El índice de pobreza aumentó del 28% al 41% en los últimos tres años."),
+    ("indigencia", "La indigencia pasó del 6% al 12%, duplicándose en apenas dos años según INDEC."),
     ("salud", "El 34% de los hospitales públicos reportan desabastecimiento de medicamentos esenciales."),
+    ("mortalidad_infantil", "La mortalidad infantil subió a 11.2 por mil nacidos vivos, revirtiendo una década de mejora."),
+    ("desnutricion", "El 16% de niños menores de 5 años presenta desnutrición crónica según UNICEF."),
     ("emigracion", "Se estima que 480.000 ciudadanos emigraron en el último año, la cifra más alta registrada."),
+    ("educacion_desercion", "La deserción escolar secundaria alcanzó el 38%, concentrada en quintiles de menor ingreso."),
+    ("vivienda", "El déficit habitacional alcanza 3.5 millones de hogares, un 28% de la población."),
+    # Fiscal & governance
+    ("gasto_social", "El gasto social fue recortado un 23% en términos reales durante la gestión actual."),
+    ("presupuesto_educacion", "El presupuesto educativo cayó al 3.1% del PIB, por debajo del mínimo legal del 6%."),
+    ("presupuesto_ciencia", "El presupuesto para ciencia y tecnología se redujo al 0.22% del PIB, el nivel más bajo en 20 años."),
+    ("subsidios", "Los subsidios a tarifas de servicios públicos representan el 4.1% del PIB, financiados con emisión monetaria."),
+    ("recaudacion", "La presión tributaria efectiva es del 25% del PIB, pero la evasión se estima en 35% de lo potencial."),
+    # Corruption & institutions
+    ("corrupcion", "El índice de percepción de corrupción cayó 12 puntos en el último informe de Transparencia Internacional."),
+    ("justicia_lentitud", "El 72% de las causas penales por corrupción llevan más de 5 años sin resolución."),
+    ("libertad_prensa", "El país descendió 18 posiciones en el ranking de Reporteros Sin Fronteras en el último bienio."),
+    ("independencia_judicial", "El 61% de los ciudadanos percibe al poder judicial como dependiente del ejecutivo según Latinobarómetro."),
+    ("contrataciones", "El 43% de las contrataciones públicas se realizaron por adjudicación directa sin licitación competitiva."),
+    # Infrastructure & productivity
+    ("infraestructura_vial", "Solo el 12% de las rutas nacionales están en buen estado según la Dirección Nacional de Vialidad."),
+    ("energia", "Los cortes de energía aumentaron un 340% respecto al año anterior, afectando la producción industrial."),
+    ("conectividad", "El 28% de la población rural no tiene acceso a internet de banda ancha."),
+    ("productividad", "La productividad laboral cayó un 15% en los últimos 5 años según la OIT."),
+    # International comparisons
+    ("comparacion_chile", "Chile mantiene una tasa de pobreza del 10.8% con un gasto social del 14% del PIB, versus 41% de pobreza con 8% de gasto social en nuestro caso."),
+    ("comparacion_uruguay", "Uruguay destina el 5.1% del PIB a educación y tiene una tasa de finalización secundaria del 72%, versus 3.1% y 62% respectivamente."),
+    ("comparacion_ocde", "El promedio OCDE de inversión en I+D es 2.7% del PIB; el país invierte 0.22%."),
+    ("IDH", "El Índice de Desarrollo Humano del país cayó de 0.845 a 0.791 en la última década, saliendo del grupo de desarrollo humano muy alto."),
+    # Government defense arguments
+    ("programa_social_1", "El programa Alimentar Futuro alcanzó 2.3 millones de beneficiarios, reduciendo la inseguridad alimentaria aguda en 8 puntos."),
+    ("obra_publica", "Se inauguraron 1.200 km de rutas pavimentadas y 45 hospitales modulares en zonas rurales durante la gestión."),
+    ("empleo_registrado", "El empleo registrado en PyMEs creció un 4.2% interanual gracias al programa REPRO III."),
+    ("exportaciones", "Las exportaciones agroindustriales alcanzaron un récord de USD 42.000M, un 18% más que el año anterior."),
+    ("acuerdo_deuda", "Se reestructuraron USD 65.000M de deuda con acreedores privados, posponiendo vencimientos hasta 2030."),
+    ("plan_conectar", "El plan Conectar Igualdad distribuyó 800.000 notebooks a estudiantes de escuelas públicas."),
+    ("vacunacion", "La campaña de vacunación alcanzó al 87% de la población objetivo con esquema completo."),
+    ("seguridad_social", "La cobertura previsional se amplió al 96% de los mayores de 65 años mediante moratorias."),
+    # Historical & structural
+    ("ciclos_economicos", "El país ha experimentado 7 recesiones en los últimos 20 años, con un patrón de stop-and-go crónico."),
+    ("estructura_productiva", "La participación industrial en el PIB cayó del 22% al 14% en dos décadas, profundizando la reprimarización."),
+    ("informalidad", "La economía informal representa el 45% del empleo total, limitando la base imponible y la protección social."),
+    ("concentracion_riqueza", "El decil más rico concentra el 32% del ingreso total, mientras el decil más pobre recibe el 1.8%."),
+    ("fuga_capitales", "La fuga de capitales acumulada en la última década supera los USD 90.000M según estimaciones del BCRA."),
+    ("pbi_per_capita", "El PIB per cápita en dólares constantes es hoy un 18% inferior al de 2011."),
 ]
 
 # Queries the agent cycles through when calling Tavily
@@ -173,7 +222,7 @@ class UtilitySelector:
 
 
 def _faction_of(agent_id: str) -> str:
-    """Extract faction prefix from agent ID (e.g. 'GOV-1' -> 'GOV')."""
+    """Extract faction prefix from agent ID (e.g. 'GOV-S1' -> 'GOV')."""
     return agent_id.split("-")[0] if "-" in agent_id else agent_id
 
 
@@ -185,19 +234,32 @@ class StimulusEvaluator:
     the highest-utility stimulus (or a proactive action) and the deficit
     gates whether it actually acts.
 
-    Criteria (weighted):
-      1. Faction relevance   (w=0.30) -- does this attack my faction?
-      2. Target centrality   (w=0.20) -- is the attacked node structurally central?
-      3. Strategic memory    (w=0.15) -- do I have relevant knowledge to counter?
-      4. Novelty             (w=0.20) -- has an ally already responded?
-      5. Unanswered pressure (w=0.15) -- is this claim uncontested in the graph?
+    Criteria:
+      1. Faction relevance   -- does this attack my faction?
+      2. Target centrality   -- is the attacked node structurally central?
+      3. Strategic memory    -- do I have relevant knowledge to counter?
+      4. Novelty             -- has an ally already responded?
+      5. Unanswered pressure -- is this claim uncontested in the graph?
+
+    Default weights are calibrated via ablation study on micro-simulation
+    pilot data (see calibrate_hyperparams.py).  Weights are passed at
+    construction time to support reproducible calibration.
     """
 
-    W_FACTION    = 0.30
-    W_CENTRALITY = 0.20
-    W_MEMORY     = 0.15
-    W_NOVELTY    = 0.20
-    W_PRESSURE   = 0.15
+    def __init__(
+        self,
+        w_faction: float = 0.20,
+        w_centrality: float = 0.20,
+        w_memory: float = 0.20,
+        w_novelty: float = 0.20,
+        w_pressure: float = 0.20,
+    ) -> None:
+        total = w_faction + w_centrality + w_memory + w_novelty + w_pressure
+        self.W_FACTION = w_faction / total
+        self.W_CENTRALITY = w_centrality / total
+        self.W_MEMORY = w_memory / total
+        self.W_NOVELTY = w_novelty / total
+        self.W_PRESSURE = w_pressure / total
 
     def evaluate(
         self,
@@ -299,6 +361,7 @@ class StimulusEvaluator:
 
 _tavily_client: object | None = None
 _tavily_checked: bool = False
+_tavily_exhausted: bool = False
 
 
 def _get_tavily_client():
@@ -309,19 +372,23 @@ def _get_tavily_client():
     _tavily_checked = True
     api_key = os.getenv("TAVILY_API_KEY", "")
     if not api_key:
-        logger.info("TAVILY_API_KEY not set — using fallback knowledge pool")
+        logger.info("TAVILY_API_KEY not set — will try DuckDuckGo")
         return None
     try:
         from tavily import TavilyClient  # type: ignore[import-untyped]
         _tavily_client = TavilyClient(api_key=api_key)
         logger.info("Tavily web search enabled")
     except ImportError:
-        logger.warning("tavily-python not installed — using fallback pool")
+        logger.warning("tavily-python not installed — will try DuckDuckGo")
     return _tavily_client
 
 
 def _search_tavily(memory: AgentMemory) -> tuple[str, str] | None:
-    """Run a real web search via Tavily and return (concept, summary)."""
+    """Tier 1: Tavily real web search."""
+    global _tavily_exhausted
+    if _tavily_exhausted:
+        return None
+
     client = _get_tavily_client()
     if client is None:
         return None
@@ -345,26 +412,83 @@ def _search_tavily(memory: AgentMemory) -> tuple[str, str] | None:
             concept = f"web_{query_idx}_{len(memory.semantic)}"
             return concept, answer[:400]
     except Exception as exc:
-        logger.warning("Tavily search failed: %s", exc)
+        exc_str = str(exc)
+        if "usage limit" in exc_str.lower() or "rate" in exc_str.lower():
+            logger.warning("Tavily quota exhausted — switching to DuckDuckGo: %s", exc)
+            _tavily_exhausted = True
+        else:
+            logger.warning("Tavily search failed: %s", exc)
 
     return None
 
 
-def _search_fallback(memory: AgentMemory) -> tuple[str, str] | None:
-    """Draw the next unused fact from the static fallback pool."""
+def _search_duckduckgo(memory: AgentMemory) -> tuple[str, str] | None:
+    """Tier 2: DuckDuckGo free web search (no API key needed)."""
+    try:
+        from ddgs import DDGS
+    except ImportError:
+        try:
+            from duckduckgo_search import DDGS  # type: ignore[import-untyped]
+        except ImportError:
+            return None
+
+    query_idx = len(memory.semantic) % len(_SEARCH_QUERIES)
+    query = _SEARCH_QUERIES[query_idx]
+
+    try:
+        with DDGS() as ddgs:
+            results = list(ddgs.text(query, max_results=3))
+        if results:
+            best = results[0]
+            body = best.get("body", "") or best.get("title", "")
+            if len(results) > 1:
+                body += " " + (results[1].get("body", "") or "")
+            body = body.strip()[:400]
+            if body:
+                concept = f"ddg_{query_idx}_{len(memory.semantic)}"
+                return concept, body
+    except Exception as exc:
+        logger.warning("DuckDuckGo search failed: %s", exc)
+
+    return None
+
+
+_fallback_cycle_counter: int = 0
+
+
+def _search_fallback(memory: AgentMemory) -> tuple[str, str]:
+    """Tier 3: static knowledge pool with recycling.
+
+    Always returns data.  When all facts have been seen, cycles through
+    them again with unique concept keys so memory accepts them.
+    """
+    global _fallback_cycle_counter
+
     for concept, fact in _FALLBACK_POOL:
         if concept not in memory.semantic:
             return concept, fact
-    return None
+
+    idx = _fallback_cycle_counter % len(_FALLBACK_POOL)
+    _fallback_cycle_counter += 1
+    _, fact = _FALLBACK_POOL[idx]
+    concept = f"pool_r{_fallback_cycle_counter}_{idx}"
+    return concept, fact
 
 
-def get_search_result(memory: AgentMemory) -> tuple[str, str] | None:
-    """Return a (concept, fact) pair for the agent.
+def get_search_result(memory: AgentMemory) -> tuple[str, str]:
+    """Return a (concept, fact) pair — guaranteed non-None.
 
-    Uses Tavily web search when TAVILY_API_KEY is set; otherwise falls
-    back to a static knowledge pool.
+    Three-tier fallback:
+      1. Tavily (real web search, if key available and quota not exhausted)
+      2. DuckDuckGo (free web search, no key needed)
+      3. Static knowledge pool (curated, recycled when exhausted)
     """
     result = _search_tavily(memory)
     if result is not None:
         return result
+
+    result = _search_duckduckgo(memory)
+    if result is not None:
+        return result
+
     return _search_fallback(memory)
