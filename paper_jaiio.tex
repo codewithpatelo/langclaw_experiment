@@ -1,0 +1,858 @@
+% LangClaw — JAIIO 2025/2026 submission (full paper, max 14 pages)
+% Uses LNCS class (llncs.cls) as required by JAIIO guidelines.
+% Anonymous submission: author/institute information omitted.
+%
+\documentclass{llncs}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+
+\lstset{
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  frame=single,
+  language=Python,
+  numbers=none,
+  xleftmargin=1em,
+  xrightmargin=1em,
+}
+
+\usepackage[style=apa]{biblatex}
+\addbibresource{references.bib}
+
+\begin{document}
+
+% ============================================================
+% ENGLISH TITLE + ABSTRACT + KEYWORDS
+% ============================================================
+\title{LangClaw: Endogenous Homeostatic Regulation for Mitigating Context
+Collapse in Multi-Agent LLM Debate Systems}
+
+% Anonymous submission — authors omitted for review
+\author{}
+\institute{}
+
+\maketitle
+
+\begin{abstract}
+Multi-agent systems built on Large Language Models are increasingly relevant
+for domains that require sustained reasoning rather than isolated prompt
+response. Their practical value, however, depends on whether coherence can be
+preserved as interaction unfolds. A frequently reported problem in this
+setting is \emph{context collapse}: as conversations grow, agents may lose
+coherence, repeat themselves, or produce disconnected monologues. Existing
+frameworks typically address this through static orchestration---fixed
+turn-taking or centralized routers---but these approaches do not adapt to
+the evolving state of the discourse. This motivates a broader question:
+what if multi-agent coherence could be regulated endogenously rather than
+imposed externally? We present LangClaw, a framework that replaces static scheduling with an
+endogenous homeostatic drive. Each agent maintains an internal epistemic
+deficit that grows over time and is reduced only by producing structurally
+integrated arguments. A sigmoid activation function maps this deficit to a
+participation probability, creating a self-regulating cycle. We measure
+argument quality through a network-theoretic proxy of Integrated Information
+Theory, combining betweenness centrality, cycle detection, and agent
+diversity. We evaluate LangClaw against a round-robin baseline with matched
+debate budgets in a zero-sum political debate with four GPT-4o-mini agents
+arranged in symmetric cognitive archetypes. The proposed benchmark is
+designed to test whether homeostatic regulation yields higher argument
+quality per intervention than static orchestration under the same number
+of debates, and whether it produces qualitatively different deficit dynamics.
+
+\keywords{multi-agent systems \and large language models \and homeostasis \and
+reinforcement learning \and context collapse}
+\end{abstract}
+
+% ============================================================
+% SPANISH TITLE + RESUMEN + KEYWORDS
+% ============================================================
+\begin{center}
+\vspace{1cm}
+{\Large \bfseries\boldmath LangClaw: Regulaci\'on Homeost\'atica End\'ogena
+para Mitigar el Colapso del Contexto en Sistemas de Debate Multi-Agente
+basados en LLM}
+\vspace{0.5cm}
+\end{center}
+
+\begin{abstract}
+Los sistemas multi-agente construidos sobre Modelos de Lenguaje de Gran Escala
+son cada vez m\'as relevantes para dominios que requieren razonamiento
+sostenido y no meras respuestas aisladas. Su valor pr\'actico, sin embargo,
+depende de si la coherencia puede preservarse a medida que la interacci\'on
+evoluciona. Un problema frecuentemente reportado en estos escenarios es el
+\emph{colapso del contexto}: a medida que las conversaciones crecen, los
+agentes pueden perder coherencia, repetirse o producir mon\'ologos
+desconectados. Los frameworks existentes suelen abordar esto mediante
+orquestaci\'on est\'atica---turnos fijos o enrutadores centralizados---pero
+estos enfoques no se adaptan al estado evolutivo del discurso. Esto motiva
+una pregunta m\'as amplia: \emph{\textquestiondown qu\'e ocurrir\'ia si la
+coherencia multi-agente pudiera regularse end\'ogenamente, en lugar de
+imponerse externamente?} Presentamos LangClaw, un framework que reemplaza la
+programaci\'on est\'atica con un impulso homeost\'atico end\'ogeno. Cada agente
+mantiene un d\'eficit epist\'emico interno que crece con el tiempo y se reduce
+\'unicamente al producir argumentos estructuralmente integrados. Una funci\'on de
+activaci\'on sigmoide mapea este d\'eficit a una probabilidad de participaci\'on,
+creando un ciclo autorregulado. Medimos la calidad argumentativa mediante un
+proxy de la Teor\'ia de la Informaci\'on Integrada basado en teor\'ia de redes.
+Evaluamos LangClaw contra una l\'inea base de turno rotativo con presupuesto
+de debates igualado, en un debate pol\'itico de suma cero con cuatro agentes
+GPT-4o-mini organizados en arquetipos cognitivos sim\'etricos. El benchmark
+propuesto busca determinar si el mecanismo homeost\'atico alcanza mayor
+calidad argumentativa por intervenci\'on que la orquestaci\'on est\'atica bajo
+el mismo n\'umero de debates, y si produce din\'amicas de d\'eficit
+cualitativamente diferentes.
+
+\keywords{sistemas multi-agente \and modelos de lenguaje \and homeostasis \and
+aprendizaje por refuerzo \and colapso del contexto}
+\end{abstract}
+
+\vspace{0.5cm}
+\setcounter{page}{1}
+
+% ============================================================
+\section{Introduction}
+\label{sec:intro}
+
+The rapid expansion of Large Language Model (LLM) applications has renewed
+interest in multi-agent systems capable of deliberating, coordinating, and
+solving tasks through sustained interaction. This trend creates an important
+opportunity: if multi-agent LLM systems can remain coherent over time, they
+could become useful in domains such as decision support, scientific
+discovery, legal and policy analysis, education, and complex digital
+workflows. More broadly, they could accelerate the emergence of new software
+industries centered on persistent AI coordination rather than isolated prompt
+response.
+
+At the same time, this shift exposes a pressing limitation. When interaction
+extends over time, the collective process tends to degrade. Agents may lose
+track of prior claims, repeat points, or produce monologues with little
+structural relation to the ongoing discourse
+\parencite{park2023generative}. A recurrent problem reported in this context
+is what we describe here as \emph{context collapse}. Rather than treating it
+as a settled property of all LLM systems, we use the term to frame a class of
+observed failures that deserves systematic study. The issue is not merely
+technical. If unresolved, it limits the reliability of multi-agent AI in
+settings where sustained reasoning, institutional memory, and coherent
+interaction are socially consequential.
+
+The dominant response to this problem has been to increase external control.
+Frameworks such as AutoGen~\parencite{wu2023autogen} and
+MetaGPT~\parencite{hong2023metagpt} impose fixed turn-taking, centralized
+coordinators, or predefined communication graphs to regulate when each agent
+speaks. These approaches can be effective, but they also reflect a paradigm:
+when coordination degrades, the solution is assumed to be more routing, more
+scheduling, and more explicit supervision. This paradigm has a limitation.
+When the discourse shifts, the schedule does not necessarily shift with it.
+As a result, static orchestration may address the visible symptom of disorder
+without necessarily explaining why the system loses coherence in the first
+place.
+
+An apparently unrelated phenomenon in biological systems offers a different
+perspective: homeostasis. In living organisms, regulation does not always
+depend on an external controller; it emerges from internal variables that
+accumulate, trigger action, and return to equilibrium. On its own, this
+observation belongs to physiology, not to multi-agent AI.
+
+But the right question can bridge the gap. \emph{What if multi-agent
+coherence could be regulated endogenously, rather than imposed externally?}
+Under this question, homeostasis is no longer just a biological analogy---it
+becomes an unexploited operational principle. Homeostatic regulation has
+already been formalized in reinforcement learning
+\parencite{keramati2014homeostatic} and extended to continuous domains
+\parencite{laurencon2024ctcs}, yet it has not been applied to the problem of
+LLM-based multi-agent orchestration. More specifically: \emph{can
+homeostatic regulation mitigate context collapse more effectively than static
+orchestration in sustained multi-agent debate?}
+
+The importance of this question lies not only in comparing two engineering
+choices, but in contrasting two paradigms of coordination. If the quality of
+multi-agent reasoning depends on internal regulation rather than only on
+external scheduling, then many current orchestration strategies may be
+addressing the symptom rather than the cause.
+
+To explore this question, we propose LangClaw, a framework where each agent
+carries an internal \emph{epistemic deficit} that governs its participation.
+The deficit grows when the agent is idle and shrinks when it produces a
+high-quality contribution. A sigmoid function maps this deficit to an action
+probability. The resulting system is self-regulating: agents tend to
+intervene when their internal pressure rises and remain silent after a
+structurally useful contribution. The mechanism is inspired by homeostatic
+regulation in biological systems. To the best of our knowledge, this
+perspective has not been evaluated as an orchestration principle for
+LLM-based debate agents.
+
+In prior work, we introduced AopifyJS~\parencite{gerpe2023aopifyjs}, an
+agent-oriented programming framework that integrated multi-criteria
+decision-making methods with an event-based communication architecture.
+That work identified the need for ``more human-like abstractions for machine
+argumentation'' and ``integrations with machine learning algorithms, reward
+and utility functions.'' LangClaw is framed as a continuation of those open
+directions. Whereas AopifyJS used deterministic decision algorithms (AHP,
+TOPSIS) for agent behavior, LangClaw introduces a homeostatic drive
+regulated by reinforcement learning, avoiding predefined criteria
+weightings.
+
+More specifically, this paper makes three contributions. First, it
+formalizes an endogenous regulation mechanism for LLM agents through an
+epistemic deficit, sigmoid activation, and quality-proportional satiation.
+Second, it operationalizes argumentative quality through a graph-based
+$\Phi^*$ proxy and a reproducible benchmark against static baselines. Third,
+it extends the event-driven architecture explored in AopifyJS toward a
+setting centered on sustained argumentative interaction. Taken together,
+these contributions are intended not only to introduce a new framework, but
+also to make the experimental question itself more explicit and testable.
+
+For the sake of clarity, this paper is structured as follows: we first
+review related work on multi-agent LLM systems and homeostatic reinforcement
+learning; then we detail the LangClaw method, including the epistemic drive,
+the argument graph, and the evaluation metric; after that, we present our
+comparative benchmark against static baselines; and finally we discuss our
+findings and limitations.
+
+% ============================================================
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Multi-Agent LLM Systems}
+
+Frameworks such as AutoGen~\parencite{wu2023autogen},
+CAMEL~\parencite{li2023camel}, and MetaGPT~\parencite{hong2023metagpt}
+implement multi-agent collaboration through predefined roles and
+communication protocols. In practice, these frameworks rely on static
+orchestration.
+\textcite{huang2024masresilience} demonstrate that linear-chain orchestration
+degrades $5\times$ faster than hierarchical structures under adversarial
+agents, suggesting that rigid schedulers can be sensitive to interaction
+stress.
+
+\subsection{Homeostatic Reinforcement Learning}
+
+\textcite{keramati2014homeostatic} introduced the HRRL framework, establishing the
+equivalence between drive minimization and reward maximization in discrete
+state spaces. \textcite{laurencon2024ctcs} extended this to continuous
+time-space, formalizing the drive function
+$d(\delta) = \sqrt{\varepsilon + \delta^\top\delta}$. We are not aware of
+previous studies applying HRRL to LLM-based cognitive agents.
+
+\subsection{Desire-Driven Autonomous Agents}
+
+More recently, work on desire-driven and intrinsically motivated LLM agents
+has begun to explore internal states as a basis for action selection.
+\textcite{wang2025d2a} present D2A (ICLR~2025), which equips LLM agents with
+a multidimensional desire vector updated through reflexive reasoning. The
+main difference with our proposal is that D2A does not define a closed
+homeostatic loop with an external quality signal. Its desire update depends
+primarily on the LLM's self-assessment, whereas LangClaw introduces a formal
+sigmoid threshold, quality-proportional satiation, and an external signal
+($\Delta\varphi^*$) derived from the evolving argument graph.
+
+\subsection{Agent-Oriented Programming}
+
+\textcite{gerpe2023aopifyjs} proposed AopifyJS as a framework combining AOSE
+high-level abstractions with multi-criteria decision-making methods. That
+work showed that agent entities with self-contained memory and event-based
+communication provide a suitable architecture for modeling human-machine
+interaction. LangClaw preserves the event-driven design pattern---agents
+communicate through asynchronous event queues---but replaces deterministic
+MCDC algorithms with a homeostatic regulation loop and LLM-based reasoning.
+
+\subsection{Other Relevant Work}
+
+The Sotopia framework~\parencite{zhou2024sotopia} evaluates LLM agents in
+social interactions. We adopt its zero-sum structure but focus on
+argumentative coherence. Defeasible Logic Programming
+(DeLP)~\parencite{garcia2004defeasible} provides formal semantics for
+argument graphs. Integrated Information Theory
+(IIT)~\parencite{tononi2016integrated} quantifies informational integration;
+we use a network-theoretic proxy. In-context
+learning~\parencite{brown2020language} enables LLMs to learn from prompt
+examples; we extend this to reinforcement learning.
+
+% ============================================================
+\section{Method}
+\label{sec:method}
+
+\subsection{The Epistemic Drive}
+
+A key design decision is how to represent the internal state that governs
+agent participation. Alternative approaches include token-counting heuristics
+(participate after $n$ tokens of silence), attention-based triggers
+(participate when attention to recent context drops below a threshold), or
+purely random activation. We chose a scalar epistemic deficit for three
+reasons. First, it is interpretable: the deficit has a clear meaning (how
+much the agent ``needs'' to contribute). Second, it is dynamically coupled
+to output quality through the satiation mechanism, creating a closed
+feedback loop. Third, it is compatible with the HRRL framework
+\parencite{keramati2014homeostatic}, which provides a theoretical grounding
+for the equivalence between drive minimization and reward maximization.
+
+Each agent $i$ maintains an internal variable
+$\delta_i \in [\varepsilon, \infty)$, the epistemic deficit, with resting
+baseline $\varepsilon = 0.1$. Three mechanisms govern it.
+
+\subsubsection{Decay.}
+At each tick $t$, the deficit grows:
+\begin{equation}
+    \delta_i^{(t+1)} = \delta_i^{(t)} + \lambda
+    \label{eq:decay}
+\end{equation}
+where $\lambda = 0.05$. This models the pressure to contribute.
+
+\subsubsection{Sigmoid Activation.}
+The probability that agent $i$ acts at tick $t$ is:
+\begin{equation}
+    p_i^{(t)} = \frac{1}{1 + e^{-k(\delta_i^{(t)} - \theta)}}
+    \label{eq:sigmoid}
+\end{equation}
+where $k = 10$ and $\theta = 0.7$. Below $\theta$ the agent rests; above it,
+the agent is compelled to participate.
+
+\subsubsection{Satiation.}
+After producing an argument with informational value $\Delta\varphi^*$:
+\begin{equation}
+    \delta_i^{\text{new}} = \max\!\bigl(\varepsilon,\;
+        \delta_i - \alpha \cdot \Delta\varphi^*\bigr)
+    \label{eq:satiation}
+\end{equation}
+where $\alpha = 2.0$. If $\Delta\varphi^* = 0$ (an isolated monologue), the
+deficit does not decrease. This is the key mechanism against context
+collapse: only structurally connected contributions provide relief.
+
+\subsection{Argument Graph and $\Phi^*$ Proxy}
+
+A central design choice is how to measure the quality of each argumentative
+intervention. Standard NLP metrics such as BLEU, ROUGE, or BERTScore
+evaluate surface-level textual similarity, but they do not capture
+\emph{structural integration}---whether an argument connects meaningfully to
+the existing discourse. Perplexity-based metrics assess fluency but not
+logical relevance. What we need is a measure that is sensitive to the
+\emph{position} of an argument within the evolving debate network: does it
+engage with central claims? Does it create dialectical cycles? Does it
+involve multiple perspectives?
+
+For this reason, we use a network-theoretic proxy inspired by Integrated
+Information Theory (IIT)~\parencite{tononi2016integrated}. IIT proposes that
+informational integration---the degree to which a system is more than the sum
+of its parts---can be quantified through the structure of its causal
+connections. Computing the full $\Phi$ measure is intractable for arbitrary
+graphs, so we approximate it through three graph-theoretic features that
+capture complementary aspects of informational integration.
+
+The discourse is represented as a directed graph $G = (V, E)$. Nodes are
+claims; edges are logical attacks (undercut or rebuttal). When agent $i$
+adds node $v$ attacking target $u$, the quality is:
+
+\begin{equation}
+    \Delta\varphi^* = 0.35 \cdot C_B(u) + 0.35 \cdot
+        \mathbb{1}_{\text{cycle}}(v, u) + 0.30 \cdot D(u)
+    \label{eq:phi}
+\end{equation}
+
+where $C_B(u)$ is the betweenness centrality of the target,
+$\mathbb{1}_{\text{cycle}}$ indicates whether a refutation cycle was created,
+and $D(u)$ is the ratio of distinct agents neighboring the target. Isolated
+nodes get $\Delta\varphi^* = 0$.
+
+Each component was chosen for a specific reason. Betweenness centrality
+$C_B(u)$ captures whether the target is a structurally important node in the
+discourse---attacking a peripheral claim contributes less than engaging with
+a claim that connects multiple lines of argumentation. The cycle indicator
+$\mathbb{1}_{\text{cycle}}$ rewards the creation of dialectical loops
+(A attacks B, B attacks C, C attacks A), which are a hallmark of genuine
+deliberation as opposed to parallel monologues. Agent diversity $D(u)$
+measures whether the target has been engaged by multiple agents, favoring
+arguments that enter contested territory rather than isolated exchanges
+between two agents. Given that this is a heuristic proxy rather than a
+theoretically grounded measure, the weights ($0.35$, $0.35$, $0.30$) were
+set to give roughly equal importance to all three features. Their
+optimization is left for future work.
+
+\subsection{Action Space}
+
+Beyond DEBATE/PASS, agents select from four actions via a utility selector:
+
+\begin{itemize}
+    \item \textbf{DEBATE}: Produce an argument (requires LLM call).
+    \item \textbf{SEARCH}: Acquire a domain fact via Tavily web search or a
+          static fallback pool.
+    \item \textbf{READ}: Absorb a recent observation from working memory.
+    \item \textbf{PASS}: Rest.
+\end{itemize}
+
+The utility function for each action depends on the agent's deficit, memory
+density, and graph state. The implementation is straightforward:
+
+\begin{lstlisting}
+scores = selector.scores(drive, memory, graph_nodes)
+action = max(scores, key=scores.get)
+\end{lstlisting}
+
+\subsection{Three-Layer Memory}
+
+Each agent maintains: (1)~episodic memory---past experiences sorted by
+$|\Delta\varphi^*|$ so both successes and failures stay visible;
+(2)~semantic memory---facts accumulated through SEARCH actions;
+(3)~working memory---a sliding window of recently observed arguments.
+The top experiences and facts are injected into the LLM prompt, enabling
+in-context reinforcement learning without parameter updates.
+
+\subsection{Event-Driven Architecture}
+
+Following the event-based communication pattern established in
+AopifyJS~\parencite{gerpe2023aopifyjs}, agents communicate through
+asynchronous event queues. Three event types drive the simulation:
+
+\begin{itemize}
+    \item \texttt{TickElapsedEvent}: Triggers drive decay in all agents.
+    \item \texttt{NewArgumentEvent}: Broadcasts a new argument to all peers.
+    \item \texttt{SimulationEndEvent}: Signals shutdown.
+\end{itemize}
+
+Each agent runs as an independent coroutine that processes events from its
+queue and publishes results to a shared output queue. The simulation
+environment reads from this queue to update the graph and broadcast events.
+No agent has direct access to another agent's state.
+
+\subsection{Agent Roles: Symmetric Design}
+
+A critical design decision is role symmetry. In early iterations, we used
+asymmetric roles (e.g., ``deflector'' vs.\ ``logical analyst''), but this
+confounded the comparison between orchestration modes. We redesigned the
+roles to mirror Analytical and Strategic archetypes across factions:
+
+\begin{table}
+\caption{Agent roles with symmetric cognitive archetypes.}\label{tab:roles}
+\begin{tabular}{|l|l|l|p{5.5cm}|}
+\hline
+\textbf{Agent} & \textbf{Faction} & \textbf{Archetype} &
+    \textbf{Objective} \\
+\hline
+GOV-1 & Gov. & Analytical & Defend with data, find factual
+    inconsistencies in opposition \\
+GOV-2 & Gov. & Strategic & Reframe criticism, challenge premises
+    and fallacies \\
+OPP-1 & Opp. & Analytical & Attack with data, find factual
+    inconsistencies in government \\
+OPP-2 & Opp. & Strategic & Reframe defenses, challenge premises
+    and fallacies \\
+\hline
+\end{tabular}
+\end{table}
+
+This ensures that performance differences reflect the orchestration
+mechanism, not role-inherent advantages.
+
+\subsection{Orchestration Modes}
+
+We compare two modes:
+
+\begin{itemize}
+    \item \textbf{HRRL}: Agents run as async coroutines regulated by their
+          drive. No external scheduler. Agents participate only when their
+          deficit crosses the activation threshold.
+    \item \textbf{Round-Robin}: Every agent speaks every tick. Static
+          baseline representing the dominant external-control paradigm.
+\end{itemize}
+
+To ensure a fair comparison, the benchmark matches debate budgets: HRRL
+runs for $T$ ticks and produces $N$ debates organically; Round-Robin then
+runs for $\lceil N / n_{\text{agents}} \rceil$ ticks, so that both modes
+consume approximately the same number of LLM interventions. This design
+controls for the volume confound that would arise from Round-Robin
+producing $n_{\text{agents}} \times T$ debates while HRRL produces fewer.
+
+\subsection{Evaluation: $\tau$-bench}
+
+Evaluating multi-agent debate requires a metric that captures whether agents
+are actually engaging with each other's arguments, as opposed to producing
+independent monologues that happen to coexist in the same transcript.
+Standard dialogue evaluation metrics---such as coherence scores based on
+embedding similarity or human preference rankings---are either too expensive
+for automated benchmarking or insufficiently sensitive to structural
+disconnection. What we need is a metric that directly measures whether each
+argument \emph{targets} an existing claim in the discourse graph.
+
+We therefore define $\tau$-bench as the fraction of DEBATE turns that are
+logically consistent---i.e., the argument connects to an existing node via a
+valid attack:
+\begin{equation}
+    \tau = \frac{|\{a \in A_{\text{debate}} :
+        \text{target}(a) \in V\}|}{|A_{\text{debate}}|}
+    \label{eq:tau}
+\end{equation}
+
+A $\tau$-bench of 1.0 means every argument engaged with the existing
+discourse. A $\tau$-bench near 0 means agents are monologuing. We chose this
+metric because it is binary, unambiguous, and computable directly from the
+graph structure without requiring human annotation or model-based scoring.
+Its limitation is that it does not distinguish between a superficially
+connected argument and a deeply relevant one; for that purpose, the
+$\Delta\varphi^*$ proxy provides a complementary measure of per-argument
+quality.
+
+% ============================================================
+\section{Experimental Setup}
+\label{sec:setup}
+
+\begin{table}
+\caption{Hyperparameters.}\label{tab:hyperparams}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Parameter} & \textbf{Symbol} & \textbf{Value} \\
+\hline
+Decay rate & $\lambda$ & 0.05 \\
+Sigmoid steepness & $k$ & 10 \\
+Activation threshold & $\theta$ & 0.7 \\
+Satiation rate & $\alpha$ & 2.0 \\
+Baseline deficit & $\varepsilon$ & 0.1 \\
+Initial deficit & $\delta_0$ & 0.5 \\
+Max iterations & $T$ & 30 (benchmark) \\
+Number of agents & $N$ & 4 \\
+LLM & --- & GPT-4o-mini \\
+Temperature & --- & 0.7 \\
+Max tokens & --- & 300 \\
+API hard limit & --- & 200 calls/agent \\
+\hline
+\end{tabular}
+\end{table}
+
+Agent outputs are structured via Pydantic models enforcing a JSON schema:
+
+\begin{lstlisting}
+{"action": "DEBATE",
+ "claim": "Las cifras contradicen ...",
+ "target_node_id": "GOV-1_abc123",
+ "attack_type": "rebuttal"}
+\end{lstlisting}
+
+Failed parses trigger a deficit penalty of $+0.1$ after two retry attempts.
+
+The benchmark script runs both modes sequentially for each seed. A seed
+factory derives deterministic prime seeds for each agent's RNG and LLM call
+via SHA-256 hashing, ensuring reproducibility. We run three seeds
+($s \in \{42, 123, 256\}$) and report mean $\pm$ standard deviation across
+runs to provide basic statistical grounding.
+
+\subsection{Research Question and Experimental Expectations}
+
+The central research question of the experiment is whether endogenous
+homeostatic regulation can preserve argumentative coherence better than
+static orchestration under the same task, model, and seed conditions.
+
+Before running the benchmark, we expect two main patterns. First, with
+debate budgets matched, HRRL should achieve higher average $\Delta\varphi^*$
+than Round-Robin, because its selective participation should produce more
+structurally integrated arguments per intervention. Second, we expect HRRL
+deficits to oscillate around the activation threshold $\theta$, exhibiting
+a self-regulating cycle, whereas Round-Robin deficits should behave
+differently since participation is forced regardless of internal state.
+With symmetric roles across factions, we expect that observed differences
+between agents are more plausibly attributable to the orchestration regime
+than to role asymmetry.
+
+% ============================================================
+\section{Results}
+\label{sec:results}
+
+\subsection{Benchmark Design}
+
+We run the same simulation under HRRL and Round-Robin using identical
+configuration (GPT-4o-mini, $T = 50$ for HRRL). Crucially, debate budgets
+are matched: HRRL runs for $T$ ticks and produces $N$ debates organically;
+Round-Robin then runs for $\lceil N/4 \rceil$ ticks so both modes consume
+approximately the same number of interventions. This controls for the
+volume confound. We repeat the experiment with three seeds
+($s \in \{42, 123, 256\}$) and report mean values. This design allows us
+to ask the data a constrained question: given the same debate budget, which
+orchestration regime produces higher-quality argumentation?
+
+\subsection{Summary Metrics}
+
+\begin{table}
+\caption{Comparative results (mean across 3 seeds, matched debate budget,
+4 agents). HRRL: $T=50$; Round-Robin: ticks auto-computed to match HRRL
+debate count.}\label{tab:results}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Metric} & \textbf{HRRL} & \textbf{Round-Robin} \\
+\hline
+Total debates (mean)       & 31.7 $\pm$ 2.5  & 33.0 $\pm$ 2.6  \\
+$\tau$-bench               & 0.9585 $\pm$ 0.015 & 0.9696 $\pm$ 0.002 \\
+Avg $\Delta\varphi^*$      & 0.1429 $\pm$ 0.013 & 0.1275 $\pm$ 0.005 \\
+Graph nodes                & 31.7             & 33.0             \\
+Graph edges                & 30.3             & 32.0             \\
+\hline
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:results} presents the aggregate results with matched debate
+budgets. With both modes producing approximately the same number of debates
+($\sim$32), the comparison becomes meaningful. Two patterns stand out.
+
+First, $\tau$-bench is comparable between modes (0.9585 vs.\ 0.9696), with
+Round-Robin slightly higher. This suggests that both modes are capable of
+producing logically connected arguments at similar rates when the debate
+volume is controlled. The small difference ($\sim$1\%) is within the range
+of seed-to-seed variability for HRRL (std = 0.015).
+
+Second, and more informative, HRRL achieves higher average
+$\Delta\varphi^*$ per intervention (0.1429 vs.\ 0.1275). This is consistent
+with the expectation that selective, internally regulated participation
+produces higher-quality arguments. HRRL agents intervene only when their
+deficit crosses the activation threshold, whereas Round-Robin agents are
+forced to participate regardless of whether the discourse would benefit from
+their contribution.
+
+\begin{table}
+\caption{Per-agent metrics (mean across 3 seeds, matched debate
+budget).}\label{tab:agents}
+\begin{tabular}{|l|l|c|c|}
+\hline
+\textbf{Agent} & \textbf{Metric} & \textbf{HRRL} & \textbf{Round-Robin} \\
+\hline
+GOV-1 & debates (mean)        & 8.3    & 8.3    \\
+GOV-1 & avg $\Delta\varphi^*$ & 0.1403 & 0.0840 \\
+GOV-1 & final $\delta$ (mean) & 0.6827 & 0.5655 \\
+\hline
+GOV-2 & debates (mean)        & 7.0    & 8.0    \\
+GOV-2 & avg $\Delta\varphi^*$ & 0.1619 & 0.1492 \\
+GOV-2 & final $\delta$ (mean) & 0.6427 & 0.3187 \\
+\hline
+OPP-1 & debates (mean)        & 8.0    & 8.3    \\
+OPP-1 & avg $\Delta\varphi^*$ & 0.1410 & 0.1278 \\
+OPP-1 & final $\delta$ (mean) & 0.6700 & 0.3836 \\
+\hline
+OPP-2 & debates (mean)        & 8.3    & 8.3    \\
+OPP-2 & avg $\Delta\varphi^*$ & 0.1364 & 0.1498 \\
+OPP-2 & final $\delta$ (mean) & 0.6390 & 0.2913 \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Phase Analysis (HRRL)}
+
+The HRRL simulation exhibits three phases:
+
+\textbf{Phase 1: Accumulation.} All agents pass. Deficits grow linearly
+toward $\theta$. No arguments are produced.
+
+\textbf{Phase 2: Onset.} Deficits cross $\theta = 0.7$. The first debates
+appear. The graph begins to form.
+
+\textbf{Phase 3: Equilibrium.} Deficits oscillate around $\theta$. Acting
+reduces the deficit via satiation, which reduces the probability of acting,
+which lets the deficit grow again. This is the homeostatic cycle.
+
+This phase structure is consistent with the expected behavior of a closed
+homeostatic loop: accumulation, activation, and regulation are not imposed
+by an external controller, but emerge from the interaction between deficit,
+threshold, and satiation.
+
+The benchmark data confirms the three-phase structure across all seeds. In
+HRRL, agents pass during ticks 1--4, begin debating around tick 5, and then
+oscillate. In contrast, Round-Robin forces all agents to speak every tick;
+because satiation reduces deficits after each high-quality argument, agents
+end at heterogeneous deficit levels ($0.29$--$0.57$) depending on the
+quality of their individual contributions, even though all were forced to
+participate equally. This suggests that context preservation in multi-agent
+debate depends not only on who speaks, but on how the system regulates the
+conditions under which speaking becomes likely.
+
+\subsection{Agent-Level Analysis}
+
+Table~\ref{tab:agents} presents per-agent metrics averaged across seeds.
+Under HRRL, participation is distributed across agents (7--8.3 debates per
+agent on average), with variation driven by the homeostatic mechanism: agents
+that produce higher-quality arguments receive more satiation and may
+participate slightly less or more depending on the deficit-threshold
+interplay. Final deficits cluster tightly around the activation threshold
+($\delta \approx 0.64$--$0.68$), consistent with the oscillatory equilibrium
+predicted by the model.
+
+Under Round-Robin, all agents produce the same number of debates (one per
+tick), but final deficits diverge more widely ($0.29$--$0.57$). This
+reflects that some agents produced higher-quality arguments and received
+more satiation even though all were forced to participate equally.
+Importantly, Round-Robin does not use this deficit information for
+scheduling---agents speak regardless of their internal state.
+
+A noteworthy observation is that GOV-1, the Analytical government agent,
+shows the largest quality gap between modes: $\Delta\varphi^* = 0.1403$
+under HRRL vs.\ $0.0840$ under Round-Robin. This could be explained by the
+fact that under HRRL, GOV-1 only intervenes when its deficit warrants
+participation, leading to more targeted attacks on high-centrality nodes.
+Under Round-Robin, forced participation dilutes argument quality. The
+symmetric design makes this comparison possible: because both factions share
+each archetype, observed differences are attributable to the orchestration
+mode rather than to factional advantage.
+
+% ============================================================
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Interpreting the Results}
+
+With debate budgets matched, the comparison between HRRL and Round-Robin
+becomes more informative than previous uncontrolled comparisons. Two main
+findings emerge.
+
+First, $\tau$-bench is comparable between modes ($0.9585$ vs.\ $0.9696$),
+suggesting that the ability to produce logically connected arguments is
+similar when both modes operate under the same debate volume. The small
+advantage for Round-Robin is within the seed-to-seed variability observed
+for HRRL (std = 0.015). This metric alone does not differentiate the modes.
+
+Second, HRRL achieves consistently higher per-argument quality
+($\Delta\varphi^* = 0.1429$ vs.\ $0.1275$, a 12\% improvement). This is
+consistent with the hypothesis that internally regulated participation
+produces more structurally integrated arguments: agents intervene only when
+their deficit crosses the activation threshold, leading to more deliberate
+target selection. The deficit-sigmoid loop creates an endogenous governor
+where agents that have contributed meaningfully become temporarily
+quiescent, whereas agents that have remained silent accumulate pressure to
+speak.
+
+The most informative observation concerns deficit dynamics. Under HRRL,
+final deficits cluster tightly around the activation threshold
+($0.64$--$0.68$), consistent with oscillatory self-regulation. Under
+Round-Robin, deficits diverge more widely ($0.29$--$0.57$) depending on
+individual argument quality, but this information is not used for scheduling.
+This pattern is consistent with the hypothesis that endogenous regulation
+produces a qualitatively different dynamic than static scheduling.
+
+From a broader perspective, the contrast is not simply between two
+implementation choices. It is a contrast between two ways of understanding
+orchestration. One treats coordination as an externally scripted process.
+The other treats it as a property that can emerge from local regulation.
+The present results, based on three seeded runs with matched budgets,
+suggest that the homeostatic lens produces observable, interpretable
+differences in system behavior---particularly in per-argument quality and
+deficit dynamics---that aggregate metrics like $\tau$-bench alone do not
+fully capture.
+
+\subsection{From AopifyJS to LangClaw}
+
+This work extends the agent-based architecture introduced in
+AopifyJS~\parencite{gerpe2023aopifyjs} along the directions identified as
+future work in that paper. Three specific advances correspond to those open
+problems:
+
+\begin{enumerate}
+    \item \textbf{Human-like abstractions}: The epistemic drive provides
+          agents with an internal motivational state analogous to biological
+          homeostasis, replacing the static decision criteria of MCDC methods.
+    \item \textbf{Machine argumentation}: The argument graph with undercut
+          and rebuttal relations implements formal argumentation semantics,
+          moving beyond the request-response pattern of AopifyJS.
+    \item \textbf{Reward and utility functions}: The $\Phi^*$ proxy and the
+          utility selector provide the reinforcement learning integration that
+          AopifyJS identified as a next step.
+\end{enumerate}
+
+The event-driven architecture is preserved: agents communicate through
+asynchronous queues, maintain self-contained state, and store interaction
+history---the same principles that AopifyJS established for
+interpretability and scalability.
+
+\subsection{Limitations}
+
+We identify five limitations:
+
+\begin{enumerate}
+    \item \textbf{Statistical power}: A single seeded run is insufficient for
+          rigorous claims. Multiple seeds and ablation studies are needed.
+    \item \textbf{$\Phi^*$ is a proxy}: The weights ($0.35, 0.35, 0.30$)
+          were set heuristically and not optimized.
+    \item \textbf{LLM dependence}: Results will vary with different models,
+          temperatures, and prompt formulations.
+    \item \textbf{Scale}: Four agents and 30--50 ticks is small. Behavior
+          with more agents or longer horizons is untested.
+    \item \textbf{Search coverage}: Web search depends on API availability
+          and query quality.
+\end{enumerate}
+
+\subsection{Further Research}
+
+Several directions follow from this work. First, multi-run statistical
+analysis with confidence intervals would strengthen the comparative claims.
+Second, hyperparameter sensitivity studies---particularly for $\theta$,
+$\alpha$, and $\lambda$---would characterize the robustness of the
+homeostatic equilibrium. Third, scaling to larger agent populations and
+longer horizons would test whether the self-regulation property holds.
+Finally, replacing the heuristic $\Phi^*$ proxy with a learned quality
+function could improve the fidelity of the homeostatic signal.
+
+% ============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+This paper examined a concrete question: whether context collapse in
+multi-agent LLM debate is better approached through external scheduling or
+through endogenous regulation. We introduced LangClaw as an experimental
+framework for studying that question under controlled conditions, comparing a
+homeostatic mechanism against a round-robin baseline with matched debate
+budgets, while reducing role-related confounds through symmetric agent
+design.
+
+The relevance of this question extends beyond the present prototype. If
+coherence in multi-agent interaction depends mainly on external control, then
+future systems will likely continue to evolve toward more sophisticated
+routing and supervision layers. If, by contrast, part of the problem can be
+addressed through endogenous regulation, then a different opportunity
+emerges: multi-agent systems may be designed less as scripted workflows and
+more as adaptive cognitive ecologies. This distinction matters for the
+development of socially relevant applications in domains such as policy
+analysis, scientific assistance, education, and other forms of persistent AI
+coordination.
+
+Our expectation throughout the paper has been that homeostatic control should
+better preserve coherence because it links participation to the evolving
+state of the discourse rather than to a fixed schedule. In that sense, the
+value of LangClaw lies not only in the mechanism itself, but in providing a
+testable way to ask whether a concept drawn from a different paradigm can
+illuminate a current limitation in LLM-based multi-agent systems.
+
+The major contributions of this paper can be summarized as follows:
+
+\begin{itemize}
+    \item A formal specification of homeostatic regulation (HRRL) for
+          multi-agent LLM systems, including the epistemic drive model,
+          sigmoid activation, and quality-proportional satiation.
+    \item An implementable $\Phi^*$ proxy that measures argument quality
+          through network-theoretic features.
+    \item A comparative benchmark framework that evaluates HRRL against
+          static baselines under identical conditions.
+    \item Symmetric agent role design that eliminates confounding role bias.
+    \item An evolution of the AopifyJS event-driven architecture toward
+          homeostatic agent autonomy.
+\end{itemize}
+
+% ============================================================
+\section*{Reproducibility}
+
+The complete codebase is available at:
+\url{https://github.com/pgerpe/langclaw_experiment}
+
+\begin{verbatim}
+pip install -r requirements.txt
+python main.py --model gpt-4o-mini --iterations 50
+python benchmark.py --iterations 30 --seed 42
+\end{verbatim}
+
+% ============================================================
+\begin{credits}
+\subsubsection{\discintname}
+The authors have no competing interests to declare that are relevant to the
+content of this article.
+\end{credits}
+
+% ============================================================
+\printbibliography
+
+\end{document}

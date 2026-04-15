@@ -1,0 +1,17 @@
+JAIIIO 2025 aceptará tres formatos de envíos:
+
+Artículos completos: Estos trabajos deben ser autocontenidos y presentar una contribución clara con una adecuada revisión bibliográfica, resultados, discusión de los mismos y conclusiones. La longitud máxima de los mismos es de 14 páginas.
+Artículos cortos: Esta categoría corresponde a trabajos en desarrollo. Como tales se espera que presenten una línea de investigación sobre la que puedan realizar una contribución original. Es esperable que se motive el tema y se plantee la línea de desarrollo sobre la que se está trabajando, aportando si hubiera resultados preliminares y las acciones futuras. La extensión máxima es de 4 páginas (sin contar la página conteniendo los títulos y resúmenes).
+Artículos “Primero en Revista”: trabajos ya publicados, en 2024 o 2025, en alguna revista indexada en temas relevantes a JAIIO 2026. La extensión máxima es de 1 página. Deberán incluir un resumen indicando (i) DOI, (ii) revista donde el artículo se publicó, y (iii) factor de impacto y cuartil.
+FORMATOS DEL ARTICULO A ENVIAR
+Por favor siga las siguientes guías al enviar su artículo:
+
+Los textos de los trabajos deben estar escritos en procesador de texto del tipo Word, LaTeX u otro, pero el envío debe realizarse en formato PDF (Portable Document Format) vía CMT Microsoft (https://cmt3.research.microsoft.com/55JAIIO2026).
+Hoja tamaño A4, con márgenes de 5,2cm (superior, inferior,) y 4,4 (derecho e izquierdo), a simple espacio y letra del tipo Times New Roman 10 ptos.
+El artículo deberá organizarse en el siguiente orden: título en inglés, abstract en inglés (150-250 palabras), palabras clave en inglés, título en español, resumen en español (150-250 palabras), palabras clave en español (hasta 5), desarrollo del trabajo, listado bibliográfico. Deben omitirse los nombres de los autores para permitir la revisión anónima.
+Las citas bibliográficas colocadas en el cuerpo principal del texto deben mantener la forma de referencia siguiente: (Apellido autor, fecha). En el caso de más de una cita se ordenará cronológicamente por año de publicación del más antiguo al más reciente, por ejemplo: (Ziviani, 1986, 1995). En caso de tratarse de más de dos autores, se cita al primero y se agrega et al. (sin itálica y con punto). No utilizar las expresiones Op. Cit. e Ibid.
+Las referencias a esas citas deben colocarse al final del artículo sin utilizar sangrías, ni numeraciones, referenciando únicamente aquella citada en el artículo. Las citas deben seguir el formato de normas APA (7ª versión): Apellido de autor, Inicial del nombre (Año). Título. Editorial.
+Recomendamos leer la siguiente guía:
+Ruiz, A. y García, D. (2024). La lista final de referencias. Composición según las Normas APA
+séptima edición [Material técnico]. Universidad Nacional de La Plata.
+http://sedici.unlp.edu.ar/handle/10915/164813

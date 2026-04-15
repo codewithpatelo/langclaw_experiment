@@ -1,0 +1,14 @@
+.env
+__pycache__/
+*.pyc
+*.pdf
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+benchmark_results/
+benchmark_results_v2/
