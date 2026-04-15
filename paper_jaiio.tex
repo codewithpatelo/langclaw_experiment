@@ -14,6 +14,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage{listings}
+\usepackage{enumitem}
 
 \lstset{
   basicstyle=\small\ttfamily,
@@ -397,103 +398,233 @@ through the $\Phi^*$ proxy.
 \section{Method}
 \label{sec:method}
 
-\subsection{Ontological Premises}
+\subsection{A Theory of Homeostatic Agency}
+\label{sec:theory}
 
-Before presenting the formal machinery, we make explicit the premises from
-which the design follows. These are not engineering conventions but
-ontological commitments---answers to foundational questions about autonomy,
-motivation, and quality that determine the form of every equation that
-follows.
+Every equation that follows rests on ontological commitments about what
+agents are, what drives them, and what counts as effective action. We
+operate within the framework of systemic
+materialism~\parencite{bunge1977treatise,romero2018scientific}---every
+agent is a concrete system representable by a CESM quadruple; every
+property is carried by a material bearer; no teleological or subjective
+predicates are admitted---combined with the principles of
+self-regulating systems theory~\parencite{ashby1956introduction,beer1972brain}
+and complexity sciences, where participation dynamics are emergent
+properties of the multi-agent system, not reducible to the behavior of
+any single component. We state these commitments as definitions and
+postulates following the four-step theory-construction
+protocol~\parencite{romero2018scientific}: empirical basis, ontological
+question, natural-language answer, formalization. Testable predictions
+are derived before any implementation detail.
 
+% --- Phase 1: Ontological delimitation ---
+
+\subsubsection{Definitions.}
+
+\noindent\textbf{Definition 1} (Concrete system).
+Following~\textcite{bunge1977treatise}, a concrete system $\sigma$ is
+represented by the quadruple
+$\mu(\sigma) = \langle \mathcal{C},\, \mathcal{E},\, \mathcal{S},\,
+\mathcal{M} \rangle$, where $\mathcal{C}$ is its composition,
+$\mathcal{E}$ its environment, $\mathcal{S}$ its structure, and
+$\mathcal{M}$ its mechanism.
+
+\smallskip
+\noindent\textbf{Definition 2} (Multi-agent discourse system).
+A \emph{multi-agent discourse system} is a concrete system
+$\Sigma = \langle \mathcal{C},\, \mathcal{E},\, \mathcal{S},\,
+\mathcal{M} \rangle$ with:
+\begin{itemize}[nosep]
+    \item $\mathcal{C}(\Sigma) = \{a_1, \ldots, a_N\}$: agents,
+          each a computational process with internal state;
+    \item $\mathcal{E}(\Sigma)$: discourse topic, language-model
+          interface, and human observers;
+    \item $\mathcal{S}(\Sigma) =
+          \mathcal{S}_{\text{int}} \cup \mathcal{S}_{\text{ext}}$,
+          where $\mathcal{S}_{\text{int}} \subseteq
+          \mathcal{C} \times \mathcal{C}$ are argumentative relations
+          and $\mathcal{S}_{\text{ext}} \subseteq
+          \mathcal{C} \times \mathcal{E}$ are agent--environment
+          relations;
+    \item $\mathcal{M}(\Sigma)$: the processes---deficit accumulation,
+          stimulus evaluation, action selection, and satiation---that
+          produce emergent coordination.
+\end{itemize}
+
+\smallskip
+\noindent\textbf{Definition 3} (State space).
+The state of agent $a_i$ at time $t$ is represented by the scalar
+function $\delta_i : \mathbb{N} \to [\varepsilon, \infty)$, with
+$\varepsilon > 0$ the homeostatic setpoint. The \emph{lawful state
+space} of $a_i$ is $S_L(a_i) = [\varepsilon, \infty)$.
+The state of the system is the tuple
+$s(\Sigma, t) = \bigl(\delta_1(t), \ldots, \delta_N(t),\, G(t)\bigr)$,
+where $G(t) = (V(t), E(t))$ is the discourse graph.
+
+\smallskip
+\noindent\textbf{Definition 4} (Event and process).
+An \emph{event} in $\Sigma$ is a pair of successive states
+$e = (s_1, s_2) \in S_L(\Sigma) \times S_L(\Sigma)$.
+A \emph{process} is an ordered sequence of events
+$p = \{e_1, e_2, \ldots, e_T\}$.
+
+\smallskip
+\noindent\textbf{Definition 5} (Emergent property).
+A property $P$ of $\Sigma$ is \emph{emergent} if no component
+$a_i \in \mathcal{C}(\Sigma)$ possesses $P$
+individually~\parencite{bunge1977treatise}:
+$P(\Sigma) \;\wedge\; \forall\, a_i \in \mathcal{C}(\Sigma):
+\neg P(a_i)$.
+Discourse coherence $C(\Sigma, t)$ is an emergent property of $\Sigma$:
+it characterizes the system as a whole, not any single agent.
+
+% --- Phase 3: Postulates ---
+
+\subsubsection{Postulates.}
+
+\smallskip
 \noindent\emph{What is autonomy?}
 
-Autonomy is the capacity of an agent to regulate its own behavior through
-internal states, rather than being governed by an external
-scheduler~\parencite{beer1972brain}.
+\textit{Empirical basis}: Beer's Viable System Model establishes that
+self-regulating systems require each component to possess sufficient
+internal variety to match the regulatory demands of its
+environment~\parencite{ashby1956introduction,beer1972brain}. External
+schedulers violate this condition: they substitute a single central
+selector for the distributed self-regulatory capacity of individual
+agents, collapsing internal variety to zero.
 
-\noindent\textsc{Postulate 1.}
-Let $\Sigma$ be a multi-agent discourse system, $C(\Sigma, t)$ its
-coherence, $\mathbf{x}(t)$ external scheduling variables, and
-$\boldsymbol{\delta}(t) = (\delta_1, \ldots, \delta_N)$ internal agent
-states.
+\noindent\textsc{Postulate 1} (Autonomy).
+Agent $a_i \in \mathcal{C}(\Sigma)$ is \emph{autonomous} if and only
+if its action-selection function $\pi_i : S_L(a_i) \to \mathcal{A}$
+depends on internal state $\delta_i(t)$:
 \begin{equation}
-    C(\Sigma, t) = f\!\bigl(\mathbf{x}(t),\,
-        \boldsymbol{\delta}(t)\bigr) \;\wedge\;
-    \frac{\partial C}{\partial \boldsymbol{\delta}} \neq \mathbf{0}
+    \mathrm{Aut}(a_i) \;\iff\;
+    \exists\, \delta_i \in S_L(a_i):\;
+    \pi_i = \pi_i\!\bigl(\delta_i(t)\bigr)
     \label{eq:a1}
 \end{equation}
-Negation (non-autonomy):
-$\partial C / \partial \boldsymbol{\delta} = 0$.
-Necessary condition:
-$\forall\, a_i \in \mathcal{C}:\;
-\mathcal{V}(a_i) \geq \mathcal{V}_{\text{req}}(\mathcal{E}(a_i))$.
+Negation: $\pi_i = \pi_i(\mathbf{x}(t))$ with
+$\partial\pi_i/\partial\delta_i = 0$ (non-autonomous, externally
+scheduled). Necessary condition (requisite variety):
+$\mathcal{V}(a_i) \geq \mathcal{V}_{\text{req}}(\mathcal{E}(a_i))$.
 
 \smallskip
-\noindent\emph{What makes an agent act?}
+\noindent\emph{What produces the drive to act?}
 
-An agent acts because it accumulates internal tension. The further its state
-deviates from a resting point, the stronger the pressure to act. At the
-resting point, there is no
-pressure~\parencite{sterling1988allostasis,friston2010free}.
+\textit{Empirical basis}: Allostatic regulation establishes that
+biological organisms act to maintain \emph{predicted} equilibrium ---
+they load internal tension in anticipation of need and discharge it
+through action, not in reaction to
+imbalance~\parencite{sterling1988allostasis}. The free energy principle
+formalizes this as drive minimization: an organism organizes behavior
+to minimize the expected surprise of its internal
+states~\parencite{friston2010free}. The drive is an accumulation, not
+a trigger; the agent acts because pressure has grown, not because an
+event arrived.
 
-\noindent\textsc{Postulate 2.}
-Let $\delta_i \in [\varepsilon, \infty)$, $\varepsilon > 0$, be the
-epistemic deficit of agent $a_i$.
+\noindent\textsc{Postulate 2} (Drive).
+For each $a_i \in \mathcal{C}(\Sigma)$ there exists a drive function
+$D: S_L(a_i) \to \mathbb{R}_{\geq 0}$ such that:
 \begin{equation}
-    \exists\, D: [\varepsilon, \infty) \to \mathbb{R}_{\geq 0}
-    \;\text{such that}\;
     D(\varepsilon) = 0 \;\wedge\;
-    \forall\, \delta > \varepsilon:\; D'(\delta) > 0
+    \forall\, \delta_i > \varepsilon:\; D'(\delta_i) > 0
     \label{eq:a2}
 \end{equation}
-Scalar simplification of the multidimensional case
-$d(\boldsymbol{\delta}) = \sqrt{\varepsilon +
-\boldsymbol{\delta}^\top
-\boldsymbol{\delta}}$~\parencite{laurencon2024ctcs}.
+Action probability is monotonically increasing in drive:
+$p_i(t) = \sigma\!\bigl(D(\delta_i(t))\bigr)$, where $\sigma$ is a
+sigmoid gate. An agent at setpoint is quiescent; an agent far from
+setpoint is compelled to act.
 
 \smallskip
-\noindent\emph{What alleviates the deficit?}
+\noindent\emph{What constitutes a quality-satisfying action for an
+argumentative agent?}
 
-A stimulus alleviates the deficit if and only if it reduces the disturbance
-between the agent's current state and its
-setpoint~\parencite{beer1972brain}.
+\textit{Empirical basis}: Research on eudaimonic motivation in
+cognitive neuroscience and positive psychology establishes that
+regulatory relief is not produced by activity per se but by
+\emph{purpose-congruent} activity---the exercise of capacities that
+are characteristic of the organism and experienced as
+meaningful~\parencite{ryan2001happiness,huta2014eudaimonia}. This is
+distinct from hedonic relief (pleasure from any activity): eudaimonic
+systems are sensitive to \emph{what} is done, not merely to the fact
+of doing. An action contributes to the agent's regulatory relief only
+if it modifies the structure
+$\mathcal{S}(\Sigma)$ in a way that exercises the agent's
+characteristic relational capacity within $\mathcal{S}_{\text{int}}$.
+For an argumentative agent, that characteristic capacity is structural
+engagement with the discourse: attacking central claims, creating
+dialectical cycles, drawing competing perspectives into contested
+territory. An isolated monologue modifies $V$ but not
+$\mathcal{S}_{\text{int}}$---it exercises the capacity of speaking
+without exercising the capacity of arguing.
 
-\noindent\textsc{Postulate 3.}
-Let $\delta_i(t)$ be the deficit of agent $a_i$ at time $t$,
-$\varepsilon$ its setpoint, and $s$ a stimulus received at $t$.
-Let $\Delta_s = |\delta_i(t) - \varepsilon| -
-|\delta_i(t{+}1) - \varepsilon|$ be the disturbance reduction caused by $s$.
+\noindent\textsc{Postulate 3} (Quality-gating).
+Let $g\!\bigl(\mathcal{S}(t),\, \mathcal{S}(t{+}1)\bigr) \geq 0$
+be the structural change in $\mathcal{S}_{\text{int}}$ produced by an
+action of agent $a_i$. Drive is reduced only by structurally
+integrated actions:
 \begin{equation}
-    \Delta_s > 0 \;\Rightarrow\; \Delta\delta_i = -\alpha \cdot \Delta_s,
-    \quad \alpha > 0
-    \;;\qquad
-    \Delta_s \leq 0 \;\Rightarrow\; \Delta\delta_i = 0
+    g\!\bigl(\mathcal{S}(t),\, \mathcal{S}(t{+}1)\bigr) = 0
+    \;\Rightarrow\; \Delta\delta_i = 0
     \label{eq:a3}
 \end{equation}
+An isolated monologue ($g = 0$) leaves the drive unrelieved. Only a
+contribution that modifies $\mathcal{S}_{\text{int}}$ provides
+regulatory relief.
 
 \smallskip
-\noindent\emph{How is disturbance reduction measured?}
+\noindent\emph{How is structural integration measured?}
 
-Disturbance reduction is a computable function of the change the agent's
-action produces in the structure of its
-environment~\parencite{tononi2016integrated}. In this work the environment
-is a defeasible argumentation
-graph~\parencite{garcia2004defeasible,simari1992mathematical};
-the operationalization of $\Delta_s$ is given in
-Eq.~\eqref{eq:phi} (Section~\ref{sec:quality}).
+\textit{Empirical basis}: Graph-theoretic properties of complex
+networks---node centrality, cycle formation, cross-component
+coupling---approximate the degree to which an intervention integrates
+information across the system's
+structure~\parencite{tononi2016integrated}. These properties are
+computable without semantic evaluation.
 
-\noindent\textsc{Postulate 4.}
-Let $\mathcal{E}(\Sigma)$ be the environment of the system and
-$\mathcal{S}(t)$ its structure at time $t$.
+\noindent\textsc{Postulate 4} (Measurability).
+The structural change $g$ is a computable function of the discourse
+graph before and after the action:
 \begin{equation}
-    \Delta_s = g\!\bigl(\mathcal{S}(t),\, \mathcal{S}(t{+}1)\bigr),
+    \Delta_s \;=\; g\!\bigl(\mathcal{S}(t),\, \mathcal{S}(t{+}1)\bigr),
     \quad g: \mathcal{S} \times \mathcal{S} \to \mathbb{R}_{\geq 0}
     \label{eq:a4}
 \end{equation}
+The specific instantiation for defeasible argumentation
+graphs~\parencite{garcia2004defeasible} is given in
+Eq.~\eqref{eq:phi}. Combined with P3: $\Delta\delta_i = -\alpha \cdot
+\Delta_s$ when $\Delta_s > 0$, and $\Delta\delta_i = 0$ otherwise,
+$\alpha > 0$.
+
+% --- Phase 4: Logical closure ---
+
+\subsubsection{Derived predictions.}
+
+The following testable consequences are deduced from P1--P4.
 
 \smallskip
-\noindent Eqs.~\eqref{eq:decay}--\eqref{eq:phi},
-\eqref{eq:stimulus} follow from P1--P4.
+\noindent\textsc{Theorem 1} (Participation equity).
+From P1 and P2: if all agents share the same basal drive parameters
+and $D' > 0$ (P2), then symmetric deficit accumulation under autonomous
+action selection (P1) produces symmetric activation. An external
+scheduler has no such symmetry guarantee. Therefore,
+$\mathrm{Var}(\text{turns})_{\text{autonomous}} <
+ \mathrm{Var}(\text{turns})_{\text{scheduled}}$.
+
+\smallskip
+\noindent\textsc{Theorem 2} (Coherence maintenance).
+From P2, P3, P4: if $\Delta_s > 0$ on average (P3, P4) and drive
+is monotonically increasing (P2), then the deficit is bounded:
+$\delta_i(t)$ does not diverge. A bounded deficit implies sustained
+participation, which prevents unilateral silence---a necessary condition
+for context collapse. Therefore, an autonomous system with homeostatic
+regulation maintains discourse coherence above a minimum threshold.
+
+\smallskip
+\noindent These predictions are operationalized as the experimental
+hypothesis in Section~\ref{sec:setup} and tested against a
+non-autonomous baseline (LangGraph round-robin) in
+Section~\ref{sec:results}.
 
 \subsection{The Epistemic Drive}
 
@@ -509,6 +640,22 @@ creating a closed feedback loop (Postulate~1). Third, it is compatible with the 
 framework~\parencite{keramati2014homeostatic}, which provides a theoretical
 grounding for the equivalence between drive minimization and reward
 maximization.
+
+The design is bio-inspired in two senses that reinforce each other. The
+first is mechanistic: allostatic regulation~\parencite{sterling1988allostasis}
+and the free energy principle~\parencite{friston2010free} establish that
+biological cognitive systems are organized around predictive drive
+minimization---they load pressure in anticipation of unmet need, cross a
+threshold, discharge through action, and return toward baseline. The
+epistemic deficit instantiates this architecture in a cognitive agent: it
+accumulates through discourse stimuli, crosses a threshold, discharges
+through contribution, and returns to resting baseline. The second sense is
+philosophical and follows directly from P3: the quality-gating of satiation
+($\Delta\varphi^* = 0$ provides no relief) is not a hyperparameter---it is
+the operational consequence of eudaimonic wellbeing. An argumentative agent
+does not flourish by speaking; it flourishes by speaking \emph{well in
+response to genuine argumentative pressure}. The formal mechanism follows
+from the ontological premise, not the other way around.
 
 Each agent $i$ maintains an internal variable
 $\delta_i \in [\varepsilon, \infty)$, the epistemic deficit, with resting
@@ -624,16 +771,15 @@ logical relevance. What we need is a measure that is sensitive to the
 engage with central claims? Does it create dialectical cycles? Does it
 involve multiple perspectives?
 
-As established in Postulate~4, the full $\Phi$ measure
-(Eq.~\ref{eq:phi_iit}) is intractable for arbitrary graphs. We therefore
-construct a computable proxy $\Delta\varphi^*$ that preserves three
-structural intuitions from IIT: integration, cyclicity, and distributed
-participation.\label{sec:quality}
+As established in P4, the full $\Phi$ measure of integrated information is
+intractable for arbitrary graphs. We therefore construct a computable proxy
+$\Delta\varphi^*$ that preserves three structural intuitions from IIT:
+integration, cyclicity, and distributed participation.\label{sec:quality}
 The discourse is represented as a directed
 graph $G = (V, E)$ where nodes are defeasible
 arguments~\parencite{garcia2004defeasible} and edges are attack
 relations (undercut or rebuttal). When agent $i$ adds node $v$ attacking
-target $u$, the disturbance reduction $\Delta_s$ (Postulate~3) is
+target $u$, the structural change $\Delta_s$ (Postulates~3 and~4) is
 operationalized as:
 
 \begin{equation}
@@ -1138,20 +1284,19 @@ post-hoc power analysis indicates $n \geq 12$ seeds would be needed to
 detect $d = 0.5$ at 80\% power, though the observed $d = -5.1$ suggests the
 effect is robust to seed variation.
 
-\subsection{Q-Weight Convergence (H4)}
+\subsection{Q-Weight Convergence}
 
 Across all 5 seeds and all 4 agents (20 agent--seed combinations), the
 learned Q-weight for DEBATE\_STIMULUS exceeds that for DEBATE\_PROACTIVE
 in every case (20/20). The mean final Q-values are: DEBATE\_STIMULUS
 $= 0.247 \pm 0.076$, DEBATE\_PROACTIVE $= 0.186 \pm 0.044$, SEARCH
-$= 0.034 \pm 0.039$, READ $= 0.017 \pm 0.019$. This confirms H4: the
-Q-learner converges to prioritize stimulus-driven debate over proactive
-exploration, consistent with the prediction that a genuinely adaptive agent
-learns to respond to faction-relevant threats rather than seeking diverse
-targets. The ordering DEBATE\_STIMULUS $>$ DEBATE\_PROACTIVE $>$ SEARCH
-$>$ READ is stable across seeds, providing evidence that the learning
-signal (drive reduction) shapes action preferences in a consistent
-direction.
+$= 0.034 \pm 0.039$, READ $= 0.017 \pm 0.019$. The Q-learner converges
+to prioritize stimulus-driven debate over proactive exploration, consistent
+with the prediction that a genuinely adaptive agent learns to respond to
+faction-relevant threats rather than seeking diverse targets. The ordering
+DEBATE\_STIMULUS $>$ DEBATE\_PROACTIVE $>$ SEARCH $>$ READ is stable
+across seeds, providing evidence that the learning signal (drive reduction)
+shapes action preferences in a consistent direction.
 
 \subsection{Phase Analysis (HRRL)}
 

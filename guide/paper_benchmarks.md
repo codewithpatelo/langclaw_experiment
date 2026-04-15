@@ -24,6 +24,7 @@ paper should score at least 4 on every dimension.
 - The structure guides the reader from problem to question to method to
   evidence to implications without friction.
 
+
 ### 1.3 Impact Potential
 - If the hypothesis holds, what changes? Which industries, institutions,
   or research agendas are affected?
@@ -49,6 +50,7 @@ paper should score at least 4 on every dimension.
 - Are hyperparameters justified by a rigourous method (like 5-fold cross-validation and/or HPO methods)?
 - Are limitations discussed seriously, not as an afterthought?
 - Is the experimental design controlled for confounds?
+- No vagueness, precise language.
 
 ### 1.7 Reproducibility
 - Can an independent researcher reproduce the experiments from the paper
