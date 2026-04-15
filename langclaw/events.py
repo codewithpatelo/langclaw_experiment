@@ -24,6 +24,10 @@ class NewArgumentEvent:
     """
     Emitted when any agent successfully adds an argument to the graph.
     Other agents observe this and update their working memory.
+
+    faction / targets_faction enable stimulus evaluation without
+    re-querying the graph: the agent can immediately assess whether
+    this event is relevant to its own faction.
     """
     tick: int
     node_id: str
@@ -32,6 +36,8 @@ class NewArgumentEvent:
     delta_phi: float
     attack_type: str | None = None
     target_node_id: str | None = None
+    faction: str = ""
+    targets_faction: str | None = None
 
 
 @dataclass(frozen=True)

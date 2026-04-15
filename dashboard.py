@@ -248,7 +248,7 @@ def render_metrics_panel(env: SotopiaEnvironment) -> None:
 
     col1, col2 = st.columns(2)
     with col1:
-        st.metric("τ-bench", f"{env.tau_bench:.4f}")
+        st.metric("Debate Consistency", f"{env.consistency_rate:.4f}")
         st.metric("Nodos", summary["nodes"])
     with col2:
         st.metric("Densidad", f"{summary['density']:.4f}")
@@ -296,9 +296,9 @@ def main() -> None:
 
         orchestration_mode = st.selectbox(
             "Modo de orquestación",
-            options=["hrrl", "round-robin", "random"],
+            options=["hrrl", "langgraph", "round-robin", "random"],
             index=0,
-            help="hrrl: regulación homeostática | round-robin: todos hablan cada tick | random: agente aleatorio cada tick",
+            help="hrrl: regulacion homeostatica | langgraph: router LLM externo | round-robin: todos cada tick | random: agente aleatorio",
         )
         api_hard_limit = st.number_input(
             "Límite API por agente", min_value=10, max_value=1000, value=200, step=10

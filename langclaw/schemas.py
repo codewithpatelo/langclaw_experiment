@@ -10,6 +10,11 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
+# Trigger values for SimulationLog
+# HOMEOSTATIC: agent's sigmoid gate fired (HRRL mode)
+# ROUTER:      external LLM router selected this agent (LangGraph mode)
+# FORCED:      external scheduler activated agent (baselines / round-robin)
+
 
 class AgentAction(BaseModel):
     """Structured action returned by the LLM.
@@ -53,7 +58,15 @@ class SimulationLog(BaseModel):
     activation_prob: float = 0.0
     graph_nodes: int = 0
     graph_edges: int = 0
-    tau_bench: float = 0.0
+    # Internal diagnostic: fraction of debate turns with logically consistent attacks.
+    # Not a benchmark — no external name. Excluded from paper results table.
+    consistency_rate: float = 0.0
+    # Activation trigger: HOMEOSTATIC (sigmoid fired), ROUTER (LLM router chose), FORCED (baseline)
+    trigger: Literal["HOMEOSTATIC", "ROUTER", "FORCED"] = "FORCED"
+    # AAF metrics (Dung 1995) — computed at end of simulation and backfilled onto final tick
+    aaf_acceptance_ratio: float = 0.0
+    aaf_defeat_cycles: int = 0
+    aaf_dialectical_completeness: float = 0.0
     # Utility scores that drove the action selection (HRRL mode only)
     utility_debate: float = 0.0
     utility_search: float = 0.0
@@ -61,3 +74,10 @@ class SimulationLog(BaseModel):
     utility_pass: float = 0.0
     # Orchestration mode used for this run
     orchestration_mode: str = "hrrl"
+    # Stimulus tracking (HRRL event-driven mode)
+    stimulus_event_id: str | None = None
+    stimulus_utility: float = 0.0
+    n_stimuli_evaluated: int = 0
+    # HRRL Q-learning metrics
+    reward: float = 0.0
+    q_values: dict[str, float] = Field(default_factory=dict)

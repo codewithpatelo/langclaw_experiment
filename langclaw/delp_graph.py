@@ -1,16 +1,33 @@
-"""Symbolic argumentation layer and IIT (Φ*) proxy.
+"""Symbolic argumentation layer — network-theoretic quality proxy (Δφ*) and AAF metrics.
 
 Implements a directed argument graph where nodes are claims and edges
-represent logical attacks (undercut / rebuttal).  The ``calculate_phi_star_proxy``
-method approximates Integrated Information Theory's Φ* using tractable
-network-theoretic features:
+represent logical attacks (undercut / rebuttal).
 
-    Φ* ≈ w_c · C_betweenness(target) + w_cycle · has_cycle + w_div · agent_diversity
+Δφ* quality proxy (calculate_phi_star_proxy)
+--------------------------------------------
+A network-theoretic proxy that operationalises three structural features
+of argumentative integration:
 
-This is explicitly a *proxy* — full IIT is computationally intractable for
-graphs of this size in real-time.  The proxy captures the intuition that
-an argument is informationally valuable when it engages central claims,
-creates dialectical cycles, and bridges perspectives from different agents.
+    Δφ* ≈ w_c · C_betweenness(target) + w_cycle · 1_cycle + w_div · D_diversity
+
+  1. Betweenness centrality C_betweenness(target): whether the attacked node is
+     structurally central to the discourse.
+  2. Cycle bonus 1_cycle: whether the new attack creates a dialectical cycle,
+     rewarding genuine back-and-forth over parallel monologue.
+  3. Cross-faction diversity D: whether the target has been engaged by agents
+     from multiple factions.
+
+These features are conceptually related to — though formally distinct from —
+informational integration (Tononi et al.); no formal equivalence is claimed.
+Weights (0.35 / 0.35 / 0.30) reflect an equal-importance prior; optimisation
+is deferred to future work.
+
+AAF metrics (Dung 1995)
+-----------------------
+Grounded-extension-based evaluation of the argument graph:
+  - defeat_cycle_count(): |SCC_{>1}| via Tarjan's SCC (genuine dialectical tension)
+  - acceptance_ratio(): α = |grounded extension| / |total nodes|
+  - dialectical_completeness(): δ = |nodes addressed by GE| / |total nodes|
 """
 
 from __future__ import annotations
@@ -142,6 +159,98 @@ class ArgumentGraph:
         w_c, w_cycle, w_div = 0.35, 0.35, 0.30
         phi = w_c * centrality_score + w_cycle * cycle_bonus + w_div * diversity_score
         return min(1.0, max(0.0, phi))
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # AAF metrics (Dung 1995)
+    # ──────────────────────────────────────────────────────────────────────────
+
+    def _grounded_extension(self) -> set[str]:
+        """Compute the grounded extension of the AAF via fixed-point iteration.
+
+        The grounded extension is the unique minimal complete extension (Dung 1995).
+        Algorithm: iteratively add to the extension all arguments whose attackers
+        are themselves attacked by the current extension, until no change.
+
+        Runs in polynomial time (O(|A|·|→|) per iteration, at most |A| iterations).
+        """
+        g = self._graph
+        if g.number_of_nodes() == 0:
+            return set()
+
+        # Start: all arguments with no attackers are unconditionally in the GE
+        ge: set[str] = {n for n in g.nodes() if g.in_degree(n) == 0}
+
+        while True:
+            # Arguments defeated by current GE (attacked by at least one member)
+            defeated: set[str] = set()
+            for s in ge:
+                defeated.update(g.successors(s))  # s attacks these nodes
+
+            # Add arguments all of whose attackers are defeated by GE
+            new_members: set[str] = set()
+            for n in g.nodes():
+                if n in ge or n in defeated:
+                    continue
+                attackers = set(g.predecessors(n))
+                if attackers and all(a in defeated for a in attackers):
+                    new_members.add(n)
+
+            if not new_members:
+                break
+            ge = ge | new_members
+
+        return ge
+
+    def defeat_cycle_count(self) -> int:
+        """Count strongly-connected components with more than one node (defeat cycles).
+
+        A non-trivial SCC (|SCC| > 1) indicates a genuine dialectical cycle in the
+        attack graph — mutual refutation between arguments. Higher counts suggest
+        richer dialectical engagement.
+
+        Uses networkx.strongly_connected_components (Tarjan's algorithm, O(|A|+|→|)).
+        """
+        sccs = list(nx.strongly_connected_components(self._graph))
+        return sum(1 for scc in sccs if len(scc) > 1)
+
+    def acceptance_ratio(self) -> float:
+        """Fraction of arguments in the grounded extension.
+
+        α = |GE| / |A|  (Dung 1995)
+
+        α = 1.0: all arguments are epistemically undefeated.
+        α = 0.0: all arguments are contested (no stable grounded truth).
+        Returns 0.0 for an empty graph.
+        """
+        n = self._graph.number_of_nodes()
+        if n == 0:
+            return 0.0
+        ge = self._grounded_extension()
+        return len(ge) / n
+
+    def dialectical_completeness(self) -> float:
+        """Fraction of arguments addressed by the grounded extension.
+
+        δ = |{x : x ∈ GE or x is attacked by GE}| / |A|
+
+        An argument is "addressed" when the grounded extension either accepts it
+        or defeats it.  δ = 0 means the discourse is fully indeterminate; δ = 1
+        means the GE has a position on every claim.
+        Returns 0.0 for an empty graph.
+        """
+        g = self._graph
+        n = g.number_of_nodes()
+        if n == 0:
+            return 0.0
+
+        ge = self._grounded_extension()
+        # Arguments defeated by GE
+        defeated_by_ge: set[str] = set()
+        for s in ge:
+            defeated_by_ge.update(g.successors(s))
+
+        addressed = ge | defeated_by_ge
+        return len(addressed) / n
 
     def get_recent_context(self, last_n: int = 5) -> str:
         """Return a textual summary of the last *n* arguments for prompt injection."""

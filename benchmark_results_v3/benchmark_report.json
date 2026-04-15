@@ -1,0 +1,498 @@
+{
+  "aggregate": {
+    "hrrl": {
+      "total_debates": 74,
+      "total_debates_std": 16.5378,
+      "avg_delta_phi": 0.1493,
+      "avg_delta_phi_std": 0.0136,
+      "graph_nodes": 74,
+      "graph_nodes_std": 16.5378,
+      "graph_edges": 72.8,
+      "graph_edges_std": 16.1307,
+      "aaf_defeat_cycles": 0,
+      "aaf_defeat_cycles_std": 0.0,
+      "aaf_acceptance_ratio": 0.5634,
+      "aaf_acceptance_ratio_std": 0.0295,
+      "aaf_dialectical_completeness": 1.0,
+      "aaf_dialectical_completeness_std": 0.0,
+      "prr_text": 0.0,
+      "prr_text_std": 0.0,
+      "prr_graph": 0.984,
+      "prr_graph_std": 0.0026,
+      "ir": 1.0,
+      "ir_std": 0.0,
+      "avg_stimuli_per_tick": 1.506,
+      "avg_stimuli_per_tick_std": 0.1776,
+      "avg_stimulus_utility": 0.5012,
+      "avg_stimulus_utility_std": 0.037,
+      "stimulus_driven_debates": 58.4,
+      "stimulus_driven_debates_std": 17.5585,
+      "per_agent_debates": {
+        "GOV-1": 19,
+        "GOV-2": 18.6,
+        "OPP-1": 18.2,
+        "OPP-2": 18.2
+      },
+      "per_agent_avg_dphi": {
+        "GOV-1": 0.1433,
+        "GOV-2": 0.15,
+        "OPP-1": 0.1518,
+        "OPP-2": 0.1557
+      },
+      "final_deficits": {
+        "GOV-1": 0.6832,
+        "GOV-2": 0.5579,
+        "OPP-1": 0.6508,
+        "OPP-2": 0.4973
+      }
+    },
+    "langgraph": {
+      "total_debates": 74,
+      "total_debates_std": 16.5378,
+      "avg_delta_phi": 0.1482,
+      "avg_delta_phi_std": 0.0121,
+      "graph_nodes": 74,
+      "graph_nodes_std": 16.5378,
+      "graph_edges": 73,
+      "graph_edges_std": 16.5378,
+      "aaf_defeat_cycles": 0,
+      "aaf_defeat_cycles_std": 0.0,
+      "aaf_acceptance_ratio": 0.6998,
+      "aaf_acceptance_ratio_std": 0.0186,
+      "aaf_dialectical_completeness": 1.0,
+      "aaf_dialectical_completeness_std": 0.0,
+      "prr_text": 0.0,
+      "prr_text_std": 0.0,
+      "prr_graph": 0.986,
+      "prr_graph_std": 0.0027,
+      "ir": 0.0,
+      "ir_std": 0.0,
+      "avg_stimuli_per_tick": 0.0,
+      "avg_stimuli_per_tick_std": 0.0,
+      "avg_stimulus_utility": 0.0,
+      "avg_stimulus_utility_std": 0.0,
+      "stimulus_driven_debates": 0,
+      "stimulus_driven_debates_std": 0.0,
+      "per_agent_debates": {
+        "GOV-1": 11.2,
+        "GOV-2": 11.6,
+        "OPP-1": 25.2,
+        "OPP-2": 26
+      },
+      "per_agent_avg_dphi": {
+        "GOV-1": 0.1052,
+        "GOV-2": 0.1737,
+        "OPP-1": 0.1531,
+        "OPP-2": 0.1526
+      },
+      "final_deficits": {
+        "GOV-1": 3.6127,
+        "GOV-2": 3.1969,
+        "OPP-1": 2.2757,
+        "OPP-2": 2.2516
+      }
+    }
+  },
+  "per_seed": {
+    "hrrl": [
+      {
+        "total_ticks": 50,
+        "total_debates": 101,
+        "avg_delta_phi": 0.1281,
+        "graph_nodes": 101,
+        "graph_edges": 99,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.5644,
+        "aaf_dialectical_completeness": 1.0,
+        "prr_text": 0.0,
+        "prr_graph": 0.9802,
+        "ir": 1.0,
+        "router_calls": 0,
+        "avg_stimuli_per_tick": 1.76,
+        "avg_stimulus_utility": 0.5638,
+        "stimulus_driven_debates": 88,
+        "final_deficits": {
+          "GOV-1": 0.6338,
+          "GOV-2": 0.555,
+          "OPP-1": 0.7972,
+          "OPP-2": 0.6752
+        },
+        "per_agent_debates": {
+          "GOV-1": 26,
+          "GOV-2": 24,
+          "OPP-1": 26,
+          "OPP-2": 25
+        },
+        "per_agent_avg_dphi": {
+          "GOV-1": 0.1226,
+          "GOV-2": 0.1367,
+          "OPP-1": 0.1221,
+          "OPP-2": 0.1319
+        }
+      },
+      {
+        "total_ticks": 50,
+        "total_debates": 68,
+        "avg_delta_phi": 0.1561,
+        "graph_nodes": 68,
+        "graph_edges": 67,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.6029,
+        "aaf_dialectical_completeness": 1.0,
+        "prr_text": 0.0,
+        "prr_graph": 0.9853,
+        "ir": 1.0,
+        "router_calls": 0,
+        "avg_stimuli_per_tick": 1.43,
+        "avg_stimulus_utility": 0.4911,
+        "stimulus_driven_debates": 54,
+        "final_deficits": {
+          "GOV-1": 0.6323,
+          "GOV-2": 0.5163,
+          "OPP-1": 0.6142,
+          "OPP-2": 0.3142
+        },
+        "per_agent_debates": {
+          "GOV-1": 19,
+          "GOV-2": 16,
+          "OPP-1": 18,
+          "OPP-2": 15
+        },
+        "per_agent_avg_dphi": {
+          "GOV-1": 0.1349,
+          "GOV-2": 0.1697,
+          "OPP-1": 0.1428,
+          "OPP-2": 0.1846
+        }
+      },
+      {
+        "total_ticks": 50,
+        "total_debates": 61,
+        "avg_delta_phi": 0.1574,
+        "graph_nodes": 61,
+        "graph_edges": 60,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.5246,
+        "aaf_dialectical_completeness": 1.0,
+        "prr_text": 0.0,
+        "prr_graph": 0.9836,
+        "ir": 1.0,
+        "router_calls": 0,
+        "avg_stimuli_per_tick": 1.37,
+        "avg_stimulus_utility": 0.4914,
+        "stimulus_driven_debates": 47,
+        "final_deficits": {
+          "GOV-1": 0.8745,
+          "GOV-2": 0.7781,
+          "OPP-1": 0.6035,
+          "OPP-2": 0.5351
+        },
+        "per_agent_debates": {
+          "GOV-1": 16,
+          "GOV-2": 15,
+          "OPP-1": 14,
+          "OPP-2": 16
+        },
+        "per_agent_avg_dphi": {
+          "GOV-1": 0.1444,
+          "GOV-2": 0.1576,
+          "OPP-1": 0.174,
+          "OPP-2": 0.1557
+        }
+      },
+      {
+        "total_ticks": 50,
+        "total_debates": 78,
+        "avg_delta_phi": 0.1437,
+        "graph_nodes": 78,
+        "graph_edges": 77,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.5769,
+        "aaf_dialectical_completeness": 1.0,
+        "prr_text": 0.0,
+        "prr_graph": 0.9872,
+        "ir": 1.0,
+        "router_calls": 0,
+        "avg_stimuli_per_tick": 1.62,
+        "avg_stimulus_utility": 0.4948,
+        "stimulus_driven_debates": 59,
+        "final_deficits": {
+          "GOV-1": 0.7812,
+          "GOV-2": 0.3351,
+          "OPP-1": 0.6658,
+          "OPP-2": 0.5297
+        },
+        "per_agent_debates": {
+          "GOV-1": 19,
+          "GOV-2": 23,
+          "OPP-1": 17,
+          "OPP-2": 19
+        },
+        "per_agent_avg_dphi": {
+          "GOV-1": 0.1438,
+          "GOV-2": 0.1255,
+          "OPP-1": 0.1655,
+          "OPP-2": 0.1461
+        }
+      },
+      {
+        "total_ticks": 50,
+        "total_debates": 62,
+        "avg_delta_phi": 0.1613,
+        "graph_nodes": 62,
+        "graph_edges": 61,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.5484,
+        "aaf_dialectical_completeness": 1.0,
+        "prr_text": 0.0,
+        "prr_graph": 0.9839,
+        "ir": 1.0,
+        "router_calls": 0,
+        "avg_stimuli_per_tick": 1.35,
+        "avg_stimulus_utility": 0.4647,
+        "stimulus_driven_debates": 44,
+        "final_deficits": {
+          "GOV-1": 0.494,
+          "GOV-2": 0.6051,
+          "OPP-1": 0.5731,
+          "OPP-2": 0.4324
+        },
+        "per_agent_debates": {
+          "GOV-1": 15,
+          "GOV-2": 15,
+          "OPP-1": 16,
+          "OPP-2": 16
+        },
+        "per_agent_avg_dphi": {
+          "GOV-1": 0.1707,
+          "GOV-2": 0.1603,
+          "OPP-1": 0.1546,
+          "OPP-2": 0.1603
+        }
+      }
+    ],
+    "langgraph": [
+      {
+        "total_ticks": 101,
+        "total_debates": 101,
+        "avg_delta_phi": 0.1479,
+        "graph_nodes": 101,
+        "graph_edges": 100,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.703,
+        "aaf_dialectical_completeness": 1.0,
+        "prr_text": 0.0,
+        "prr_graph": 0.9901,
+        "ir": 0.0,
+        "router_calls": 404,
+        "avg_stimuli_per_tick": 0.0,
+        "avg_stimulus_utility": 0.0,
+        "stimulus_driven_debates": 0,
+        "final_deficits": {
+          "GOV-1": 4.7461,
+          "GOV-2": 4.3107,
+          "OPP-1": 2.4752,
+          "OPP-2": 3.1983
+        },
+        "per_agent_debates": {
+          "GOV-1": 16,
+          "GOV-2": 14,
+          "OPP-1": 41,
+          "OPP-2": 30
+        },
+        "per_agent_avg_dphi": {
+          "GOV-1": 0.1005,
+          "GOV-2": 0.177,
+          "OPP-1": 0.15,
+          "OPP-2": 0.1568
+        }
+      },
+      {
+        "total_ticks": 68,
+        "total_debates": 68,
+        "avg_delta_phi": 0.1426,
+        "graph_nodes": 68,
+        "graph_edges": 67,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.6765,
+        "aaf_dialectical_completeness": 1.0,
+        "prr_text": 0.0,
+        "prr_graph": 0.9853,
+        "ir": 0.0,
+        "router_calls": 272,
+        "avg_stimuli_per_tick": 0.0,
+        "avg_stimulus_utility": 0.0,
+        "stimulus_driven_debates": 0,
+        "final_deficits": {
+          "GOV-1": 3.4214,
+          "GOV-2": 2.9522,
+          "OPP-1": 2.4182,
+          "OPP-2": 1.9608
+        },
+        "per_agent_debates": {
+          "GOV-1": 10,
+          "GOV-2": 12,
+          "OPP-1": 19,
+          "OPP-2": 27
+        },
+        "per_agent_avg_dphi": {
+          "GOV-1": 0.0957,
+          "GOV-2": 0.158,
+          "OPP-1": 0.156,
+          "OPP-2": 0.1437
+        }
+      },
+      {
+        "total_ticks": 61,
+        "total_debates": 61,
+        "avg_delta_phi": 0.1447,
+        "graph_nodes": 61,
+        "graph_edges": 60,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.6885,
+        "aaf_dialectical_completeness": 1.0,
+        "prr_text": 0.0,
+        "prr_graph": 0.9836,
+        "ir": 0.0,
+        "router_calls": 244,
+        "avg_stimuli_per_tick": 0.0,
+        "avg_stimulus_utility": 0.0,
+        "stimulus_driven_debates": 0,
+        "final_deficits": {
+          "GOV-1": 3.079,
+          "GOV-2": 2.7217,
+          "OPP-1": 2.0562,
+          "OPP-2": 1.9303
+        },
+        "per_agent_debates": {
+          "GOV-1": 9,
+          "GOV-2": 10,
+          "OPP-1": 21,
+          "OPP-2": 21
+        },
+        "per_agent_avg_dphi": {
+          "GOV-1": 0.1047,
+          "GOV-2": 0.1657,
+          "OPP-1": 0.1423,
+          "OPP-2": 0.1543
+        }
+      },
+      {
+        "total_ticks": 78,
+        "total_debates": 78,
+        "avg_delta_phi": 0.1372,
+        "graph_nodes": 78,
+        "graph_edges": 77,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.7051,
+        "aaf_dialectical_completeness": 1.0,
+        "prr_text": 0.0,
+        "prr_graph": 0.9872,
+        "ir": 0.0,
+        "router_calls": 312,
+        "avg_stimuli_per_tick": 0.0,
+        "avg_stimulus_utility": 0.0,
+        "stimulus_driven_debates": 0,
+        "final_deficits": {
+          "GOV-1": 3.7206,
+          "GOV-2": 3.4296,
+          "OPP-1": 2.6883,
+          "OPP-2": 2.409
+        },
+        "per_agent_debates": {
+          "GOV-1": 12,
+          "GOV-2": 12,
+          "OPP-1": 22,
+          "OPP-2": 32
+        },
+        "per_agent_avg_dphi": {
+          "GOV-1": 0.1132,
+          "GOV-2": 0.1617,
+          "OPP-1": 0.1556,
+          "OPP-2": 0.1244
+        }
+      },
+      {
+        "total_ticks": 62,
+        "total_debates": 62,
+        "avg_delta_phi": 0.1688,
+        "graph_nodes": 62,
+        "graph_edges": 61,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.7258,
+        "aaf_dialectical_completeness": 1.0,
+        "prr_text": 0.0,
+        "prr_graph": 0.9839,
+        "ir": 0.0,
+        "router_calls": 248,
+        "avg_stimuli_per_tick": 0.0,
+        "avg_stimulus_utility": 0.0,
+        "stimulus_driven_debates": 0,
+        "final_deficits": {
+          "GOV-1": 3.0964,
+          "GOV-2": 2.5702,
+          "OPP-1": 1.7404,
+          "OPP-2": 1.7596
+        },
+        "per_agent_debates": {
+          "GOV-1": 9,
+          "GOV-2": 10,
+          "OPP-1": 23,
+          "OPP-2": 20
+        },
+        "per_agent_avg_dphi": {
+          "GOV-1": 0.1119,
+          "GOV-2": 0.206,
+          "OPP-1": 0.1617,
+          "OPP-2": 0.184
+        }
+      }
+    ]
+  },
+  "statistical_tests": {
+    "H1_defeat_cycles": {
+      "t": 0.0,
+      "df": 0,
+      "p": 0.5,
+      "cohen_d": 0.0,
+      "significant": false
+    },
+    "H2_prr_text": {
+      "t": 0.0,
+      "df": 0,
+      "p": 0.5,
+      "cohen_d": 0.0,
+      "significant": false
+    },
+    "H3_avg_delta_phi": {
+      "t": 0.1327,
+      "df": 7.9,
+      "p": 0.4489,
+      "cohen_d": 0.0839,
+      "significant": false,
+      "bonferroni_alpha": 0.016666666666666666
+    }
+  },
+  "config": {
+    "base_url": "https://api.openai.com/v1",
+    "model": "gpt-4o-mini",
+    "api_key": "[REDACTED]",
+    "iterations": 50,
+    "seeds": [
+      7,
+      17,
+      42,
+      123,
+      256
+    ],
+    "modes": [
+      "hrrl",
+      "langgraph"
+    ],
+    "api_hard_limit": 200,
+    "initial_deficit": 0.5,
+    "output_dir": "benchmark_results_v3",
+    "langgraph_tick_multiplier": 4.0,
+    "log_level": "WARNING"
+  }
+}

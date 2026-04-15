@@ -1,16 +1,8 @@
-"""
-UtilitySelector: chooses the action that best satisfies the agent's homeostatic drive.
+"""Action selection and stimulus evaluation for LangClaw agents.
 
-Action space: DEBATE | SEARCH | READ | PASS
-
-Utility functions
-─────────────────
-  U(DEBATE) — high when δ > θ, graph has attack targets, and recent Δφ* was positive
-  U(SEARCH) — high when δ > θ but recent arguments were low-quality (agent needs info)
-  U(READ)   — high when δ > θ but semantic memory is sparse (agent lacks background)
-  U(PASS)   — 1 − sigmoid(δ): natural resting pressure when the agent is sated
-
-The winning action is argmax over these scores.
+Two systems coexist:
+  UtilitySelector  -- legacy action-type scorer (used by baseline / fallback).
+  StimulusEvaluator -- per-event multi-criteria utility (AOP redesign).
 
 SEARCH provider
 ───────────────
@@ -23,10 +15,13 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Literal
+from typing import Literal, TYPE_CHECKING, Any
 
 from langclaw.homeostasis import EpistemicDrive
 from langclaw.memory import AgentMemory
+
+if TYPE_CHECKING:
+    from langclaw.events import NewArgumentEvent
 
 logger = logging.getLogger(__name__)
 
@@ -170,6 +165,132 @@ class UtilitySelector:
         1 − sigmoid(δ) so that a fully sated agent (δ → 0) has U(PASS) ≈ 1.
         """
         return 1.0 - drive.get_activation_probability(k=self.k, theta=self.theta)
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Stimulus evaluator (AOP redesign)
+# ──────────────────────────────────────────────────────────────────────────────
+
+
+def _faction_of(agent_id: str) -> str:
+    """Extract faction prefix from agent ID (e.g. 'GOV-1' -> 'GOV')."""
+    return agent_id.split("-")[0] if "-" in agent_id else agent_id
+
+
+class StimulusEvaluator:
+    """Multi-criteria utility evaluator for incoming discourse events.
+
+    Given a NewArgumentEvent, computes how valuable it would be for a
+    specific agent to respond to that stimulus. The agent then picks
+    the highest-utility stimulus (or a proactive action) and the deficit
+    gates whether it actually acts.
+
+    Criteria (weighted):
+      1. Faction relevance   (w=0.30) -- does this attack my faction?
+      2. Target centrality   (w=0.20) -- is the attacked node structurally central?
+      3. Strategic memory    (w=0.15) -- do I have relevant knowledge to counter?
+      4. Novelty             (w=0.20) -- has an ally already responded?
+      5. Unanswered pressure (w=0.15) -- is this claim uncontested in the graph?
+    """
+
+    W_FACTION    = 0.30
+    W_CENTRALITY = 0.20
+    W_MEMORY     = 0.15
+    W_NOVELTY    = 0.20
+    W_PRESSURE   = 0.15
+
+    def evaluate(
+        self,
+        event: "NewArgumentEvent",
+        agent_id: str,
+        memory: AgentMemory,
+        graph: Any,
+    ) -> float:
+        """Compute expected utility of acting on this stimulus."""
+        my_faction = _faction_of(agent_id)
+
+        # 1. Faction relevance
+        faction_score = 0.0
+        if event.targets_faction and event.targets_faction == my_faction:
+            faction_score = 1.0
+        elif event.faction != my_faction:
+            faction_score = 0.5
+
+        # 2. Target centrality (betweenness of the attacked node)
+        centrality_score = 0.0
+        if event.target_node_id and hasattr(graph, 'graph'):
+            try:
+                import networkx as nx
+                bc = nx.betweenness_centrality(graph.graph)
+                centrality_score = bc.get(event.target_node_id, 0.0)
+            except Exception:
+                pass
+
+        # 3. Strategic memory -- semantic relevance of stored knowledge
+        memory_score = 0.0
+        if event.claim:
+            relevant = memory.search_relevant(event.claim, "semantic", limit=2)
+            memory_score = min(1.0, len(relevant) * 0.5)
+
+        # 4. Novelty -- has an ally already responded to the target?
+        novelty_score = 1.0
+        if event.node_id and hasattr(graph, 'graph'):
+            g = graph.graph
+            attackers = list(g.predecessors(event.node_id)) if g.has_node(event.node_id) else []
+            ally_responded = any(
+                _faction_of(g.nodes[a].get("agent_id", "")) == my_faction
+                for a in attackers if a in g.nodes
+            )
+            if ally_responded:
+                novelty_score = 0.2
+
+        # 5. Unanswered pressure -- is this node uncontested?
+        pressure_score = 0.0
+        if event.node_id and hasattr(graph, 'graph'):
+            g = graph.graph
+            if g.has_node(event.node_id):
+                incoming = g.in_degree(event.node_id)
+                pressure_score = 1.0 if incoming == 0 else max(0.0, 1.0 - incoming * 0.3)
+
+        utility = (
+            self.W_FACTION * faction_score
+            + self.W_CENTRALITY * centrality_score
+            + self.W_MEMORY * memory_score
+            + self.W_NOVELTY * novelty_score
+            + self.W_PRESSURE * pressure_score
+        )
+        return round(utility, 4)
+
+    def proactive_utility(
+        self,
+        action: ActionType,
+        drive: EpistemicDrive,
+        memory: AgentMemory,
+        graph_node_count: int,
+    ) -> float:
+        """Utility of a proactive (non-stimulus) action.
+
+        DEBATE gets high proactive utility when the graph is sparse (bootstrap
+        phase) or when the agent has strong debate quality history.
+        SEARCH and READ remain auxiliary -- they help prepare for future debates
+        but should not dominate during bootstrap.
+        """
+        p_act = drive.get_activation_probability()
+        if action == "DEBATE":
+            avg_quality = memory.recent_avg_delta_phi()
+            quality_factor = max(0.3, avg_quality / 0.5)
+            # Bootstrap bonus: high when graph is empty, drops as graph grows
+            bootstrap = max(0.2, 1.0 - graph_node_count / 8.0)
+            return round(p_act * (quality_factor + bootstrap) * 0.5, 4)
+        elif action == "SEARCH":
+            avg_quality = memory.recent_avg_delta_phi()
+            quality_deficit = max(0.0, 1.0 - avg_quality / 0.15)
+            novelty = 1.0 - memory.semantic_density()
+            return round(p_act * quality_deficit * novelty * 0.3, 4)
+        elif action == "READ":
+            sparsity = max(0.0, 0.2 - memory.semantic_density())
+            return round(p_act * (sparsity / 0.2) * 0.2, 4)
+        return 0.0
 
 
 # ──────────────────────────────────────────────────────────────────────────────

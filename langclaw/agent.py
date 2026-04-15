@@ -1,14 +1,22 @@
-"""LangClaw agent — HRRL-regulated, event-driven, with utility-based action selection.
+"""LangClaw agent -- event-driven AOP entity with homeostatic regulation.
 
 Two operating modes:
-  HRRL (async) — agent runs as an asyncio coroutine, reacts to events from a queue,
-                 selects actions via UtilitySelector, regulated by EpistemicDrive.
-  Baseline (sync) — simulation forces the agent to call the LLM directly (round-robin
-                    / random modes); drive mechanics bypassed.
+  HRRL (async) -- agent runs as an asyncio coroutine, processes events from a
+                  queue.  Each NewArgumentEvent is a *stimulus* evaluated for
+                  utility.  The agent picks the best stimulus (or proactive
+                  action), then the deficit-sigmoid gates execution.
+  Baseline (sync) -- simulation forces the agent via step() (LangGraph / round-robin).
 
-HRRL cycle (async path):
-    TickElapsedEvent → decay → sigmoid sample → utility select → execute action
-    NewArgumentEvent → observe → update working memory (no forced action)
+HRRL cycle (event-driven):
+    TickElapsedEvent ->
+        1. decay (basal pressure)
+        2. drain buffered NewArgumentEvents
+        3. stimulate: each event increases deficit proportionally to relevance
+        4. evaluate: per-event utility via StimulusEvaluator + proactive utilities
+        5. select: argmax over stimulus pool
+        6. gate: deficit -> sigmoid -> Bernoulli sample
+        7. execute: act on selected stimulus or proactive action
+        8. satiate: deficit -= alpha * delta_phi
 """
 
 from __future__ import annotations
@@ -22,11 +30,17 @@ from typing import Any
 from openai import AsyncOpenAI, OpenAI
 from pydantic import ValidationError
 
-from langclaw.actions import UtilitySelector, get_search_result
+from langclaw.actions import (
+    StimulusEvaluator,
+    UtilitySelector,
+    get_search_result,
+    ActionType,
+)
 from langclaw.budget import APIBudget
 from langclaw.events import NewArgumentEvent, SimulationEndEvent, TickElapsedEvent
 from langclaw.homeostasis import EpistemicDrive
 from langclaw.memory import AgentMemory, Experience
+from langclaw.q_learner import HomeostaticQLearner
 from langclaw.schemas import AgentAction
 
 logger = logging.getLogger(__name__)
@@ -70,6 +84,9 @@ USER_PROMPT_TEMPLATE = """\
 ## Your Recent Experience and Knowledge
 {memory_context}
 
+## Stimulus Context
+{stimulus_context}
+
 Respond now with your JSON action:"""
 
 MAX_RETRIES = 2
@@ -77,7 +94,7 @@ REQUEST_TIMEOUT = 30.0
 
 
 class LangClawAgent:
-    """HRRL-regulated agent with utility-based action selection and rich memory.
+    """Event-driven AOP agent with homeostatic regulation and stimulus evaluation.
 
     Parameters
     ----------
@@ -86,7 +103,9 @@ class LangClawAgent:
     base_url       : OpenAI-compatible API endpoint
     api_key        : API key for the endpoint
     model          : model name for completions
-    seed           : random seed for reproducibility
+    rng_seed       : random seed for sigmoid sampling
+    llm_seed       : seed forwarded to LLM API
+    initial_deficit: starting epistemic deficit
     """
 
     def __init__(
@@ -103,18 +122,21 @@ class LangClawAgent:
         self.agent_id = agent_id
         self.role_prompt = role_prompt
         self.drive = EpistemicDrive(initial_deficit=initial_deficit)
-        self.memory = AgentMemory()
+        self.memory = AgentMemory(agent_id=agent_id)
+        self.stimulus_evaluator = StimulusEvaluator()
         self.utility_selector = UtilitySelector()
+        self.q_learner = HomeostaticQLearner(eta=0.01, gamma=0.95)
         self._base_url = base_url
         self._api_key = api_key
         self._model = model
-        self._rng = random.Random(rng_seed)   # sigmoid sampling
-        self._llm_seed = llm_seed             # forwarded to LLM API
-        # Sync client kept for baseline step() compatibility
+        self._rng = random.Random(rng_seed)
+        self._llm_seed = llm_seed
         self._sync_client = OpenAI(base_url=base_url, api_key=api_key)
 
+        self._event_buffer: list[NewArgumentEvent] = []
+
     # ──────────────────────────────────────────────────────────────────────────
-    # HRRL async path
+    # HRRL async path (event-driven)
     # ──────────────────────────────────────────────────────────────────────────
 
     async def run(
@@ -124,28 +146,22 @@ class LangClawAgent:
         budget: APIBudget,
         output_queue: asyncio.Queue,
     ) -> None:
-        """Main HRRL coroutine. Processes events and puts tick results into output_queue.
-
-        The simulation reads output_queue to handle graph updates, log entries,
-        and event broadcasting — keeping agents decoupled from each other.
-        """
+        """Main AOP coroutine. Buffers events, processes ticks with stimulus evaluation."""
         async with AsyncOpenAI(base_url=self._base_url, api_key=self._api_key) as client:
             while True:
                 event = await event_queue.get()
 
-                # ── Shutdown ──────────────────────────────────────────────────
                 if isinstance(event, SimulationEndEvent):
                     event_queue.task_done()
                     break
 
-                # ── Observe other agents' arguments (no action) ───────────────
                 if isinstance(event, NewArgumentEvent):
                     if event.agent_id != self.agent_id:
                         self.memory.observe(event)
+                        self._event_buffer.append(event)
                     event_queue.task_done()
                     continue
 
-                # ── Tick: decay + evaluate + maybe act ────────────────────────
                 if isinstance(event, TickElapsedEvent):
                     result = await self._process_tick(event, graph, budget, client)
                     await output_queue.put(result)
@@ -158,11 +174,43 @@ class LangClawAgent:
         budget: APIBudget,
         client: AsyncOpenAI,
     ) -> dict[str, Any]:
-        """Execute one HRRL tick and return a result dict for the simulation."""
+        """Execute one AOP tick with Q-learning-based action selection.
+
+        The stimulus evaluator acts as a *sensor* (computing relevance for
+        the stimulate() call).  The Q-learner is the *decision maker*: it
+        maps the agent's internal state to action values and selects the
+        best action.  After execution, drive reduction becomes the reward
+        signal for a TD(0) weight update.
+        """
         deficit_before = self.drive.deficit
+
+        # 1. Basal decay
         self.drive.decay()
-        activation_prob = self.drive.get_activation_probability()
         self.memory.update_working_tick(event.tick)
+
+        # 2. Drain buffered events; stimulus evaluator acts as sensor
+        buffered_events = list(self._event_buffer)
+        self._event_buffer.clear()
+
+        for evt in buffered_events:
+            relevance = self.stimulus_evaluator.evaluate(
+                evt, self.agent_id, self.memory, graph
+            )
+            self.drive.stimulate(relevance, gamma=0.1)
+
+        activation_prob = self.drive.get_activation_probability()
+        graph_summary = graph.get_state_summary()
+        graph_node_count = graph_summary["nodes"]
+        graph_edge_count = graph_summary.get("edges", 0)
+        graph_density = graph_edge_count / max(1, graph_node_count * (graph_node_count - 1))
+
+        # Build state features for Q-learner
+        state_features = HomeostaticQLearner.build_features(
+            deficit=self.drive.deficit,
+            graph_density=graph_density,
+            n_stimuli=len(buffered_events),
+        )
+        q_values = self.q_learner.get_q_values(state_features)
 
         result: dict[str, Any] = {
             "agent_id": self.agent_id,
@@ -177,66 +225,122 @@ class LangClawAgent:
             "activation_prob": activation_prob,
             "delta_phi": 0.0,
             "utility_scores": {},
+            "stimulus_event_id": None,
+            "stimulus_utility": 0.0,
+            "n_stimuli_evaluated": len(buffered_events),
+            "reward": 0.0,
+            "q_values": {k: round(v, 4) for k, v in q_values.items()},
         }
 
-        # Rate limit check
         if not budget.can_call(self.agent_id, self.drive.deficit, event.tick):
             return result
 
-        # Sigmoid sampling
+        # 3. Sigmoid gating
         if self._rng.random() >= activation_prob:
             return result
 
-        # Utility-based action selection
-        graph_node_count = graph.get_state_summary()["nodes"]
-        utility_scores = self.utility_selector.scores(self.drive, self.memory, graph_node_count)
-        action_type = self.utility_selector.select(self.drive, self.memory, graph_node_count)
-        result["utility_scores"] = {k: round(v, 4) for k, v in utility_scores.items()}
-        result["action_type"] = action_type
+        # 4. Q-learner selects action type
+        q_action = self.q_learner.select_action(state_features)
 
-        if action_type == "SEARCH":
+        # Find best stimulus event for DEBATE_STIMULUS
+        best_stimulus_event: NewArgumentEvent | None = None
+        best_stimulus_utility = 0.0
+        if buffered_events:
+            stimulus_scored = []
+            for evt in buffered_events:
+                u = self.stimulus_evaluator.evaluate(evt, self.agent_id, self.memory, graph)
+                stimulus_scored.append((evt, u))
+            best_stimulus_event, best_stimulus_utility = max(stimulus_scored, key=lambda x: x[1])
+
+        # Map Q-action to execution
+        if q_action == "DEBATE_STIMULUS" and best_stimulus_event:
+            result["stimulus_event_id"] = best_stimulus_event.node_id
+            result["stimulus_utility"] = best_stimulus_utility
+            stimulus_ctx = (
+                f"You are responding to: [{best_stimulus_event.node_id}] "
+                f"{best_stimulus_event.agent_id} ({best_stimulus_event.faction}): "
+                f'"{best_stimulus_event.claim}"'
+            )
+            await self._execute_debate(client, graph, budget, event, result, stimulus_ctx)
+
+        elif q_action in ("DEBATE_STIMULUS", "DEBATE_PROACTIVE"):
+            await self._execute_debate(client, graph, budget, event, result, "")
+
+        elif q_action == "SEARCH":
+            result["action_type"] = "SEARCH"
             await self._do_search()
             budget.record_call(self.agent_id, event.tick)
 
-        elif action_type == "READ":
+        elif q_action == "READ":
+            result["action_type"] = "READ"
             await self._do_read(event.tick)
             budget.record_call(self.agent_id, event.tick)
 
-        elif action_type == "DEBATE":
-            debate_result = await self._call_llm_debate(client, graph)
-            if debate_result and debate_result.claim:
-                budget.record_call(self.agent_id, event.tick)
-                node_id = await graph.add_argument_async(
-                    agent_id=self.agent_id,
-                    claim=debate_result.claim,
-                    target_node_id=debate_result.target_node_id,
-                    attack_type=debate_result.attack_type,
-                    tick=event.tick,
-                )
-                delta_phi = graph.calculate_phi_star_proxy(node_id)
-                # α=2.0: a good debate (Δφ*≈0.15) removes 0.30 deficit,
-                # enough to cross back below θ=0.7 and create genuine oscillation
-                self.drive.satiate(delta_phi, alpha=2.0)
-                self.memory.add_experience(Experience(
-                    state_summary=graph.get_recent_context(3),
-                    action="DEBATE",
-                    claim=debate_result.claim,
-                    delta_phi=delta_phi,
-                    tick=event.tick,
-                ))
-                result.update({
-                    "action_type": "DEBATE",
-                    "node_id": node_id,
-                    "claim": debate_result.claim,
-                    "target_node_id": debate_result.target_node_id,
-                    "attack_type": debate_result.attack_type,
-                    "delta_phi": delta_phi,
-                })
-            else:
-                result["action_type"] = "PASS"
-
         result["deficit_after"] = self.drive.deficit
+
+        # 5. Compute homeostatic reward and TD update
+        reward = EpistemicDrive.compute_reward(
+            delta_before=deficit_before,
+            delta_after=self.drive.deficit,
+            epsilon=EpistemicDrive.BASELINE,
+            m=self.drive.m,
+        )
+        next_features = HomeostaticQLearner.build_features(
+            deficit=self.drive.deficit,
+            graph_density=graph_density,
+            n_stimuli=0,
+        )
+        self.q_learner.update(state_features, q_action, reward, next_features)
+
+        result["reward"] = round(reward, 6)
+        result["q_values"] = {
+            k: round(v, 4) for k, v in self.q_learner.get_q_values(next_features).items()
+        }
+        result["utility_scores"] = {k: round(v, 4) for k, v in q_values.items()}
+
         return result
+
+    async def _execute_debate(
+        self,
+        client: AsyncOpenAI,
+        graph: Any,
+        budget: APIBudget,
+        event: TickElapsedEvent,
+        result: dict[str, Any],
+        stimulus_ctx: str,
+    ) -> None:
+        """Run a DEBATE action: call LLM, add argument, satiate drive."""
+        debate_result = await self._call_llm_debate(
+            client, graph, stimulus_context=stimulus_ctx
+        )
+        if debate_result and debate_result.claim:
+            budget.record_call(self.agent_id, event.tick)
+            node_id = await graph.add_argument_async(
+                agent_id=self.agent_id,
+                claim=debate_result.claim,
+                target_node_id=debate_result.target_node_id,
+                attack_type=debate_result.attack_type,
+                tick=event.tick,
+            )
+            delta_phi = graph.calculate_phi_star_proxy(node_id)
+            self.drive.satiate(delta_phi, alpha=2.0)
+            self.memory.add_experience(Experience(
+                state_summary=graph.get_recent_context(3),
+                action="DEBATE",
+                claim=debate_result.claim,
+                delta_phi=delta_phi,
+                tick=event.tick,
+            ))
+            result.update({
+                "action_type": "DEBATE",
+                "node_id": node_id,
+                "claim": debate_result.claim,
+                "target_node_id": debate_result.target_node_id,
+                "attack_type": debate_result.attack_type,
+                "delta_phi": delta_phi,
+            })
+        else:
+            result["action_type"] = "PASS"
 
     # ──────────────────────────────────────────────────────────────────────────
     # Internal action executors
@@ -248,10 +352,8 @@ class LangClawAgent:
         if pair:
             concept, fact = pair
             self.memory.add_fact(concept, fact)
-            # Minimal satiation: gathering facts doesn't satisfy the drive to argue.
-            # Only DEBATE (with α=2.0) produces meaningful deficit reduction.
             self.drive.satiate(0.02)
-            logger.debug("%s SEARCH → added fact: %s", self.agent_id, concept)
+            logger.debug("%s SEARCH -> added fact: %s", self.agent_id, concept)
 
     async def _do_read(self, tick: int) -> None:
         """Absorb the most recent working-memory entry as a semantic fact."""
@@ -259,21 +361,25 @@ class LangClawAgent:
             entry = list(self.memory.working)[-1]
             self.memory.add_fact(f"observacion_t{tick}", entry)
             self.drive.satiate(0.02)
-            logger.debug("%s READ → stored working observation at tick %d", self.agent_id, tick)
+            logger.debug("%s READ -> stored working observation at tick %d", self.agent_id, tick)
 
     async def _call_llm_debate(
-        self, client: AsyncOpenAI, graph: Any
+        self, client: AsyncOpenAI, graph: Any, stimulus_context: str = ""
     ) -> AgentAction | None:
         """Call the LLM asynchronously and return a parsed AgentAction."""
         graph_context = graph.get_recent_context(last_n=6)
         target_ids = graph.valid_target_ids()
 
+        discourse_query = graph_context[:200] if graph_context else None
+        memory_ctx = self.memory.get_prompt_context(discourse_query=discourse_query)
+
         system_msg = SYSTEM_PROMPT_TEMPLATE.format(role_prompt=self.role_prompt)
         user_msg = USER_PROMPT_TEMPLATE.format(
-            graph_context=graph_context or "No hay argumentos aún. Presenta tu posición inicial.",
-            target_ids=", ".join(target_ids) if target_ids else "Ninguno — crea un argumento raíz (target_node_id: null)",
+            graph_context=graph_context or "No hay argumentos aun. Presenta tu posicion inicial.",
+            target_ids=", ".join(target_ids) if target_ids else "Ninguno -- crea un argumento raiz (target_node_id: null)",
             deficit=self.drive.deficit,
-            memory_context=self.memory.get_prompt_context(),
+            memory_context=memory_ctx,
+            stimulus_context=stimulus_context or "No specific stimulus. Act proactively.",
         )
 
         for attempt in range(MAX_RETRIES + 1):
@@ -322,7 +428,7 @@ class LangClawAgent:
         return None
 
     # ──────────────────────────────────────────────────────────────────────────
-    # Baseline sync path (round-robin / random modes)
+    # Baseline sync path (LangGraph / round-robin modes)
     # ──────────────────────────────────────────────────────────────────────────
 
     def step(
@@ -332,23 +438,22 @@ class LangClawAgent:
     ) -> AgentAction | None:
         """Synchronous forced-action path for baseline orchestration modes.
 
-        Bypasses sigmoid sampling and utility selection — the simulation decides
+        Bypasses sigmoid sampling and utility selection -- the simulation decides
         when this agent speaks. Drive mechanics still apply for logging continuity.
         """
         self.drive.decay()
-        activation_prob = self.drive.get_activation_probability()
 
         system_msg = SYSTEM_PROMPT_TEMPLATE.format(role_prompt=self.role_prompt)
         user_msg = USER_PROMPT_TEMPLATE.format(
-            graph_context=graph_context or "No hay argumentos aún. Presenta tu posición inicial.",
-            target_ids=", ".join(target_ids) if target_ids else "Ninguno — crea un argumento raíz (target_node_id: null)",
+            graph_context=graph_context or "No hay argumentos aun. Presenta tu posicion inicial.",
+            target_ids=", ".join(target_ids) if target_ids else "Ninguno -- crea un argumento raiz (target_node_id: null)",
             deficit=self.drive.deficit,
             memory_context=self.memory.get_prompt_context(),
+            stimulus_context="Externally routed -- respond to current discourse state.",
         )
 
         for attempt in range(MAX_RETRIES + 1):
             try:
-                import time
                 extra = {"seed": self._llm_seed} if self._llm_seed is not None else {}
                 response = self._sync_client.chat.completions.create(
                     model=self._model,

@@ -80,8 +80,8 @@ def main() -> None:
     parser.add_argument(
         "--orchestration-mode",
         default="hrrl",
-        choices=["hrrl", "round-robin", "random"],
-        help="Orchestration mode: hrrl (default) | round-robin | random",
+        choices=["hrrl", "langgraph", "round-robin", "random"],
+        help="Orchestration mode: hrrl (default) | langgraph (LLM router) | round-robin | random",
     )
     parser.add_argument(
         "--api-hard-limit",
