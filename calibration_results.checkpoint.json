@@ -14,5 +14,149 @@
     "avg_dphi": 0.121035,
     "consistency": 0.9706,
     "elapsed_s": 734.4
+  },
+  {
+    "_checkpoint_key": "equal__alpha2.0",
+    "weight_config_name": "equal",
+    "stimulus_weights": {
+      "w_faction": 0.2,
+      "w_centrality": 0.2,
+      "w_memory": 0.2,
+      "w_novelty": 0.2,
+      "w_pressure": 0.2
+    },
+    "debate_alpha": 2.0,
+    "n_debates": 33,
+    "avg_dphi": 0.104709,
+    "consistency": 0.9697,
+    "elapsed_s": 754.9
+  },
+  {
+    "_checkpoint_key": "equal__alpha3.0",
+    "weight_config_name": "equal",
+    "stimulus_weights": {
+      "w_faction": 0.2,
+      "w_centrality": 0.2,
+      "w_memory": 0.2,
+      "w_novelty": 0.2,
+      "w_pressure": 0.2
+    },
+    "debate_alpha": 3.0,
+    "n_debates": 38,
+    "avg_dphi": 0.118784,
+    "consistency": 0.9737,
+    "elapsed_s": 696.4
+  },
+  {
+    "_checkpoint_key": "faction_dominant__alpha1.0",
+    "weight_config_name": "faction_dominant",
+    "stimulus_weights": {
+      "w_faction": 0.4,
+      "w_centrality": 0.15,
+      "w_memory": 0.15,
+      "w_novelty": 0.15,
+      "w_pressure": 0.15
+    },
+    "debate_alpha": 1.0,
+    "n_debates": 34,
+    "avg_dphi": 0.1016,
+    "consistency": 0.9412,
+    "elapsed_s": 981.8
+  },
+  {
+    "_checkpoint_key": "faction_dominant__alpha2.0",
+    "weight_config_name": "faction_dominant",
+    "stimulus_weights": {
+      "w_faction": 0.4,
+      "w_centrality": 0.15,
+      "w_memory": 0.15,
+      "w_novelty": 0.15,
+      "w_pressure": 0.15
+    },
+    "debate_alpha": 2.0,
+    "n_debates": 31,
+    "avg_dphi": 0.12379,
+    "consistency": 0.9677,
+    "elapsed_s": 712.8
+  },
+  {
+    "_checkpoint_key": "faction_dominant__alpha3.0",
+    "weight_config_name": "faction_dominant",
+    "stimulus_weights": {
+      "w_faction": 0.4,
+      "w_centrality": 0.15,
+      "w_memory": 0.15,
+      "w_novelty": 0.15,
+      "w_pressure": 0.15
+    },
+    "debate_alpha": 3.0,
+    "n_debates": 36,
+    "avg_dphi": 0.135631,
+    "consistency": 0.9722,
+    "elapsed_s": 721.5
+  },
+  {
+    "_checkpoint_key": "centrality_dominant__alpha1.0",
+    "weight_config_name": "centrality_dominant",
+    "stimulus_weights": {
+      "w_faction": 0.15,
+      "w_centrality": 0.4,
+      "w_memory": 0.15,
+      "w_novelty": 0.15,
+      "w_pressure": 0.15
+    },
+    "debate_alpha": 1.0,
+    "n_debates": 30,
+    "avg_dphi": 0.10689,
+    "consistency": 0.9667,
+    "elapsed_s": 740.4
+  },
+  {
+    "_checkpoint_key": "centrality_dominant__alpha2.0",
+    "weight_config_name": "centrality_dominant",
+    "stimulus_weights": {
+      "w_faction": 0.15,
+      "w_centrality": 0.4,
+      "w_memory": 0.15,
+      "w_novelty": 0.15,
+      "w_pressure": 0.15
+    },
+    "debate_alpha": 2.0,
+    "n_debates": 29,
+    "avg_dphi": 0.116138,
+    "consistency": 0.9655,
+    "elapsed_s": 556.1
+  },
+  {
+    "_checkpoint_key": "centrality_dominant__alpha3.0",
+    "weight_config_name": "centrality_dominant",
+    "stimulus_weights": {
+      "w_faction": 0.15,
+      "w_centrality": 0.4,
+      "w_memory": 0.15,
+      "w_novelty": 0.15,
+      "w_pressure": 0.15
+    },
+    "debate_alpha": 3.0,
+    "n_debates": 33,
+    "avg_dphi": 0.112006,
+    "consistency": 0.9697,
+    "elapsed_s": 422.6
+  },
+  {
+    "_checkpoint_key": "novelty_dominant__alpha1.0",
+    "weight_config_name": "novelty_dominant",
+    "stimulus_weights": {
+      "w_faction": 0.15,
+      "w_centrality": 0.15,
+      "w_memory": 0.15,
+      "w_novelty": 0.4,
+      "w_pressure": 0.15
+    },
+    "debate_alpha": 1.0,
+    "n_debates": 30,
+    "avg_dphi": 0.12772,
+    "consistency": 0.9667,
+    "elapsed_s": 983.7
   }
 ]
