@@ -1,7 +1,7 @@
 {
-  "phase": "benchmark",
+  "phase": "failed",
   "started_at": "2026-04-15T22:09:50.621840+00:00",
-  "updated_at": "2026-04-16T05:02:19.535186+00:00",
+  "updated_at": "2026-04-16T17:48:34.020212+00:00",
   "worker_pid": 23780,
   "project_root": "C:\\Users\\PatricioGerpe\\langclaw_experiment",
   "commands": {
@@ -73,9 +73,9 @@
   },
   "benchmark": {
     "done": true,
-    "returncode": 3221225786
+    "returncode": 1
   },
-  "finished": false,
+  "finished": true,
   "success": false,
-  "error": null
+  "error": "benchmark failed with code 1"
 }

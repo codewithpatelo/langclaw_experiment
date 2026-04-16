@@ -1,0 +1,260 @@
+{
+  "aggregate": {
+    "hrrl": {
+      "total_debates": 17,
+      "total_debates_std": 0.0,
+      "avg_delta_phi": 0.0824,
+      "avg_delta_phi_std": 0.0,
+      "graph_nodes": 17,
+      "graph_nodes_std": 0.0,
+      "graph_edges": 14,
+      "graph_edges_std": 0.0,
+      "aaf_defeat_cycles": 0,
+      "aaf_defeat_cycles_std": 0.0,
+      "aaf_acceptance_ratio": 0.7059,
+      "aaf_acceptance_ratio_std": 0.0,
+      "aaf_dialectical_completeness": 1.0,
+      "aaf_dialectical_completeness_std": 0.0,
+      "prr_text": 0.0,
+      "prr_text_std": 0.0,
+      "prr_graph": 0.8235,
+      "prr_graph_std": 0.0,
+      "ir": 1.0,
+      "ir_std": 0.0,
+      "avg_stimuli_per_tick": 3.6,
+      "avg_stimuli_per_tick_std": 0.0,
+      "avg_stimulus_utility": 0.5811,
+      "avg_stimulus_utility_std": 0.0,
+      "stimulus_driven_debates": 9,
+      "stimulus_driven_debates_std": 0.0,
+      "avg_reward": -0.0174,
+      "avg_reward_std": 0.0,
+      "total_reward": -0.3307,
+      "total_reward_std": 0.0,
+      "per_agent_debates": {
+        "GOV-S1": 2,
+        "GOV-S2": 2,
+        "GOV-S3": 1,
+        "GOV-S4": 1,
+        "GOV-S5": 2,
+        "OPP-S1": 2,
+        "OPP-S2": 3,
+        "OPP-S3": 2,
+        "OPP-S4": 1,
+        "OPP-S5": 1
+      },
+      "per_agent_avg_dphi": {
+        "GOV-S1": 0.0609,
+        "GOV-S2": 0.0709,
+        "GOV-S3": 0.1667,
+        "GOV-S4": 0.1667,
+        "GOV-S5": 0.0833,
+        "OPP-S1": 0.0859,
+        "OPP-S2": 0.0425,
+        "OPP-S3": 0.0347,
+        "OPP-S4": 0.1222,
+        "OPP-S5": 0.1455
+      },
+      "final_deficits": {
+        "GOV-S1": 0.867,
+        "GOV-S2": 0.8066,
+        "GOV-S3": 0.7322,
+        "GOV-S4": 0.7322,
+        "GOV-S5": 0.7022,
+        "OPP-S1": 0.7366,
+        "OPP-S2": 0.8391,
+        "OPP-S3": 1.0439,
+        "OPP-S4": 0.885,
+        "OPP-S5": 0.8153
+      }
+    }
+  },
+  "per_seed": {
+    "hrrl": [
+      {
+        "total_ticks": 4,
+        "total_debates": 17,
+        "avg_delta_phi": 0.0824,
+        "graph_nodes": 17,
+        "graph_edges": 14,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.7059,
+        "aaf_dialectical_completeness": 1.0,
+        "prr_text": 0.0,
+        "prr_graph": 0.8235,
+        "ir": 1.0,
+        "router_calls": 0,
+        "avg_stimuli_per_tick": 3.6,
+        "avg_stimulus_utility": 0.5811,
+        "stimulus_driven_debates": 9,
+        "avg_reward": -0.0174,
+        "total_reward": -0.3307,
+        "final_q_weights": {
+          "GOV-S1": {
+            "DEBATE_STIMULUS": -0.0007,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          },
+          "GOV-S2": {
+            "DEBATE_STIMULUS": -0.0002,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          },
+          "GOV-S3": {
+            "DEBATE_STIMULUS": -0.0002,
+            "DEBATE_PROACTIVE": 0.0001,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          },
+          "GOV-S4": {
+            "DEBATE_STIMULUS": 0.0018,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          },
+          "GOV-S5": {
+            "DEBATE_STIMULUS": -0.0,
+            "DEBATE_PROACTIVE": 0.001,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          },
+          "OPP-S1": {
+            "DEBATE_STIMULUS": -0.0001,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          },
+          "OPP-S2": {
+            "DEBATE_STIMULUS": -0.0,
+            "DEBATE_PROACTIVE": -0.0004,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          },
+          "OPP-S3": {
+            "DEBATE_STIMULUS": -0.0,
+            "DEBATE_PROACTIVE": -0.001,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          },
+          "OPP-S4": {
+            "DEBATE_STIMULUS": 0.0011,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          },
+          "OPP-S5": {
+            "DEBATE_STIMULUS": 0.0014,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        "final_deficits": {
+          "GOV-S1": 0.867,
+          "GOV-S2": 0.8066,
+          "GOV-S3": 0.7322,
+          "GOV-S4": 0.7322,
+          "GOV-S5": 0.7022,
+          "OPP-S1": 0.7366,
+          "OPP-S2": 0.8391,
+          "OPP-S3": 1.0439,
+          "OPP-S4": 0.885,
+          "OPP-S5": 0.8153
+        },
+        "per_agent_debates": {
+          "GOV-S1": 2,
+          "GOV-S2": 2,
+          "GOV-S3": 1,
+          "GOV-S4": 1,
+          "GOV-S5": 2,
+          "OPP-S1": 2,
+          "OPP-S2": 3,
+          "OPP-S3": 2,
+          "OPP-S4": 1,
+          "OPP-S5": 1
+        },
+        "per_agent_avg_dphi": {
+          "GOV-S1": 0.0609,
+          "GOV-S2": 0.0709,
+          "GOV-S3": 0.1667,
+          "GOV-S4": 0.1667,
+          "GOV-S5": 0.0833,
+          "OPP-S1": 0.0859,
+          "OPP-S2": 0.0425,
+          "OPP-S3": 0.0347,
+          "OPP-S4": 0.1222,
+          "OPP-S5": 0.1455
+        },
+        "window_dphi": [
+          0.0,
+          0.1056,
+          0.1455,
+          0.1201,
+          0.0573
+        ],
+        "slope_dphi": 0.01291,
+        "window_acceptance": [
+          1.0,
+          0.6667,
+          0.6667,
+          0.75,
+          0.7059
+        ],
+        "slope_acceptance": -0.05049,
+        "window_core": [
+          0.608069,
+          0.378799,
+          0.278925,
+          0.241934,
+          0.40253
+        ],
+        "slope_core": -0.054794
+      }
+    ]
+  },
+  "statistical_tests": {},
+  "config": {
+    "base_url": "https://api.openai.com/v1",
+    "model": "gpt-5-nano",
+    "api_key": "***REDACTED***",
+    "iterations": 4,
+    "seeds": [
+      999
+    ],
+    "modes": [
+      "hrrl"
+    ],
+    "api_hard_limit": 500,
+    "initial_deficit": 0.5,
+    "output_dir": "micro_test_broadcast",
+    "config": "calibration_results.json",
+    "log_level": "WARNING",
+    "clean": false,
+    "no_halt_on_red_flags": false,
+    "preflight": false,
+    "preflight_ticks": 12,
+    "health_llm_model": null
+  },
+  "calibration": {
+    "stimulus_weights": {
+      "w_faction": 0.4,
+      "w_centrality": 0.15,
+      "w_memory": 0.15,
+      "w_novelty": 0.15,
+      "w_pressure": 0.15
+    },
+    "debate_alpha": 3.0
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "phase": "benchmark",
+  "started_at": "2026-04-15T22:09:50.621840+00:00",
+  "updated_at": "2026-04-16T12:01:05.202620+00:00",
+  "worker_pid": 23780,
+  "project_root": "C:\\Users\\PatricioGerpe\\langclaw_experiment",
+  "commands": {
+    "calibration": [
+      "C:\\Python313\\python.exe",
+      "calibrate_hyperparams.py",
+      "--ticks",
+      "10",
+      "--seed",
+      "42",
+      "--api-hard-limit",
+      "200",
+      "--log-level",
+      "WARNING",
+      "--output",
+      "calibration_results.json"
+    ],
+    "preflight": [
+      "C:\\Python313\\python.exe",
+      "benchmark.py",
+      "--preflight",
+      "--preflight-ticks",
+      "12",
+      "--seeds",
+      "7",
+      "--modes",
+      "hrrl",
+      "langgraph",
+      "--config",
+      "calibration_results.json",
+      "--output-dir",
+      "benchmark_results_v7",
+      "--api-hard-limit",
+      "500",
+      "--log-level",
+      "WARNING"
+    ],
+    "benchmark": [
+      "C:\\Python313\\python.exe",
+      "benchmark.py",
+      "--iterations",
+      "80",
+      "--seeds",
+      "7",
+      "17",
+      "42",
+      "123",
+      "256",
+      "--modes",
+      "hrrl",
+      "langgraph",
+      "--config",
+      "calibration_results.json",
+      "--output-dir",
+      "benchmark_results_v7",
+      "--api-hard-limit",
+      "500",
+      "--log-level",
+      "WARNING"
+    ]
+  },
+  "calibration": {
+    "done": true,
+    "returncode": 0
+  },
+  "preflight": {
+    "done": true,
+    "returncode": 0
+  },
+  "benchmark": {
+    "done": true,
+    "returncode": 4294967295
+  },
+  "finished": false,
+  "success": false,
+  "error": null
+}

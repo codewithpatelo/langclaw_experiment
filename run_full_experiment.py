@@ -20,6 +20,7 @@ import json
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -43,9 +44,25 @@ def _read_json(path: Path) -> dict[str, Any]:
 
 
 def _pid_is_alive(pid: int | None) -> bool:
-    """Best-effort process liveness check."""
+    """Process liveness check (works for detached processes on Windows)."""
     if pid is None or pid <= 0:
         return False
+    if os.name == "nt":
+        import ctypes
+
+        kernel32 = ctypes.windll.kernel32  # type: ignore[attr-defined]
+        PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+        STILL_ACTIVE = 259
+        handle = kernel32.OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, False, pid)
+        if not handle:
+            return False
+        try:
+            exit_code = ctypes.c_ulong()
+            if kernel32.GetExitCodeProcess(handle, ctypes.byref(exit_code)):
+                return exit_code.value == STILL_ACTIVE
+            return False
+        finally:
+            kernel32.CloseHandle(handle)
     try:
         os.kill(pid, 0)
         return True
@@ -743,6 +760,119 @@ def _watchdog_check(args: argparse.Namespace) -> int:
     return _run_detached(args)
 
 
+def _watchdog_loop(args: argparse.Namespace) -> int:
+    """Self-contained watchdog that polls every --watchdog-interval seconds.
+
+    Designed to run as a detached process so it survives terminal closure.
+    Writes its PID to watchdog_pid.txt for later kill/monitoring.
+    """
+    root = Path(args.project_root).resolve()
+    events_path = (root / args.events_file).resolve()
+    pid_file = root / "watchdog_pid.txt"
+    pid_file.write_text(str(os.getpid()), encoding="utf-8")
+
+    interval = getattr(args, "watchdog_interval", 900)
+    _append_event(
+        events_path,
+        {
+            "timestamp": _now_iso(),
+            "event": "watchdog_loop_started",
+            "pid": os.getpid(),
+            "interval_s": interval,
+        },
+    )
+
+    while True:
+        try:
+            rc = _watchdog_check(args)
+            status = _read_json((root / args.status_file).resolve())
+            if status.get("finished") and status.get("success"):
+                _append_event(
+                    events_path,
+                    {
+                        "timestamp": _now_iso(),
+                        "event": "watchdog_loop_exit",
+                        "reason": "experiment_completed",
+                    },
+                )
+                pid_file.unlink(missing_ok=True)
+                return 0
+            if status.get("finished") and not status.get("success"):
+                phase = status.get("phase", "?")
+                if phase in ("needs_review",):
+                    _append_event(
+                        events_path,
+                        {
+                            "timestamp": _now_iso(),
+                            "event": "watchdog_loop_exit",
+                            "reason": f"experiment_halted_{phase}",
+                        },
+                    )
+                    pid_file.unlink(missing_ok=True)
+                    return 1
+        except Exception as exc:
+            _append_event(
+                events_path,
+                {
+                    "timestamp": _now_iso(),
+                    "event": "watchdog_loop_error",
+                    "error": str(exc),
+                },
+            )
+        time.sleep(interval)
+
+
+def _launch_watchdog_detached(args: argparse.Namespace) -> int:
+    """Spawn the watchdog loop as a fully detached process."""
+    root = Path(args.project_root).resolve()
+    interval = getattr(args, "watchdog_interval", 900)
+
+    child_args = [
+        sys.executable,
+        str(Path(__file__).resolve()),
+        "--watchdog-loop-internal",
+        "--project-root", str(root),
+        "--watchdog-interval", str(interval),
+        "--status-file", args.status_file,
+        "--log-file", args.log_file,
+        "--events-file", args.events_file,
+        "--state-file", args.state_file,
+        "--benchmark-output-dir", args.benchmark_output_dir,
+        "--calibration-output", args.calibration_output,
+        "--calibration-ticks", str(args.calibration_ticks),
+        "--calibration-seed", str(args.calibration_seed),
+        "--calibration-api-hard-limit", str(args.calibration_api_hard_limit),
+        "--preflight-ticks", str(args.preflight_ticks),
+        "--iterations", str(args.iterations),
+        "--seeds", *[str(s) for s in args.seeds],
+        "--benchmark-api-hard-limit", str(args.benchmark_api_hard_limit),
+        "--log-level", args.log_level,
+    ]
+
+    creationflags = 0
+    if os.name == "nt":
+        creationflags = (
+            subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+        )
+
+    log_path = root / "watchdog.log"
+    with open(log_path, "a", encoding="utf-8") as lf:
+        proc = subprocess.Popen(
+            child_args,
+            cwd=root,
+            creationflags=creationflags,
+            close_fds=True,
+            stdout=lf,
+            stderr=lf,
+        )
+
+    print(f"Watchdog loop started as detached PID {proc.pid}")
+    print(f"  Interval: {interval}s")
+    print(f"  PID file: {root / 'watchdog_pid.txt'}")
+    print(f"  Log: {log_path}")
+    return 0
+
+
 def _print_status(args: argparse.Namespace) -> int:
     root = Path(args.project_root).resolve()
     status_path = (root / args.status_file).resolve()
@@ -782,6 +912,17 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--worker", action="store_true")
     parser.add_argument("--status", action="store_true")
     parser.add_argument("--watchdog-check", action="store_true")
+    parser.add_argument(
+        "--watchdog-loop",
+        action="store_true",
+        help="Launch a detached watchdog that polls every --watchdog-interval seconds.",
+    )
+    parser.add_argument(
+        "--watchdog-loop-internal",
+        action="store_true",
+        help=argparse.SUPPRESS,
+    )
+    parser.add_argument("--watchdog-interval", type=int, default=900)
     return parser.parse_args()
 
 
@@ -791,6 +932,10 @@ def main() -> int:
         return _print_status(args)
     if args.watchdog_check:
         return _watchdog_check(args)
+    if getattr(args, "watchdog_loop_internal", False):
+        return _watchdog_loop(args)
+    if args.watchdog_loop:
+        return _launch_watchdog_detached(args)
     if args.detach:
         return _run_detached(args)
     if args.worker:

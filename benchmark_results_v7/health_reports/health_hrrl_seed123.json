@@ -1,0 +1,195 @@
+{
+  "mode": "hrrl",
+  "seed": 123,
+  "status": "ok",
+  "alerts": [],
+  "summary": {
+    "total_debates": 118,
+    "aaf_acceptance_ratio": 0.661,
+    "avg_reward": 0.131,
+    "max_abs_q_value": 0.0028,
+    "median_final_deficit": 0.3851
+  },
+  "recent_log_tail": [
+    {
+      "tick": 79,
+      "agent_id": "OPP-S5",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.5304,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0002,
+        "DEBATE_PROACTIVE": 0.0015,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 79,
+      "agent_id": "GOV-S2",
+      "action": "MESSAGE",
+      "reward": 0.030214,
+      "delta_phi": 0.0,
+      "deficit_after": 0.5886,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.002,
+        "DEBATE_PROACTIVE": 0.0001,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 80,
+      "agent_id": "GOV-S2",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.6386,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0022,
+        "DEBATE_PROACTIVE": 0.0001,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 80,
+      "agent_id": "GOV-S3",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.3,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0007,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 80,
+      "agent_id": "GOV-S4",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.3,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0006,
+        "DEBATE_PROACTIVE": 0.0001,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 80,
+      "agent_id": "GOV-S5",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.3,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0006,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0001,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 80,
+      "agent_id": "OPP-S2",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.6397,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0019,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 80,
+      "agent_id": "OPP-S3",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.4703,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0014,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 80,
+      "agent_id": "OPP-S5",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.5804,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0002,
+        "DEBATE_PROACTIVE": 0.0017,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 80,
+      "agent_id": "OPP-S1",
+      "action": "DEBATE",
+      "reward": 0.253063,
+      "delta_phi": 0.135,
+      "deficit_after": 0.279,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0008,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 80,
+      "agent_id": "GOV-S1",
+      "action": "DEBATE",
+      "reward": 0.067635,
+      "delta_phi": 0.0668,
+      "deficit_after": 0.2496,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0005,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 80,
+      "agent_id": "OPP-S4",
+      "action": "DEBATE",
+      "reward": 0.061892,
+      "delta_phi": 0.0335,
+      "deficit_after": 0.6892,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0026,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": -0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    }
+  ]
+}

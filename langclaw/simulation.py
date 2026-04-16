@@ -451,6 +451,45 @@ class SotopiaEnvironment:
             await q.put(SimulationEndEvent())
         await asyncio.gather(*agent_tasks)
 
+        agent_map = {a.agent_id: a for a in self.agents}
+
+        for res in tick_results:
+            if res["action_type"] == "DEBATE" and res.get("node_id"):
+                author_faction = _faction_of(res["agent_id"])
+                target_faction: str | None = None
+                target_nid = res.get("target_node_id")
+                if target_nid and self.graph.graph.has_node(target_nid):
+                    ta = self.graph.graph.nodes[target_nid].get("agent_id", "")
+                    target_faction = _faction_of(ta)
+                evt = NewArgumentEvent(
+                    tick=tick,
+                    node_id=res["node_id"],
+                    agent_id=res["agent_id"],
+                    claim=res["claim"] or "",
+                    delta_phi=res["delta_phi"],
+                    attack_type=res.get("attack_type"),
+                    target_node_id=target_nid,
+                    faction=author_faction,
+                    targets_faction=target_faction,
+                )
+                for other_agent in self.agents:
+                    if other_agent.agent_id != res["agent_id"]:
+                        other_agent.memory.observe(evt)
+                        other_agent._event_buffer.append(evt)
+
+        for res in tick_results:
+            for msg in res.get("messages", []):
+                to_id = msg.get("to_agent", "")
+                if to_id in agent_map:
+                    dm = DirectMessageEvent(
+                        tick=tick,
+                        from_agent=res["agent_id"],
+                        to_agent=to_id,
+                        content=msg.get("content", ""),
+                        performative=msg.get("msg_type", "inform"),
+                    )
+                    agent_map[to_id]._message_buffer.append(dm)
+
         return self._build_tick_logs(tick_results, tick)
 
     # ──────────────────────────────────────────────────────────────────────────

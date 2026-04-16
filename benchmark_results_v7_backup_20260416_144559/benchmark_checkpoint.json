@@ -1,0 +1,867 @@
+[
+  {
+    "_ck": "hrrl__seed7",
+    "_mode": "hrrl",
+    "_seed": 7,
+    "total_ticks": 80,
+    "total_debates": 310,
+    "avg_delta_phi": 0.0909,
+    "graph_nodes": 310,
+    "graph_edges": 305,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.6484,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.1387,
+    "prr_graph": 0.9871,
+    "ir": 1.0,
+    "router_calls": 0,
+    "avg_stimuli_per_tick": 3.53,
+    "avg_stimulus_utility": 0.7958,
+    "stimulus_driven_debates": 148,
+    "avg_reward": -1.9922,
+    "total_reward": -1390.5502,
+    "final_q_weights": {
+      "GOV-S1": {
+        "DEBATE_STIMULUS": 734992929790.4213,
+        "DEBATE_PROACTIVE": -110357271876095.47,
+        "SEARCH": -2600814565544108.0,
+        "READ": -22259859636.2548,
+        "MESSAGE": -1008748647303.9938
+      },
+      "GOV-S2": {
+        "DEBATE_STIMULUS": -1.8989069151131676e+16,
+        "DEBATE_PROACTIVE": -41488009184.8583,
+        "SEARCH": -72614707706.5022,
+        "READ": -599264493947.6976,
+        "MESSAGE": -4245568383278.75
+      },
+      "GOV-S3": {
+        "DEBATE_STIMULUS": -213731023868178.38,
+        "DEBATE_PROACTIVE": -83356863128853.9,
+        "SEARCH": -21090411400504.42,
+        "READ": 105982682265877.88,
+        "MESSAGE": -19367190172913.133
+      },
+      "GOV-S4": {
+        "DEBATE_STIMULUS": -1726867260.9031,
+        "DEBATE_PROACTIVE": -309550025144076.6,
+        "SEARCH": -452296101578.6341,
+        "READ": -23973675281.9825,
+        "MESSAGE": -709033666185.8231
+      },
+      "GOV-S5": {
+        "DEBATE_STIMULUS": -3292941915.2232,
+        "DEBATE_PROACTIVE": -58331501522.1626,
+        "SEARCH": -261765821237.1674,
+        "READ": -39181040319.1788,
+        "MESSAGE": -192511704763.5719
+      },
+      "OPP-S1": {
+        "DEBATE_STIMULUS": -1550558147288.1904,
+        "DEBATE_PROACTIVE": -1008560677.4881,
+        "SEARCH": 108002419.9789,
+        "READ": -61196020.3035,
+        "MESSAGE": -2335077821.0329
+      },
+      "OPP-S2": {
+        "DEBATE_STIMULUS": -595540.1136,
+        "DEBATE_PROACTIVE": -139204910.1741,
+        "SEARCH": 104870.6345,
+        "READ": -5999145.1678,
+        "MESSAGE": -253977.678
+      },
+      "OPP-S3": {
+        "DEBATE_STIMULUS": -36830178400.1259,
+        "DEBATE_PROACTIVE": -1344420258.6555,
+        "SEARCH": -958498445.0253,
+        "READ": -7198448828.7153,
+        "MESSAGE": -550973804.5507
+      },
+      "OPP-S4": {
+        "DEBATE_STIMULUS": -2395627.8102,
+        "DEBATE_PROACTIVE": -500.2446,
+        "SEARCH": -2362.2918,
+        "READ": -887.603,
+        "MESSAGE": -778.6696
+      },
+      "OPP-S5": {
+        "DEBATE_STIMULUS": -0.6623,
+        "DEBATE_PROACTIVE": 3.379,
+        "SEARCH": -0.7566,
+        "READ": -1.3779,
+        "MESSAGE": -0.9807
+      }
+    },
+    "final_deficits": {
+      "GOV-S1": 16.1567,
+      "GOV-S2": 16.206,
+      "GOV-S3": 17.0141,
+      "GOV-S4": 15.5314,
+      "GOV-S5": 15.4295,
+      "OPP-S1": 12.7778,
+      "OPP-S2": 8.6392,
+      "OPP-S3": 12.0885,
+      "OPP-S4": 9.4356,
+      "OPP-S5": 2.5309
+    },
+    "per_agent_debates": {
+      "GOV-S1": 28,
+      "GOV-S2": 26,
+      "GOV-S3": 21,
+      "GOV-S4": 26,
+      "GOV-S5": 28,
+      "OPP-S1": 30,
+      "OPP-S2": 35,
+      "OPP-S3": 27,
+      "OPP-S4": 35,
+      "OPP-S5": 54
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.0717,
+      "GOV-S2": 0.0734,
+      "GOV-S3": 0.085,
+      "GOV-S4": 0.0822,
+      "GOV-S5": 0.0841,
+      "OPP-S1": 0.0827,
+      "OPP-S2": 0.1028,
+      "OPP-S3": 0.0942,
+      "OPP-S4": 0.0964,
+      "OPP-S5": 0.1111
+    },
+    "window_dphi": [
+      0.0781,
+      0.0878,
+      0.096,
+      0.0863,
+      0.1066
+    ],
+    "slope_dphi": 0.00555,
+    "window_acceptance": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "slope_acceptance": 0.0,
+    "window_core": [
+      0.011282,
+      0.002347,
+      0.002904,
+      0.005469,
+      0.004322
+    ],
+    "slope_core": -0.00108
+  },
+  {
+    "_ck": "langgraph__seed7",
+    "_mode": "langgraph",
+    "_seed": 7,
+    "total_ticks": 80,
+    "total_debates": 71,
+    "avg_delta_phi": 0.0919,
+    "graph_nodes": 71,
+    "graph_edges": 70,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.5634,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.1268,
+    "prr_graph": 0.9859,
+    "ir": 0.0,
+    "router_calls": 800,
+    "avg_stimuli_per_tick": 1.0,
+    "avg_stimulus_utility": 0.6502,
+    "stimulus_driven_debates": 64,
+    "avg_reward": 0.3882,
+    "total_reward": 31.059,
+    "final_q_weights": {},
+    "final_deficits": {
+      "GOV-S1": 6.4439,
+      "GOV-S2": 3.6827,
+      "GOV-S3": 3.2222,
+      "GOV-S4": 5.6384,
+      "GOV-S5": 7.5183,
+      "OPP-S1": 7.3169,
+      "OPP-S2": 1.5697,
+      "OPP-S3": 6.0458,
+      "OPP-S4": 7.7958,
+      "OPP-S5": 7.7958
+    },
+    "per_agent_debates": {
+      "GOV-S1": 5,
+      "GOV-S2": 15,
+      "GOV-S3": 13,
+      "GOV-S4": 5,
+      "GOV-S5": 0,
+      "OPP-S1": 2,
+      "OPP-S2": 27,
+      "OPP-S3": 4,
+      "OPP-S4": 0,
+      "OPP-S5": 0
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.0896,
+      "GOV-S2": 0.0916,
+      "GOV-S3": 0.1024,
+      "GOV-S4": 0.1181,
+      "GOV-S5": 0.0,
+      "OPP-S1": 0.137,
+      "OPP-S2": 0.0732,
+      "OPP-S3": 0.1322,
+      "OPP-S4": 0.0,
+      "OPP-S5": 0.0
+    },
+    "window_dphi": [
+      0.1485,
+      0.086,
+      0.0822,
+      0.0664,
+      0.0774
+    ],
+    "slope_dphi": -0.01618,
+    "window_acceptance": [
+      0.5714,
+      0.5714,
+      0.5714,
+      0.5714,
+      0.5634
+    ],
+    "slope_acceptance": -0.0016,
+    "window_core": [
+      0.168985,
+      0.008331,
+      0.019527,
+      0.021901,
+      0.014049
+    ],
+    "slope_core": -0.02963
+  },
+  {
+    "_ck": "hrrl__seed17",
+    "_mode": "hrrl",
+    "_seed": 17,
+    "total_ticks": 80,
+    "total_debates": 127,
+    "avg_delta_phi": 0.1036,
+    "graph_nodes": 127,
+    "graph_edges": 124,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.7087,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.0157,
+    "prr_graph": 0.9764,
+    "ir": 1.0,
+    "router_calls": 0,
+    "avg_stimuli_per_tick": 0.0,
+    "avg_stimulus_utility": 0.0,
+    "stimulus_driven_debates": 0,
+    "avg_reward": 0.1669,
+    "total_reward": 24.5386,
+    "final_q_weights": {
+      "GOV-S1": {
+        "DEBATE_STIMULUS": 0.0012,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S2": {
+        "DEBATE_STIMULUS": 0.0,
+        "DEBATE_PROACTIVE": 0.0018,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S3": {
+        "DEBATE_STIMULUS": 0.0011,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S4": {
+        "DEBATE_STIMULUS": 0.0015,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S5": {
+        "DEBATE_STIMULUS": 0.0023,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S1": {
+        "DEBATE_STIMULUS": 0.0018,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S2": {
+        "DEBATE_STIMULUS": -0.0,
+        "DEBATE_PROACTIVE": 0.0016,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S3": {
+        "DEBATE_STIMULUS": 0.0016,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S4": {
+        "DEBATE_STIMULUS": -0.0,
+        "DEBATE_PROACTIVE": 0.0021,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S5": {
+        "DEBATE_STIMULUS": -0.0,
+        "DEBATE_PROACTIVE": 0.0006,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    "final_deficits": {
+      "GOV-S1": 0.3915,
+      "GOV-S2": 0.6,
+      "GOV-S3": 0.3777,
+      "GOV-S4": 0.4287,
+      "GOV-S5": 0.5883,
+      "OPP-S1": 0.5739,
+      "OPP-S2": 0.6,
+      "OPP-S3": 0.7,
+      "OPP-S4": 0.6315,
+      "OPP-S5": 0.2429
+    },
+    "per_agent_debates": {
+      "GOV-S1": 16,
+      "GOV-S2": 15,
+      "GOV-S3": 13,
+      "GOV-S4": 19,
+      "GOV-S5": 12,
+      "OPP-S1": 11,
+      "OPP-S2": 10,
+      "OPP-S3": 10,
+      "OPP-S4": 9,
+      "OPP-S5": 12
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.0856,
+      "GOV-S2": 0.0875,
+      "GOV-S3": 0.1041,
+      "GOV-S4": 0.07,
+      "GOV-S5": 0.1031,
+      "OPP-S1": 0.1214,
+      "OPP-S2": 0.1277,
+      "OPP-S3": 0.1402,
+      "OPP-S4": 0.1196,
+      "OPP-S5": 0.1221
+    },
+    "window_dphi": [
+      0.0739,
+      0.1045,
+      0.1057,
+      0.1133,
+      0.1194
+    ],
+    "slope_dphi": 0.00998,
+    "window_acceptance": [
+      0.6,
+      0.64,
+      0.68,
+      0.7,
+      0.7087
+    ],
+    "slope_acceptance": 0.02774,
+    "window_core": [
+      0.031497,
+      0.00971,
+      0.006582,
+      0.005833,
+      0.00349
+    ],
+    "slope_core": -0.005989
+  },
+  {
+    "_ck": "langgraph__seed17",
+    "_mode": "langgraph",
+    "_seed": 17,
+    "total_ticks": 80,
+    "total_debates": 62,
+    "avg_delta_phi": 0.1267,
+    "graph_nodes": 62,
+    "graph_edges": 61,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.5484,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.0484,
+    "prr_graph": 0.9839,
+    "ir": 0.0,
+    "router_calls": 800,
+    "avg_stimuli_per_tick": 1.0,
+    "avg_stimulus_utility": 0.6519,
+    "stimulus_driven_debates": 55,
+    "avg_reward": 0.5095,
+    "total_reward": 39.7389,
+    "final_q_weights": {},
+    "final_deficits": {
+      "GOV-S1": 3.0606,
+      "GOV-S2": 5.1921,
+      "GOV-S3": 2.6355,
+      "GOV-S4": 7.3319,
+      "GOV-S5": 7.3319,
+      "OPP-S1": 4.7139,
+      "OPP-S2": 1.3668,
+      "OPP-S3": 6.2208,
+      "OPP-S4": 7.1396,
+      "OPP-S5": 7.1396
+    },
+    "per_agent_debates": {
+      "GOV-S1": 16,
+      "GOV-S2": 6,
+      "GOV-S3": 12,
+      "GOV-S4": 0,
+      "GOV-S5": 0,
+      "OPP-S1": 9,
+      "OPP-S2": 17,
+      "OPP-S3": 2,
+      "OPP-S4": 0,
+      "OPP-S5": 0
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.1588,
+      "GOV-S2": 0.1142,
+      "GOV-S3": 0.0906,
+      "GOV-S4": 0.0,
+      "GOV-S5": 0.0,
+      "OPP-S1": 0.1541,
+      "OPP-S2": 0.1095,
+      "OPP-S3": 0.1464,
+      "OPP-S4": 0.0,
+      "OPP-S5": 0.0
+    },
+    "window_dphi": [
+      0.2056,
+      0.1354,
+      0.0789,
+      0.1032,
+      0.1128
+    ],
+    "slope_dphi": -0.02178,
+    "window_acceptance": [
+      0.5833,
+      0.5417,
+      0.5556,
+      0.5417,
+      0.5484
+    ],
+    "slope_acceptance": -0.00698,
+    "window_core": [
+      0.028474,
+      0.056011,
+      0.022496,
+      0.009207,
+      0.024464
+    ],
+    "slope_core": -0.005482
+  },
+  {
+    "_ck": "hrrl__seed42",
+    "_mode": "hrrl",
+    "_seed": 42,
+    "total_ticks": 80,
+    "total_debates": 137,
+    "avg_delta_phi": 0.0972,
+    "graph_nodes": 137,
+    "graph_edges": 134,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.6058,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.073,
+    "prr_graph": 0.9854,
+    "ir": 1.0,
+    "router_calls": 0,
+    "avg_stimuli_per_tick": 0.0,
+    "avg_stimulus_utility": 0.0,
+    "stimulus_driven_debates": 0,
+    "avg_reward": 0.1568,
+    "total_reward": 25.0834,
+    "final_q_weights": {
+      "GOV-S1": {
+        "DEBATE_STIMULUS": 0.0013,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S2": {
+        "DEBATE_STIMULUS": -0.0,
+        "DEBATE_PROACTIVE": 0.002,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S3": {
+        "DEBATE_STIMULUS": 0.0019,
+        "DEBATE_PROACTIVE": 0.0001,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S4": {
+        "DEBATE_STIMULUS": 0.0015,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S5": {
+        "DEBATE_STIMULUS": 0.0018,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S1": {
+        "DEBATE_STIMULUS": 0.0013,
+        "DEBATE_PROACTIVE": 0.0001,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": -0.0
+      },
+      "OPP-S2": {
+        "DEBATE_STIMULUS": 0.0024,
+        "DEBATE_PROACTIVE": 0.0003,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S3": {
+        "DEBATE_STIMULUS": -0.0,
+        "DEBATE_PROACTIVE": 0.0014,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S4": {
+        "DEBATE_STIMULUS": 0.0019,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S5": {
+        "DEBATE_STIMULUS": 0.0014,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    "final_deficits": {
+      "GOV-S1": 0.4413,
+      "GOV-S2": 0.6258,
+      "GOV-S3": 0.4981,
+      "GOV-S4": 0.4314,
+      "GOV-S5": 0.5266,
+      "OPP-S1": 0.547,
+      "OPP-S2": 0.6905,
+      "OPP-S3": 0.3925,
+      "OPP-S4": 0.5486,
+      "OPP-S5": 0.548
+    },
+    "per_agent_debates": {
+      "GOV-S1": 14,
+      "GOV-S2": 12,
+      "GOV-S3": 15,
+      "GOV-S4": 16,
+      "GOV-S5": 15,
+      "OPP-S1": 12,
+      "OPP-S2": 14,
+      "OPP-S3": 16,
+      "OPP-S4": 12,
+      "OPP-S5": 11
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.0969,
+      "GOV-S2": 0.1112,
+      "GOV-S3": 0.092,
+      "GOV-S4": 0.0848,
+      "GOV-S5": 0.0891,
+      "OPP-S1": 0.1184,
+      "OPP-S2": 0.0838,
+      "OPP-S3": 0.0797,
+      "OPP-S4": 0.1013,
+      "OPP-S5": 0.1337
+    },
+    "window_dphi": [
+      0.0973,
+      0.0874,
+      0.1058,
+      0.0986,
+      0.0971
+    ],
+    "slope_dphi": 0.00108,
+    "window_acceptance": [
+      0.5926,
+      0.5926,
+      0.6173,
+      0.6019,
+      0.6058
+    ],
+    "slope_acceptance": 0.00357,
+    "window_core": [
+      0.047844,
+      0.031833,
+      0.018631,
+      0.00574,
+      0.00868
+    ],
+    "slope_core": -0.010442
+  },
+  {
+    "_ck": "langgraph__seed42",
+    "_mode": "langgraph",
+    "_seed": 42,
+    "total_ticks": 80,
+    "total_debates": 75,
+    "avg_delta_phi": 0.0858,
+    "graph_nodes": 75,
+    "graph_edges": 74,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.5067,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.0667,
+    "prr_graph": 0.9867,
+    "ir": 0.0,
+    "router_calls": 800,
+    "avg_stimuli_per_tick": 1.0,
+    "avg_stimulus_utility": 0.6743,
+    "stimulus_driven_debates": 69,
+    "avg_reward": 0.349,
+    "total_reward": 27.9161,
+    "final_q_weights": {},
+    "final_deficits": {
+      "GOV-S1": 5.9397,
+      "GOV-S2": 4.7123,
+      "GOV-S3": 4.1587,
+      "GOV-S4": 7.5373,
+      "GOV-S5": 7.8165,
+      "OPP-S1": 7.667,
+      "OPP-S2": 1.3925,
+      "OPP-S3": 6.1586,
+      "OPP-S4": 7.0415,
+      "OPP-S5": 7.701
+    },
+    "per_agent_debates": {
+      "GOV-S1": 9,
+      "GOV-S2": 11,
+      "GOV-S3": 17,
+      "GOV-S4": 1,
+      "GOV-S5": 0,
+      "OPP-S1": 1,
+      "OPP-S2": 31,
+      "OPP-S3": 4,
+      "OPP-S4": 1,
+      "OPP-S5": 0
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.0887,
+      "GOV-S2": 0.109,
+      "GOV-S3": 0.065,
+      "GOV-S4": 0.0884,
+      "GOV-S5": 0.0,
+      "OPP-S1": 0.1667,
+      "OPP-S2": 0.0783,
+      "OPP-S3": 0.1098,
+      "OPP-S4": 0.2106,
+      "OPP-S5": 0.0
+    },
+    "window_dphi": [
+      0.1666,
+      0.0736,
+      0.059,
+      0.0505,
+      0.0793
+    ],
+    "slope_dphi": -0.01977,
+    "window_acceptance": [
+      0.5333,
+      0.5,
+      0.5111,
+      0.5,
+      0.5067
+    ],
+    "slope_acceptance": -0.00532,
+    "window_core": [
+      0.101919,
+      0.005753,
+      0.024104,
+      0.027657,
+      0.055574
+    ],
+    "slope_core": -0.007079
+  },
+  {
+    "_ck": "hrrl__seed123",
+    "_mode": "hrrl",
+    "_seed": 123,
+    "total_ticks": 80,
+    "total_debates": 118,
+    "avg_delta_phi": 0.1159,
+    "graph_nodes": 118,
+    "graph_edges": 117,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.661,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.1441,
+    "prr_graph": 0.9915,
+    "ir": 1.0,
+    "router_calls": 0,
+    "avg_stimuli_per_tick": 0.0,
+    "avg_stimulus_utility": 0.0,
+    "stimulus_driven_debates": 0,
+    "avg_reward": 0.131,
+    "total_reward": 23.1796,
+    "final_q_weights": {
+      "GOV-S1": {
+        "DEBATE_STIMULUS": 0.0005,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S2": {
+        "DEBATE_STIMULUS": 0.0022,
+        "DEBATE_PROACTIVE": 0.0001,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S3": {
+        "DEBATE_STIMULUS": 0.0007,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S4": {
+        "DEBATE_STIMULUS": 0.0006,
+        "DEBATE_PROACTIVE": 0.0001,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "GOV-S5": {
+        "DEBATE_STIMULUS": 0.0006,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0001,
+        "MESSAGE": 0.0
+      },
+      "OPP-S1": {
+        "DEBATE_STIMULUS": 0.0008,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S2": {
+        "DEBATE_STIMULUS": 0.0019,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S3": {
+        "DEBATE_STIMULUS": 0.0014,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S4": {
+        "DEBATE_STIMULUS": 0.0026,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": -0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      },
+      "OPP-S5": {
+        "DEBATE_STIMULUS": 0.0002,
+        "DEBATE_PROACTIVE": 0.0017,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    "final_deficits": {
+      "GOV-S1": 0.2496,
+      "GOV-S2": 0.6386,
+      "GOV-S3": 0.3,
+      "GOV-S4": 0.3,
+      "GOV-S5": 0.3,
+      "OPP-S1": 0.279,
+      "OPP-S2": 0.6397,
+      "OPP-S3": 0.4703,
+      "OPP-S4": 0.6892,
+      "OPP-S5": 0.5804
+    },
+    "per_agent_debates": {
+      "GOV-S1": 11,
+      "GOV-S2": 12,
+      "GOV-S3": 9,
+      "GOV-S4": 13,
+      "GOV-S5": 8,
+      "OPP-S1": 14,
+      "OPP-S2": 13,
+      "OPP-S3": 12,
+      "OPP-S4": 12,
+      "OPP-S5": 14
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.1482,
+      "GOV-S2": 0.1039,
+      "GOV-S3": 0.1389,
+      "GOV-S4": 0.1264,
+      "GOV-S5": 0.1993,
+      "OPP-S1": 0.0957,
+      "OPP-S2": 0.102,
+      "OPP-S3": 0.1202,
+      "OPP-S4": 0.0731,
+      "OPP-S5": 0.0947
+    },
+    "window_dphi": [
+      0.1124,
+      0.101,
+      0.1198,
+      0.1456,
+      0.1024
+    ],
+    "slope_dphi": 0.00246,
+    "window_acceptance": [
+      0.6087,
+      0.6087,
+      0.6232,
+      0.663,
+      0.661
+    ],
+    "slope_acceptance": 0.01589,
+    "window_core": [
+      0.034607,
+      0.020701,
+      0.033248,
+      0.021566,
+      0.036449
+    ],
+    "slope_core": 0.000455
+  }
+]

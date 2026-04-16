@@ -1,0 +1,195 @@
+{
+  "mode": "hrrl",
+  "seed": 999,
+  "status": "ok",
+  "alerts": [],
+  "summary": {
+    "total_debates": 17,
+    "aaf_acceptance_ratio": 0.7059,
+    "avg_reward": -0.0174,
+    "max_abs_q_value": 0.0018,
+    "median_final_deficit": 0.811
+  },
+  "recent_log_tail": [
+    {
+      "tick": 3,
+      "agent_id": "OPP-S4",
+      "action": "DEBATE",
+      "reward": 0.184322,
+      "delta_phi": 0.1222,
+      "deficit_after": 0.5333,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0002,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 3,
+      "agent_id": "OPP-S5",
+      "action": "DEBATE",
+      "reward": 0.239869,
+      "delta_phi": 0.1455,
+      "deficit_after": 0.4636,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0002,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 4,
+      "agent_id": "GOV-S4",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.7322,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0018,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 4,
+      "agent_id": "GOV-S5",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.7022,
+      "q_values": {
+        "DEBATE_STIMULUS": -0.0,
+        "DEBATE_PROACTIVE": 0.001,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 4,
+      "agent_id": "OPP-S4",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.885,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0011,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 4,
+      "agent_id": "OPP-S5",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.8153,
+      "q_values": {
+        "DEBATE_STIMULUS": 0.0014,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 4,
+      "agent_id": "GOV-S1",
+      "action": "DEBATE",
+      "reward": -0.376763,
+      "delta_phi": 0.0384,
+      "deficit_after": 0.867,
+      "q_values": {
+        "DEBATE_STIMULUS": -0.0007,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 4,
+      "agent_id": "GOV-S2",
+      "action": "DEBATE",
+      "reward": -0.207626,
+      "delta_phi": 0.0752,
+      "deficit_after": 0.8066,
+      "q_values": {
+        "DEBATE_STIMULUS": -0.0002,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 4,
+      "agent_id": "OPP-S1",
+      "action": "DEBATE",
+      "reward": -0.164733,
+      "delta_phi": 0.0685,
+      "deficit_after": 0.7366,
+      "q_values": {
+        "DEBATE_STIMULUS": -0.0001,
+        "DEBATE_PROACTIVE": 0.0,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 4,
+      "agent_id": "GOV-S3",
+      "action": "PASS",
+      "reward": -0.342077,
+      "delta_phi": 0.0,
+      "deficit_after": 0.7322,
+      "q_values": {
+        "DEBATE_STIMULUS": -0.0002,
+        "DEBATE_PROACTIVE": 0.0001,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 4,
+      "agent_id": "OPP-S2",
+      "action": "DEBATE",
+      "reward": -0.304001,
+      "delta_phi": 0.0349,
+      "deficit_after": 0.8391,
+      "q_values": {
+        "DEBATE_STIMULUS": -0.0,
+        "DEBATE_PROACTIVE": -0.0004,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    },
+    {
+      "tick": 4,
+      "agent_id": "OPP-S3",
+      "action": "DEBATE",
+      "reward": -0.297984,
+      "delta_phi": 0.0694,
+      "deficit_after": 1.0439,
+      "q_values": {
+        "DEBATE_STIMULUS": -0.0,
+        "DEBATE_PROACTIVE": -0.001,
+        "SEARCH": 0.0,
+        "READ": 0.0,
+        "MESSAGE": 0.0
+      }
+    }
+  ]
+}

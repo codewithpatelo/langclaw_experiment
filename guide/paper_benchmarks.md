@@ -25,6 +25,8 @@ paper should score at least 4 on every dimension.
   evidence to implications without friction.
 - No vagueness. No ambiguity.
 - All text is coherent and cohesive. Nothing seems "off".
+- The paragraphs aren't isolated pieces, there is a cohesive narrative that connects each part. Each paragraph starts connecting from what happened before in previouos paragraphs. Feels like "scientific story-telling"
+- No contradictions.
 
 
 ### 1.3 Impact Potential
@@ -52,6 +54,9 @@ paper should score at least 4 on every dimension.
 - Are limitations discussed seriously, not as an afterthought?
 - Is the experimental design controlled for confounds?
 - No vagueness, precise language.
+- The logic behind claims is sound
+- All math is correct
+
 
 #### 1.6.1 Hyperparameter & Constant Justification (CRITICAL)
 
