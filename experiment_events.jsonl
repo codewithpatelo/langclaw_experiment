@@ -6,3 +6,5 @@
 {"timestamp": "2026-04-15T22:09:50.534535+00:00", "event": "detached_started", "phase": "failed", "launcher_pid": 10024, "detached_worker_pid": 15836}
 {"timestamp": "2026-04-15T22:09:50.622477+00:00", "event": "worker_started", "phase": "starting", "worker_pid": 15836}
 {"timestamp": "2026-04-15T22:09:50.624219+00:00", "event": "phase_started", "phase": "calibration", "message": "Calibration phase started."}
+{"timestamp": "2026-04-16T01:00:42.048279+00:00", "event": "phase_finished", "phase": "calibration", "returncode": 0}
+{"timestamp": "2026-04-16T01:00:42.049542+00:00", "event": "phase_started", "phase": "benchmark", "message": "Benchmark phase started."}
