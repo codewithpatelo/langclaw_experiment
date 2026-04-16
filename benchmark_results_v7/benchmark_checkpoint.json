@@ -1,0 +1,156 @@
+[
+  {
+    "_ck": "hrrl__seed7",
+    "_mode": "hrrl",
+    "_seed": 7,
+    "total_ticks": 80,
+    "total_debates": 310,
+    "avg_delta_phi": 0.0909,
+    "graph_nodes": 310,
+    "graph_edges": 305,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.6484,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.1387,
+    "prr_graph": 0.9871,
+    "ir": 1.0,
+    "router_calls": 0,
+    "avg_stimuli_per_tick": 3.53,
+    "avg_stimulus_utility": 0.7958,
+    "stimulus_driven_debates": 148,
+    "avg_reward": -1.9922,
+    "total_reward": -1390.5502,
+    "final_q_weights": {
+      "GOV-S1": {
+        "DEBATE_STIMULUS": 734992929790.4213,
+        "DEBATE_PROACTIVE": -110357271876095.47,
+        "SEARCH": -2600814565544108.0,
+        "READ": -22259859636.2548,
+        "MESSAGE": -1008748647303.9938
+      },
+      "GOV-S2": {
+        "DEBATE_STIMULUS": -1.8989069151131676e+16,
+        "DEBATE_PROACTIVE": -41488009184.8583,
+        "SEARCH": -72614707706.5022,
+        "READ": -599264493947.6976,
+        "MESSAGE": -4245568383278.75
+      },
+      "GOV-S3": {
+        "DEBATE_STIMULUS": -213731023868178.38,
+        "DEBATE_PROACTIVE": -83356863128853.9,
+        "SEARCH": -21090411400504.42,
+        "READ": 105982682265877.88,
+        "MESSAGE": -19367190172913.133
+      },
+      "GOV-S4": {
+        "DEBATE_STIMULUS": -1726867260.9031,
+        "DEBATE_PROACTIVE": -309550025144076.6,
+        "SEARCH": -452296101578.6341,
+        "READ": -23973675281.9825,
+        "MESSAGE": -709033666185.8231
+      },
+      "GOV-S5": {
+        "DEBATE_STIMULUS": -3292941915.2232,
+        "DEBATE_PROACTIVE": -58331501522.1626,
+        "SEARCH": -261765821237.1674,
+        "READ": -39181040319.1788,
+        "MESSAGE": -192511704763.5719
+      },
+      "OPP-S1": {
+        "DEBATE_STIMULUS": -1550558147288.1904,
+        "DEBATE_PROACTIVE": -1008560677.4881,
+        "SEARCH": 108002419.9789,
+        "READ": -61196020.3035,
+        "MESSAGE": -2335077821.0329
+      },
+      "OPP-S2": {
+        "DEBATE_STIMULUS": -595540.1136,
+        "DEBATE_PROACTIVE": -139204910.1741,
+        "SEARCH": 104870.6345,
+        "READ": -5999145.1678,
+        "MESSAGE": -253977.678
+      },
+      "OPP-S3": {
+        "DEBATE_STIMULUS": -36830178400.1259,
+        "DEBATE_PROACTIVE": -1344420258.6555,
+        "SEARCH": -958498445.0253,
+        "READ": -7198448828.7153,
+        "MESSAGE": -550973804.5507
+      },
+      "OPP-S4": {
+        "DEBATE_STIMULUS": -2395627.8102,
+        "DEBATE_PROACTIVE": -500.2446,
+        "SEARCH": -2362.2918,
+        "READ": -887.603,
+        "MESSAGE": -778.6696
+      },
+      "OPP-S5": {
+        "DEBATE_STIMULUS": -0.6623,
+        "DEBATE_PROACTIVE": 3.379,
+        "SEARCH": -0.7566,
+        "READ": -1.3779,
+        "MESSAGE": -0.9807
+      }
+    },
+    "final_deficits": {
+      "GOV-S1": 16.1567,
+      "GOV-S2": 16.206,
+      "GOV-S3": 17.0141,
+      "GOV-S4": 15.5314,
+      "GOV-S5": 15.4295,
+      "OPP-S1": 12.7778,
+      "OPP-S2": 8.6392,
+      "OPP-S3": 12.0885,
+      "OPP-S4": 9.4356,
+      "OPP-S5": 2.5309
+    },
+    "per_agent_debates": {
+      "GOV-S1": 28,
+      "GOV-S2": 26,
+      "GOV-S3": 21,
+      "GOV-S4": 26,
+      "GOV-S5": 28,
+      "OPP-S1": 30,
+      "OPP-S2": 35,
+      "OPP-S3": 27,
+      "OPP-S4": 35,
+      "OPP-S5": 54
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.0717,
+      "GOV-S2": 0.0734,
+      "GOV-S3": 0.085,
+      "GOV-S4": 0.0822,
+      "GOV-S5": 0.0841,
+      "OPP-S1": 0.0827,
+      "OPP-S2": 0.1028,
+      "OPP-S3": 0.0942,
+      "OPP-S4": 0.0964,
+      "OPP-S5": 0.1111
+    },
+    "window_dphi": [
+      0.0781,
+      0.0878,
+      0.096,
+      0.0863,
+      0.1066
+    ],
+    "slope_dphi": 0.00555,
+    "window_acceptance": [
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "slope_acceptance": 0.0,
+    "window_core": [
+      0.011282,
+      0.002347,
+      0.002904,
+      0.005469,
+      0.004322
+    ],
+    "slope_core": -0.00108
+  }
+]

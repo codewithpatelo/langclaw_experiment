@@ -1,41 +1,21 @@
-"""Online Q-learning with linear function approximation for HRRL.
+"""Bounded online Q-learning adaptation for HRRL.
 
-Implements the reinforcement learning component of the HRRL framework
-(Keramati & Gutkin, 2014) adapted to epistemic agents.  The Q-learner
-selects actions based on the agent's internal state (deficit, graph
-density, stimulus count, message count) and updates its weights via
-semi-gradient TD(0) using homeostatic reward (drive reduction).
+Keramati & Gutkin (2014) formulate HRRL over homeostatic reward and
+state-action value learning. In this MAS we preserve that mathematical core:
+reward is still drive reduction and action selection is still endogenous to
+internal state. The extension is explicit: instead of a tabular state space,
+we project discourse observables into a compact bounded feature vector and
+learn a linear controller on top of that projection.
 
-Design decisions and justifications
-------------------------------------
-State features  φ(s) = [deficit, deficit², graph_density, n_stimuli, n_messages]
-Actions         DEBATE_STIMULUS, DEBATE_PROACTIVE, SEARCH, READ, MESSAGE
-Q-function      Q(s, a) = wₐᵀ φ(s)   (linear in features)
-TD(0) update    wₐ ← wₐ + η · [r + γ · max_a' Q(s', a') − Q(s, a)] · φ(s)
-
-Hyperparameters:
-  η = 0.01   Learning rate.  Sutton & Barto (2018, §9.6) recommend
-             η ≈ 1/(10·E[‖x‖²]) for linear FA.  With 5 features whose
-             typical magnitude is O(1), E[‖x‖²] ≈ 5–10, giving
-             η ≈ 1/50–1/100 ≈ 0.01–0.02.  We use η=0.01 (conservative).
-
-  γ = 0.95   Discount factor.  Standard for continuing tasks with moderate
-             horizon (Sutton & Barto 2018, §10.3).  The agent plans ~20
-             steps ahead: 1/(1−γ) = 20, comparable to our 80-tick horizon.
-
-  ε = 0.1    Exploration rate for ε-greedy policy (Sutton & Barto 2018,
-             §2.3, §10.1).  With probability ε the agent selects a
-             uniformly random action, ensuring all actions are tried and
-             the Q-learner can discover which are genuinely useful.
-
-Initialization:
-  Weights are zero-initialized (Sutton & Barto 2018, §9.4).  This is
-  the standard uninformative prior for linear FA — it assigns equal
-  initial Q-value (0) to all actions, letting the reward signal alone
-  determine the learned policy.  No action is favoured a priori.
+This file therefore implements an *adaptation* of HRRL, not a claim of
+identity with the original tabular setting. The bounded feature map and the
+clipping/regularisation below are included to keep long benchmark runs
+numerically stable and scientifically interpretable.
 """
 
 from __future__ import annotations
+
+from typing import Any
 
 import numpy as np
 
@@ -50,13 +30,22 @@ def _build_features(
     n_stimuli: int,
     n_messages: int = 0,
 ) -> np.ndarray:
-    """Construct the state feature vector φ(s)."""
+    """Construct a bounded state feature vector φ(s).
+
+    Mapping a continuous MAS state to bounded features is the main extension
+    beyond the original HRRL setting. Every component is clipped to [0, 1] so
+    the semi-gradient update remains well-conditioned over long runs.
+    """
+    deficit_hat = min(1.0, max(0.0, (deficit - 0.1) / 2.0))
+    density_hat = min(1.0, max(0.0, graph_density))
+    stimuli_hat = min(1.0, max(0.0, float(n_stimuli) / 5.0))
+    messages_hat = min(1.0, max(0.0, float(n_messages) / 5.0))
     return np.array([
-        deficit,
-        deficit ** 2,
-        graph_density,
-        float(n_stimuli),
-        float(n_messages),
+        deficit_hat,
+        deficit_hat ** 2,
+        density_hat,
+        stimuli_hat,
+        messages_hat,
     ], dtype=np.float64)
 
 
@@ -82,10 +71,16 @@ class HomeostaticQLearner:
         gamma: float = 0.95,
         epsilon: float = 0.1,
         rng_seed: int | None = None,
+        td_clip: float = 1.0,
+        weight_clip: float = 5.0,
+        l2_reg: float = 1e-4,
     ) -> None:
         self.eta = eta
         self.gamma = gamma
         self.epsilon = epsilon
+        self.td_clip = td_clip
+        self.weight_clip = weight_clip
+        self.l2_reg = l2_reg
         self._rng = np.random.default_rng(rng_seed)
 
         self._weights: dict[str, np.ndarray] = {
@@ -128,13 +123,44 @@ class HomeostaticQLearner:
         q_next_max = max(self.q_value(next_features, a) for a in ACTIONS)
 
         td_error = reward + self.gamma * q_next_max - q_current
-        self._weights[action] = (
-            self._weights[action] + self.eta * td_error * features
-        )
+        td_error = float(np.clip(td_error, -self.td_clip, self.td_clip))
+        updated = self._weights[action] + self.eta * td_error * features
+        updated *= (1.0 - self.eta * self.l2_reg)
+        self._weights[action] = np.clip(updated, -self.weight_clip, self.weight_clip)
 
     def get_weights(self) -> dict[str, list[float]]:
         """Return current weight vectors for logging and analysis."""
         return {a: w.tolist() for a, w in self._weights.items()}
+
+    def to_checkpoint(self) -> dict[str, Any]:
+        """Serialize learner state for per-tick benchmark resume."""
+        return {
+            "eta": self.eta,
+            "gamma": self.gamma,
+            "epsilon": self.epsilon,
+            "td_clip": self.td_clip,
+            "weight_clip": self.weight_clip,
+            "l2_reg": self.l2_reg,
+            "weights": self.get_weights(),
+            "rng_state": self._rng.bit_generator.state,
+        }
+
+    def load_checkpoint(self, payload: dict[str, Any]) -> None:
+        """Restore learner state from a serialized checkpoint."""
+        self.eta = float(payload.get("eta", self.eta))
+        self.gamma = float(payload.get("gamma", self.gamma))
+        self.epsilon = float(payload.get("epsilon", self.epsilon))
+        self.td_clip = float(payload.get("td_clip", self.td_clip))
+        self.weight_clip = float(payload.get("weight_clip", self.weight_clip))
+        self.l2_reg = float(payload.get("l2_reg", self.l2_reg))
+
+        for action, weights in payload.get("weights", {}).items():
+            if action in self._weights:
+                self._weights[action] = np.array(weights, dtype=np.float64)
+
+        rng_state = payload.get("rng_state")
+        if rng_state is not None:
+            self._rng.bit_generator.state = rng_state
 
     @staticmethod
     def build_features(

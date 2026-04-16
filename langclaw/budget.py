@@ -102,3 +102,32 @@ class APIBudget:
         exponent = max(-500.0, min(500.0, exponent))
         p = 1.0 / (1.0 + math.exp(exponent))
         return max(1, round(p * MAX_CALLS_PER_WINDOW))
+
+    def to_checkpoint(self) -> dict[str, object]:
+        """Serialize budget counters for per-tick resume."""
+        return {
+            "hard_limit": self.hard_limit,
+            "window_size": self.window_size,
+            "k": self._k,
+            "theta": self._theta,
+            "total_calls": dict(self._total_calls),
+            "window_calls": {
+                agent_id: list(ticks)
+                for agent_id, ticks in self._window_calls.items()
+            },
+        }
+
+    def load_checkpoint(self, payload: dict[str, object]) -> None:
+        """Restore budget counters from checkpoint."""
+        self.hard_limit = int(payload.get("hard_limit", self.hard_limit))
+        self.window_size = int(payload.get("window_size", self.window_size))
+        self._k = float(payload.get("k", self._k))
+        self._theta = float(payload.get("theta", self._theta))
+
+        self._total_calls.clear()
+        for agent_id, total in (payload.get("total_calls") or {}).items():
+            self._total_calls[str(agent_id)] = int(total)
+
+        self._window_calls.clear()
+        for agent_id, ticks in (payload.get("window_calls") or {}).items():
+            self._window_calls[str(agent_id)] = deque(int(t) for t in ticks)

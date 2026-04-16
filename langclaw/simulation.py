@@ -21,6 +21,7 @@ Agent structure: 10 agents organized as two viable systems (Beer's VSM),
 
 from __future__ import annotations
 
+import ast
 import asyncio
 import logging
 import random
@@ -270,6 +271,9 @@ class SotopiaEnvironment:
                 model=model,
                 seed=router_seed,
             )
+        self._langgraph_pending_messages: dict[str, list[DirectMessageEvent]] = {
+            a.agent_id: [] for a in self.agents
+        }
 
         self.logs: list[SimulationLog] = []
         self._consistent_turns: int = 0
@@ -320,12 +324,7 @@ class SotopiaEnvironment:
         if self.orchestration_mode == OrchestrationMode.HRRL:
             tick_logs = asyncio.run(self._hrrl_single_tick(tick))
         elif self.orchestration_mode == OrchestrationMode.LANGGRAPH:
-            saved_max = self.max_iterations
-            self.max_iterations = 1
-            self._run_langgraph()
-            self.max_iterations = saved_max
-            tick_logs = [l for l in self.logs if l.tick == tick]
-            return tick_logs
+            tick_logs = self._langgraph_single_tick(tick)
         else:
             tick_logs = self._baseline_tick(tick)
         self.logs.extend(tick_logs)
@@ -482,265 +481,256 @@ class SotopiaEnvironment:
           5. DirectMessages are routed (same infrastructure as HRRL).
           6. Non-selected agents buffer events for next tick.
         """
-        from langclaw.langgraph_flow import build_cognitive_graph
-
-        assert self._router is not None, "Router not initialised for LANGGRAPH mode"
-        agent_ids = [a.agent_id for a in self.agents]
-        agent_map = {a.agent_id: a for a in self.agents}
-
-        cognitive_graph = build_cognitive_graph()
-
-        pending_messages: dict[str, list[DirectMessageEvent]] = {
+        self._langgraph_pending_messages = {
             a.agent_id: [] for a in self.agents
         }
-
         for tick in range(1, self.max_iterations + 1):
-            discourse_context = self.graph.get_recent_context(last_n=6)
-            selected_id = self._router.select_next_agent(
-                discourse_context=discourse_context,
-                agent_ids=agent_ids,
-            )
-
-            tick_results: list[dict[str, Any]] = []
-
-            for agent in self.agents:
-                deficit_before = agent.drive.deficit
-                agent.drive.decay()
-                agent.memory.update_working_tick(tick)
-
-                # Drain buffered events for stimulus
-                buffered_events = list(agent._event_buffer)
-                agent._event_buffer.clear()
-                for evt in buffered_events:
-                    relevance = agent.stimulus_evaluator.evaluate(
-                        evt, agent.agent_id, agent.memory, self.graph
-                    )
-                    agent.drive.stimulate(relevance, gamma=0.1)
-
-                incoming_msgs = list(pending_messages[agent.agent_id])
-                pending_messages[agent.agent_id].clear()
-
-                activation_prob = agent.drive.get_activation_probability()
-
-                res: dict[str, Any] = {
-                    "agent_id": agent.agent_id,
-                    "tick": tick,
-                    "action_type": "PASS",
-                    "node_id": None,
-                    "claim": None,
-                    "target_node_id": None,
-                    "attack_type": None,
-                    "deficit_before": deficit_before,
-                    "deficit_after": agent.drive.deficit,
-                    "activation_prob": activation_prob,
-                    "delta_phi": 0.0,
-                    "utility_scores": {},
-                    "stimulus_event_id": None,
-                    "stimulus_utility": 0.0,
-                    "n_stimuli_evaluated": len(buffered_events),
-                    "n_messages_received": len(incoming_msgs),
-                    "reward": 0.0,
-                    "q_values": {},
-                    "agent_state": "active",
-                    "cognitive_phase": None,
-                    "messages": [],
-                    "vsm_system": agent.vsm_system,
-                    "send_to": None,
-                    "message_content": None,
-                    "message_type": None,
-                }
-
-                if agent.agent_id != selected_id:
-                    tick_results.append(res)
-                    continue
-
-                # Run the compiled cognitive graph for the selected agent
-                messages_ctx = "No messages."
-                if incoming_msgs:
-                    msg_lines = [
-                        f"[{m.performative.upper()}] from {m.from_agent}: {m.content}"
-                        for m in incoming_msgs
-                    ]
-                    messages_ctx = "\n".join(msg_lines)
-
-                faction_agents_str = ", ".join(
-                    a for a in agent.faction_agents if a != agent.agent_id
-                ) or "None"
-
-                target_ids = self.graph.valid_target_ids()
-                discourse_query = discourse_context[:200] if discourse_context else None
-                memory_ctx = agent.memory.get_prompt_context(
-                    discourse_query=discourse_query
-                )
-
-                best_stimulus_ctx = "No specific stimulus. Act proactively."
-                if buffered_events:
-                    scored = [
-                        (e, agent.stimulus_evaluator.evaluate(
-                            e, agent.agent_id, agent.memory, self.graph
-                        ))
-                        for e in buffered_events
-                    ]
-                    best_evt, best_u = max(scored, key=lambda x: x[1])
-                    res["stimulus_event_id"] = best_evt.node_id
-                    res["stimulus_utility"] = best_u
-                    best_stimulus_ctx = (
-                        f"You are responding to: [{best_evt.node_id}] "
-                        f"{best_evt.agent_id} ({best_evt.faction}): "
-                        f'"{best_evt.claim}"'
-                    )
-
-                graph_state = {
-                    "agent_id": agent.agent_id,
-                    "tick": tick,
-                    "deficit": agent.drive.deficit,
-                    "graph_context": discourse_context or "",
-                    "target_ids": target_ids,
-                    "faction_agents": faction_agents_str,
-                    "memory_context": memory_ctx,
-                    "messages_context": messages_ctx,
-                    "stimulus_context": best_stimulus_ctx,
-                    "role_prompt": agent.role_prompt,
-                    "action": "PASS",
-                    "claim": None,
-                    "target_node_id": None,
-                    "attack_type": None,
-                    "send_to": None,
-                    "message_content": None,
-                    "message_type": None,
-                    "delta_phi": 0.0,
-                    "phase": "triage",
-                    "should_act": False,
-                    "llm_response": None,
-                    "budget_ok": self.budget.can_call(
-                        agent.agent_id, agent.drive.deficit, tick
-                    ),
-                }
-
-                # Invoke the compiled graph
-                graph_result = cognitive_graph.invoke(graph_state)
-                res["cognitive_phase"] = graph_result.get("phase", "pass")
-                res["agent_state"] = "working"
-
-                # If graph decided to act (phase == "execute" or "observe")
-                if graph_result.get("phase") in ("execute", "observe"):
-                    faction_prefix = agent.agent_id.split("-")[0] + "-"
-                    undefended = self.graph.get_undefended_attacks(faction_prefix)
-                    undef_ctx = "None — your faction's claims are all defended."
-                    if undefended:
-                        udef_lines = []
-                        for u in undefended[:5]:
-                            udef_lines.append(
-                                f"- [{u['attacker_node']}] attacks your "
-                                f"[{u['attacked_node']}]: \"{u['attacker_claim']}\""
-                            )
-                        undef_ctx = "\n".join(udef_lines)
-
-                    action_result = agent.step(
-                        discourse_context,
-                        target_ids,
-                        incoming_messages=incoming_msgs,
-                        stimulus_context=best_stimulus_ctx,
-                        undefended_attacks_ctx=undef_ctx,
-                    )
-
-                    if action_result and action_result.action == "DEBATE" and action_result.claim:
-                        node_id = self.graph.add_argument(
-                            agent_id=agent.agent_id,
-                            claim=action_result.claim,
-                            target_node_id=action_result.target_node_id,
-                            attack_type=action_result.attack_type,
-                            tick=tick,
-                        )
-                        delta_phi = self.graph.calculate_phi_star_proxy(node_id)
-                        agent.learn(discourse_context, action_result, delta_phi)
-                        res.update({
-                            "action_type": "DEBATE",
-                            "node_id": node_id,
-                            "claim": action_result.claim,
-                            "target_node_id": action_result.target_node_id,
-                            "attack_type": action_result.attack_type,
-                            "delta_phi": delta_phi,
-                        })
-
-                    elif action_result and action_result.action == "MESSAGE" and action_result.send_to:
-                        res.update({
-                            "action_type": "MESSAGE",
-                            "send_to": action_result.send_to,
-                            "message_content": action_result.message_content,
-                            "message_type": action_result.message_type,
-                        })
-                        res["messages"] = [{
-                            "to_agent": action_result.send_to,
-                            "content": action_result.message_content or "",
-                            "msg_type": action_result.message_type or "inform",
-                        }]
-                        content = (action_result.message_content or "").strip()
-                        has_recipient = action_result.send_to in agent.faction_agents
-                        word_count = len(content.split()) if content else 0
-                        substance = min(1.0, word_count / 20.0) if has_recipient else 0.0
-                        agent.drive.satiate(substance * 0.08, alpha=1.0)
-
-                    elif action_result and action_result.action in ("SEARCH", "READ"):
-                        res["action_type"] = action_result.action
-
-                res["deficit_after"] = agent.drive.deficit
-
-                # Compute reward (same as HRRL, for logging parity)
-                reward = agent.drive.compute_reward(
-                    delta_before=deficit_before,
-                    delta_after=agent.drive.deficit,
-                    epsilon=agent.drive.BASELINE,
-                    m=agent.drive.m,
-                )
-                res["reward"] = round(reward, 6)
-
-                tick_results.append(res)
-
-            # Broadcast NewArgumentEvents (same as HRRL)
-            for r in tick_results:
-                if r["action_type"] == "DEBATE" and r.get("node_id"):
-                    author_faction = _faction_of(r["agent_id"])
-                    target_faction: str | None = None
-                    target_nid = r.get("target_node_id")
-                    if target_nid and self.graph.graph.has_node(target_nid):
-                        ta = self.graph.graph.nodes[target_nid].get("agent_id", "")
-                        target_faction = _faction_of(ta)
-                    evt = NewArgumentEvent(
-                        tick=tick,
-                        node_id=r["node_id"],
-                        agent_id=r["agent_id"],
-                        claim=r["claim"] or "",
-                        delta_phi=r["delta_phi"],
-                        attack_type=r.get("attack_type"),
-                        target_node_id=target_nid,
-                        faction=author_faction,
-                        targets_faction=target_faction,
-                    )
-                    for agent in self.agents:
-                        if agent.agent_id != r["agent_id"]:
-                            agent.memory.observe(evt)
-                            agent._event_buffer.append(evt)
-
-            # Route DirectMessages (same as HRRL)
-            for r in tick_results:
-                for msg in r.get("messages", []):
-                    to_id = msg.get("to_agent", "")
-                    if to_id in pending_messages:
-                        pending_messages[to_id].append(DirectMessageEvent(
-                            tick=tick,
-                            from_agent=r["agent_id"],
-                            to_agent=to_id,
-                            content=msg.get("content", ""),
-                            performative=msg.get("msg_type", "inform"),
-                        ))
-
-            tick_logs = self._build_tick_logs(tick_results, tick, trigger="ROUTER")
+            tick_logs = self._langgraph_single_tick(tick)
             self.logs.extend(tick_logs)
             self._print_tick(tick, tick_logs)
 
             if self._on_tick:
                 self._on_tick(tick, tick_logs, self)
+
+    def _langgraph_single_tick(self, tick: int) -> list[SimulationLog]:
+        from langclaw.langgraph_flow import build_cognitive_graph
+
+        assert self._router is not None, "Router not initialised for LANGGRAPH mode"
+        agent_ids = [a.agent_id for a in self.agents]
+        cognitive_graph = build_cognitive_graph()
+
+        discourse_context = self.graph.get_recent_context(last_n=6)
+        selected_id = self._router.select_next_agent(
+            discourse_context=discourse_context,
+            agent_ids=agent_ids,
+        )
+
+        tick_results: list[dict[str, Any]] = []
+
+        for agent in self.agents:
+            deficit_before = agent.drive.deficit
+            agent.drive.decay()
+            agent.memory.update_working_tick(tick)
+
+            buffered_events = list(agent._event_buffer)
+            agent._event_buffer.clear()
+            for evt in buffered_events:
+                relevance = agent.stimulus_evaluator.evaluate(
+                    evt, agent.agent_id, agent.memory, self.graph
+                )
+                agent.drive.stimulate(relevance, gamma=0.1)
+
+            incoming_msgs = list(self._langgraph_pending_messages[agent.agent_id])
+            self._langgraph_pending_messages[agent.agent_id].clear()
+            activation_prob = agent.drive.get_activation_probability()
+
+            res: dict[str, Any] = {
+                "agent_id": agent.agent_id,
+                "tick": tick,
+                "action_type": "PASS",
+                "node_id": None,
+                "claim": None,
+                "target_node_id": None,
+                "attack_type": None,
+                "deficit_before": deficit_before,
+                "deficit_after": agent.drive.deficit,
+                "activation_prob": activation_prob,
+                "delta_phi": 0.0,
+                "utility_scores": {},
+                "stimulus_event_id": None,
+                "stimulus_utility": 0.0,
+                "n_stimuli_evaluated": len(buffered_events),
+                "n_messages_received": len(incoming_msgs),
+                "reward": 0.0,
+                "q_values": {},
+                "agent_state": "active",
+                "cognitive_phase": None,
+                "messages": [],
+                "vsm_system": agent.vsm_system,
+                "send_to": None,
+                "message_content": None,
+                "message_type": None,
+            }
+
+            if agent.agent_id != selected_id:
+                tick_results.append(res)
+                continue
+
+            messages_ctx = "No messages."
+            if incoming_msgs:
+                msg_lines = [
+                    f"[{m.performative.upper()}] from {m.from_agent}: {m.content}"
+                    for m in incoming_msgs
+                ]
+                messages_ctx = "\n".join(msg_lines)
+
+            faction_agents_str = ", ".join(
+                a for a in agent.faction_agents if a != agent.agent_id
+            ) or "None"
+
+            target_ids = self.graph.valid_target_ids()
+            discourse_query = discourse_context[:200] if discourse_context else None
+            memory_ctx = agent.memory.get_prompt_context(discourse_query=discourse_query)
+
+            best_stimulus_ctx = "No specific stimulus. Act proactively."
+            if buffered_events:
+                scored = [
+                    (
+                        e,
+                        agent.stimulus_evaluator.evaluate(
+                            e, agent.agent_id, agent.memory, self.graph
+                        ),
+                    )
+                    for e in buffered_events
+                ]
+                best_evt, best_u = max(scored, key=lambda x: x[1])
+                res["stimulus_event_id"] = best_evt.node_id
+                res["stimulus_utility"] = best_u
+                best_stimulus_ctx = (
+                    f"You are responding to: [{best_evt.node_id}] "
+                    f"{best_evt.agent_id} ({best_evt.faction}): "
+                    f'"{best_evt.claim}"'
+                )
+
+            graph_state = {
+                "agent_id": agent.agent_id,
+                "tick": tick,
+                "deficit": agent.drive.deficit,
+                "graph_context": discourse_context or "",
+                "target_ids": target_ids,
+                "faction_agents": faction_agents_str,
+                "memory_context": memory_ctx,
+                "messages_context": messages_ctx,
+                "stimulus_context": best_stimulus_ctx,
+                "role_prompt": agent.role_prompt,
+                "action": "PASS",
+                "claim": None,
+                "target_node_id": None,
+                "attack_type": None,
+                "send_to": None,
+                "message_content": None,
+                "message_type": None,
+                "delta_phi": 0.0,
+                "phase": "triage",
+                "should_act": False,
+                "llm_response": None,
+                "budget_ok": self.budget.can_call(
+                    agent.agent_id, agent.drive.deficit, tick
+                ),
+            }
+
+            graph_result = cognitive_graph.invoke(graph_state)
+            res["cognitive_phase"] = graph_result.get("phase", "pass")
+            res["agent_state"] = "working"
+
+            if graph_result.get("phase") in ("execute", "observe"):
+                faction_prefix = agent.agent_id.split("-")[0] + "-"
+                undefended = self.graph.get_undefended_attacks(faction_prefix)
+                undef_ctx = "None — your faction's claims are all defended."
+                if undefended:
+                    udef_lines = []
+                    for u in undefended[:5]:
+                        udef_lines.append(
+                            f"- [{u['attacker_node']}] attacks your "
+                            f"[{u['attacked_node']}]: \"{u['attacker_claim']}\""
+                        )
+                    undef_ctx = "\n".join(udef_lines)
+
+                action_result = agent.step(
+                    discourse_context,
+                    target_ids,
+                    incoming_messages=incoming_msgs,
+                    stimulus_context=best_stimulus_ctx,
+                    undefended_attacks_ctx=undef_ctx,
+                )
+
+                if action_result and action_result.action == "DEBATE" and action_result.claim:
+                    node_id = self.graph.add_argument(
+                        agent_id=agent.agent_id,
+                        claim=action_result.claim,
+                        target_node_id=action_result.target_node_id,
+                        attack_type=action_result.attack_type,
+                        tick=tick,
+                    )
+                    delta_phi = self.graph.calculate_phi_star_proxy(node_id)
+                    agent.learn(discourse_context, action_result, delta_phi)
+                    res.update({
+                        "action_type": "DEBATE",
+                        "node_id": node_id,
+                        "claim": action_result.claim,
+                        "target_node_id": action_result.target_node_id,
+                        "attack_type": action_result.attack_type,
+                        "delta_phi": delta_phi,
+                    })
+
+                elif action_result and action_result.action == "MESSAGE" and action_result.send_to:
+                    res.update({
+                        "action_type": "MESSAGE",
+                        "send_to": action_result.send_to,
+                        "message_content": action_result.message_content,
+                        "message_type": action_result.message_type,
+                    })
+                    res["messages"] = [{
+                        "to_agent": action_result.send_to,
+                        "content": action_result.message_content or "",
+                        "msg_type": action_result.message_type or "inform",
+                    }]
+                    content = (action_result.message_content or "").strip()
+                    has_recipient = action_result.send_to in agent.faction_agents
+                    word_count = len(content.split()) if content else 0
+                    substance = min(1.0, word_count / 20.0) if has_recipient else 0.0
+                    agent.drive.satiate(substance * 0.08, alpha=1.0)
+
+                elif action_result and action_result.action in ("SEARCH", "READ"):
+                    res["action_type"] = action_result.action
+
+            res["deficit_after"] = agent.drive.deficit
+            reward = agent.drive.compute_reward(
+                delta_before=deficit_before,
+                delta_after=agent.drive.deficit,
+                epsilon=agent.drive.BASELINE,
+                m=agent.drive.m,
+            )
+            res["reward"] = round(reward, 6)
+            tick_results.append(res)
+
+        for r in tick_results:
+            if r["action_type"] == "DEBATE" and r.get("node_id"):
+                author_faction = _faction_of(r["agent_id"])
+                target_faction: str | None = None
+                target_nid = r.get("target_node_id")
+                if target_nid and self.graph.graph.has_node(target_nid):
+                    ta = self.graph.graph.nodes[target_nid].get("agent_id", "")
+                    target_faction = _faction_of(ta)
+                evt = NewArgumentEvent(
+                    tick=tick,
+                    node_id=r["node_id"],
+                    agent_id=r["agent_id"],
+                    claim=r["claim"] or "",
+                    delta_phi=r["delta_phi"],
+                    attack_type=r.get("attack_type"),
+                    target_node_id=target_nid,
+                    faction=author_faction,
+                    targets_faction=target_faction,
+                )
+                for other_agent in self.agents:
+                    if other_agent.agent_id != r["agent_id"]:
+                        other_agent.memory.observe(evt)
+                        other_agent._event_buffer.append(evt)
+
+        for r in tick_results:
+            for msg in r.get("messages", []):
+                to_id = msg.get("to_agent", "")
+                if to_id in self._langgraph_pending_messages:
+                    self._langgraph_pending_messages[to_id].append(DirectMessageEvent(
+                        tick=tick,
+                        from_agent=r["agent_id"],
+                        to_agent=to_id,
+                        content=msg.get("content", ""),
+                        performative=msg.get("msg_type", "inform"),
+                    ))
+
+        return self._build_tick_logs(tick_results, tick, trigger="ROUTER")
 
     def _baseline_tick(self, tick: int) -> list[SimulationLog]:
         if self.orchestration_mode == OrchestrationMode.ROUND_ROBIN:
@@ -753,6 +743,7 @@ class SotopiaEnvironment:
             is_acting = agent in acting_agents
             deficit_before = agent.drive.deficit
 
+            node_id = None
             delta_phi = 0.0
             action_str = "PASS"
             claim = None
@@ -802,6 +793,7 @@ class SotopiaEnvironment:
                 tick=tick,
                 agent_id=agent.agent_id,
                 action=action_str,
+                node_id=node_id,
                 claim=claim,
                 target_node_id=target_node_id,
                 attack_type=attack_type,
@@ -846,6 +838,7 @@ class SotopiaEnvironment:
                 tick=tick,
                 agent_id=res["agent_id"],
                 action=res["action_type"],
+                node_id=res.get("node_id"),
                 claim=res.get("claim"),
                 target_node_id=res.get("target_node_id"),
                 attack_type=res.get("attack_type"),
@@ -940,3 +933,70 @@ class SotopiaEnvironment:
                 f"    {agent.agent_id} ({agent.vsm_system or '?'}): "
                 f"{agent.drive.deficit:.4f}"
             )
+
+    def to_checkpoint(self) -> dict[str, Any]:
+        """Serialize environment state for per-tick benchmark resume."""
+        return {
+            "graph": self.graph.to_checkpoint(),
+            "budget": self.budget.to_checkpoint(),
+            "agents": {
+                agent.agent_id: agent.to_checkpoint()
+                for agent in self.agents
+            },
+            "logs": [log.model_dump() for log in self.logs],
+            "consistent_turns": self._consistent_turns,
+            "total_debate_turns": self._total_debate_turns,
+            "rng_state": repr(self._rng.getstate()),
+            "langgraph_pending_messages": {
+                agent_id: [
+                    {
+                        "tick": msg.tick,
+                        "from_agent": msg.from_agent,
+                        "to_agent": msg.to_agent,
+                        "content": msg.content,
+                        "performative": msg.performative,
+                    }
+                    for msg in messages
+                ]
+                for agent_id, messages in self._langgraph_pending_messages.items()
+            },
+            "router": self._router.to_checkpoint() if self._router else None,
+        }
+
+    def load_checkpoint(self, payload: dict[str, Any]) -> None:
+        """Restore environment state from a serialized checkpoint."""
+        reset_shared_store()
+        self.graph = ArgumentGraph.from_checkpoint(payload.get("graph", {}))
+        self.budget.load_checkpoint(payload.get("budget", {}))
+
+        agent_payloads = payload.get("agents", {})
+        for agent in self.agents:
+            if agent.agent_id in agent_payloads:
+                agent.load_checkpoint(agent_payloads[agent.agent_id])
+
+        self.logs = [SimulationLog.model_validate(item) for item in payload.get("logs", [])]
+        self._consistent_turns = int(payload.get("consistent_turns", 0))
+        self._total_debate_turns = int(payload.get("total_debate_turns", 0))
+
+        rng_state = payload.get("rng_state")
+        if isinstance(rng_state, str):
+            self._rng.setstate(ast.literal_eval(rng_state))
+
+        self._langgraph_pending_messages = {
+            agent.agent_id: [] for agent in self.agents
+        }
+        for agent_id, messages in (payload.get("langgraph_pending_messages") or {}).items():
+            if agent_id in self._langgraph_pending_messages:
+                self._langgraph_pending_messages[agent_id] = [
+                    DirectMessageEvent(
+                        tick=int(msg.get("tick", 0)),
+                        from_agent=str(msg.get("from_agent", "")),
+                        to_agent=str(msg.get("to_agent", "")),
+                        content=str(msg.get("content", "")),
+                        performative=str(msg.get("performative", "inform")),
+                    )
+                    for msg in messages
+                ]
+
+        if self._router is not None and payload.get("router") is not None:
+            self._router.load_checkpoint(payload["router"])

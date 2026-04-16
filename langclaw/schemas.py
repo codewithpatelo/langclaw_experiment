@@ -82,6 +82,7 @@ class SimulationLog(BaseModel):
     tick: int
     agent_id: str
     action: str
+    node_id: str | None = None
     claim: str | None = None
     target_node_id: str | None = None
     attack_type: str | None = None

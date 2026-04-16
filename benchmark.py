@@ -93,6 +93,42 @@ def _save_bm_checkpoint(path: Path, completed: dict[str, dict]) -> None:
         json.dump(list(completed.values()), f, indent=2, ensure_ascii=False)
 
 
+def _run_checkpoint_path(output_dir: Path, mode: str, seed: int | None) -> Path:
+    safe_seed = "none" if seed is None else str(seed)
+    return output_dir / "run_checkpoints" / f"{mode}__seed{safe_seed}.json"
+
+
+def _load_run_checkpoint(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    try:
+        with open(path, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        return None
+
+
+def _save_run_checkpoint(
+    path: Path,
+    *,
+    mode: str,
+    seed: int | None,
+    iterations: int,
+    next_tick: int,
+    env: SotopiaEnvironment,
+) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "mode": mode,
+        "seed": seed,
+        "iterations": iterations,
+        "next_tick": next_tick,
+        "env": env.to_checkpoint(),
+    }
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, ensure_ascii=False)
+
+
 def _is_rate_limit_error(exc: Exception) -> bool:
     """Heuristic detection for OpenAI quota/rate-limit failures."""
     parts: list[str] = []
@@ -157,6 +193,7 @@ def _run_mode(
     initial_deficit: float,
     stimulus_weights: dict[str, float] | None = None,
     debate_alpha: float = 2.0,
+    run_checkpoint_path: Path | None = None,
 ) -> tuple[list[SimulationLog], float, SotopiaEnvironment]:
     """Run simulation for the given mode. Returns (logs, elapsed_seconds, env).
 
@@ -179,10 +216,29 @@ def _run_mode(
         stimulus_weights=stimulus_weights,
         debate_alpha=debate_alpha,
     )
+    start_tick = 1
+    if run_checkpoint_path is not None:
+        checkpoint_payload = _load_run_checkpoint(run_checkpoint_path)
+        if checkpoint_payload and checkpoint_payload.get("mode") == mode and checkpoint_payload.get("seed") == seed:
+            env.load_checkpoint(checkpoint_payload.get("env", {}))
+            start_tick = int(checkpoint_payload.get("next_tick", 1))
+
     t0 = time.perf_counter()
-    logs = env.run()
+    for tick in range(start_tick, iterations + 1):
+        env.run_single_tick(tick)
+        if run_checkpoint_path is not None:
+            _save_run_checkpoint(
+                run_checkpoint_path,
+                mode=mode,
+                seed=seed,
+                iterations=iterations,
+                next_tick=tick + 1,
+                env=env,
+            )
     elapsed = time.perf_counter() - t0
-    return logs, elapsed, env
+    if run_checkpoint_path is not None and run_checkpoint_path.exists():
+        run_checkpoint_path.unlink()
+    return env.logs, elapsed, env
 
 
 def _build_aaf_from_logs(logs: list[SimulationLog]) -> ArgumentGraph:
@@ -191,24 +247,18 @@ def _build_aaf_from_logs(logs: list[SimulationLog]) -> ArgumentGraph:
     We rebuild the graph structure using the node IDs and target links stored
     in the simulation logs.  This avoids passing the live graph across seeds.
     """
-    import uuid
-    import networkx as nx
-    from langclaw.delp_graph import ArgumentGraph
-
     g = ArgumentGraph()
-    # Map from log-recorded target_node_id strings to actual node IDs in graph
-    # Reconstruction: add nodes in tick order, connecting attack edges
-    node_ids_seen: list[str] = []
-
     for log in logs:
         if log.action != "DEBATE" or not log.claim:
             continue
-        # We cannot reconstruct exact node IDs from logs (they contain UUID suffixes)
-        # Instead we use the graph's own node list from the last log entry
-        # → use graph_nodes count as a proxy and compute metrics from live env graph
-        break
-
-    # Return empty — callers should use env.graph directly (passed as arg)
+        g.add_argument(
+            agent_id=log.agent_id,
+            claim=log.claim,
+            target_node_id=log.target_node_id,
+            attack_type=log.attack_type,
+            tick=log.tick,
+            node_id=log.node_id,
+        )
     return g
 
 
@@ -411,13 +461,14 @@ def _replay_graph_from_debates(debates: list[SimulationLog]) -> ArgumentGraph:
     """Rebuild an ArgumentGraph from logged debate entries (for incremental AAF)."""
     g = ArgumentGraph()
     for d in debates:
-        if d.claim:
+        if d.claim and d.node_id:
             g.add_argument(
                 agent_id=d.agent_id,
                 claim=d.claim,
                 target_node_id=d.target_node_id,
                 attack_type=d.attack_type,
                 tick=d.tick,
+                node_id=d.node_id,
             )
     return g
 
@@ -442,6 +493,161 @@ def _get_embeddings_for_utterances(utterances: list[str]) -> "np.ndarray | None"
         return embeddings
     except Exception:
         return None
+
+
+def _detect_red_flags(
+    mode: str,
+    seed: int,
+    metrics: dict[str, Any],
+    logs: list[SimulationLog],
+) -> dict[str, Any]:
+    """Detect severe validity/runtime anomalies after a completed run.
+
+    These checks are intentionally conservative: they target patterns that are
+    hard to reconcile with a healthy run and therefore justify stopping the
+    benchmark before spending more budget.
+    """
+    alerts: list[dict[str, Any]] = []
+    debates = [l for l in logs if l.action == "DEBATE" and l.claim]
+    q_magnitudes = [
+        abs(float(v))
+        for log in logs
+        for v in (log.q_values or {}).values()
+    ]
+    max_abs_q = max(q_magnitudes, default=0.0)
+    final_deficits = list((metrics.get("final_deficits") or {}).values())
+    median_final_deficit = statistics.median(final_deficits) if final_deficits else 0.0
+    window_acceptance = metrics.get("window_acceptance") or []
+    final_acceptance = float(metrics.get("aaf_acceptance_ratio", 0.0))
+    avg_reward = float(metrics.get("avg_reward", 0.0))
+
+    if (
+        len(window_acceptance) >= 3
+        and all(abs(float(v) - 1.0) < 1e-9 for v in window_acceptance)
+        and final_acceptance < 0.95
+        and len(debates) >= 20
+    ):
+        alerts.append({
+            "severity": "critical",
+            "code": "acceptance_replay_mismatch",
+            "message": (
+                "Windowed acceptance stayed at 1.0 while final acceptance was materially lower. "
+                "This usually indicates graph replay or node-link reconstruction failure."
+            ),
+            "evidence": {
+                "window_acceptance": window_acceptance,
+                "final_acceptance_ratio": final_acceptance,
+                "debates": len(debates),
+            },
+        })
+
+    if max_abs_q > 1_000.0:
+        alerts.append({
+            "severity": "critical",
+            "code": "q_value_explosion",
+            "message": (
+                "Observed Q-values far outside the expected scale of homeostatic rewards, "
+                "suggesting numerical instability or learner divergence."
+            ),
+            "evidence": {
+                "max_abs_q_value": round(max_abs_q, 4),
+            },
+        })
+
+    if mode == "hrrl" and avg_reward < -0.25 and median_final_deficit > 2.0:
+        alerts.append({
+            "severity": "critical",
+            "code": "negative_homeostatic_drift",
+            "message": (
+                "Average reward was strongly negative while final deficits remained high, "
+                "which suggests the controller is increasing drive rather than regulating it."
+            ),
+            "evidence": {
+                "avg_reward": round(avg_reward, 4),
+                "median_final_deficit": round(median_final_deficit, 4),
+            },
+        })
+
+    if mode == "hrrl" and metrics.get("ir") not in (None, 1.0):
+        alerts.append({
+            "severity": "warning",
+            "code": "unexpected_ir",
+            "message": "HRRL initiative ratio deviated from the expected endogenous value.",
+            "evidence": {
+                "initiative_ratio": metrics.get("ir"),
+            },
+        })
+
+    recent_tail = []
+    for log in logs[-12:]:
+        recent_tail.append({
+            "tick": log.tick,
+            "agent_id": log.agent_id,
+            "action": log.action,
+            "reward": log.reward,
+            "delta_phi": log.delta_phi,
+            "deficit_after": log.deficit_after,
+            "q_values": log.q_values,
+        })
+
+    severity_rank = {"warning": 1, "critical": 2}
+    overall = "ok"
+    if alerts:
+        overall = max(alerts, key=lambda a: severity_rank.get(a["severity"], 0))["severity"]
+
+    return {
+        "mode": mode,
+        "seed": seed,
+        "status": overall,
+        "alerts": alerts,
+        "summary": {
+            "total_debates": metrics.get("total_debates", 0),
+            "aaf_acceptance_ratio": final_acceptance,
+            "avg_reward": avg_reward,
+            "max_abs_q_value": round(max_abs_q, 4),
+            "median_final_deficit": round(median_final_deficit, 4),
+        },
+        "recent_log_tail": recent_tail,
+    }
+
+
+def _explain_red_flags_with_llm(
+    health_report: dict[str, Any],
+    *,
+    base_url: str,
+    api_key: str,
+    model: str,
+) -> dict[str, Any] | None:
+    """Use an LLM to produce a concise explanation for red-flagged runs."""
+    alerts = health_report.get("alerts") or []
+    if not alerts:
+        return None
+
+    try:
+        from openai import OpenAI
+
+        client = OpenAI(base_url=base_url, api_key=api_key)
+        prompt = (
+            "You are diagnosing an experimental run in a multi-agent benchmark.\n"
+            "Explain briefly what likely went wrong, why it threatens validity, and what to inspect next.\n"
+            "Be concrete and skeptical. Do not speculate beyond the evidence.\n\n"
+            f"Health report:\n{json.dumps(health_report, ensure_ascii=False, indent=2)}\n\n"
+            "Return JSON with keys: probable_cause, validity_risk, next_checks."
+        )
+        response = client.chat.completions.create(
+            model=model,
+            messages=[{"role": "user", "content": prompt}],
+            max_completion_tokens=1200,
+        )
+        raw = (response.choices[0].message.content or "").strip()
+        return {
+            "model": model,
+            "raw": raw,
+        }
+    except Exception as exc:
+        return {
+            "error": f"LLM explanation failed: {exc}",
+        }
 
 
 def _run_statistical_tests(hrrl_runs: list[dict], lg_runs: list[dict]) -> dict:
@@ -812,6 +1018,74 @@ def _save_comparison_charts(all_metrics: dict, all_logs: dict, output_dir: Path)
     console.print(f"  [green]Charts saved to {output_dir}/[/green]")
 
 
+def _run_preflight(args: argparse.Namespace, cal: dict[str, Any]) -> int:
+    """Run a short safety check before the full benchmark."""
+    cal_stimulus_weights = cal.get("stimulus_weights")
+    cal_debate_alpha = cal.get("debate_alpha", 2.0)
+    preflight_dir = Path(args.output_dir) / "preflight"
+    preflight_dir.mkdir(parents=True, exist_ok=True)
+
+    seed = args.seeds[0]
+    reports: list[dict[str, Any]] = []
+
+    for mode in args.modes:
+        logs, elapsed, env = _run_mode(
+            mode=mode,
+            base_url=args.base_url,
+            model=args.model,
+            api_key=args.api_key,
+            iterations=args.preflight_ticks,
+            seed=seed,
+            api_hard_limit=args.api_hard_limit,
+            initial_deficit=args.initial_deficit,
+            stimulus_weights=cal_stimulus_weights,
+            debate_alpha=cal_debate_alpha,
+            run_checkpoint_path=None,
+        )
+        metrics = _compute_metrics(logs, env.graph)
+        temporal = _compute_temporal_metrics(logs, env.graph, n_windows=min(3, max(1, len([l for l in logs if l.action == "DEBATE" and l.claim]))))
+        metrics.update(temporal)
+        health = _detect_red_flags(mode, seed, metrics, logs)
+        replay_graph = _build_aaf_from_logs(logs)
+        health["replay_validation"] = {
+            "live_acceptance_ratio": round(env.graph.acceptance_ratio(), 4),
+            "replayed_acceptance_ratio": round(replay_graph.acceptance_ratio(), 4),
+            "live_cycles": env.graph.defeat_cycle_count(),
+            "replayed_cycles": replay_graph.defeat_cycle_count(),
+        }
+        if health["status"] == "critical":
+            explanation = _explain_red_flags_with_llm(
+                health,
+                base_url=args.base_url,
+                api_key=args.api_key,
+                model=args.health_llm_model or args.model,
+            )
+            if explanation is not None:
+                health["llm_explanation"] = explanation
+        reports.append({
+            "mode": mode,
+            "elapsed_seconds": round(elapsed, 3),
+            "metrics": metrics,
+            "health": health,
+        })
+
+    report_path = preflight_dir / f"preflight_seed{seed}.json"
+    with open(report_path, "w", encoding="utf-8") as f:
+        json.dump(reports, f, indent=2, ensure_ascii=False)
+
+    has_critical = any(r["health"]["status"] == "critical" for r in reports)
+    if has_critical:
+        console.print(
+            f"[red]Preflight detected critical issues. Report saved to {report_path}.[/red]"
+        )
+        return 86
+
+    console.print(
+        f"[green]Preflight passed. Report saved to {report_path}.[/green]"
+    )
+    return 0
+
+
 def main() -> None:
     default_api_key = os.getenv("OPEN_AI_API_KEY", "ollama")
     default_base_url = (
@@ -854,6 +1128,27 @@ def main() -> None:
         "--clean", action="store_true",
         help="Discard checkpoint and start fresh.",
     )
+    parser.add_argument(
+        "--no-halt-on-red-flags",
+        action="store_true",
+        help="Continue despite critical health alerts (not recommended for long runs).",
+    )
+    parser.add_argument(
+        "--preflight",
+        action="store_true",
+        help="Run a short safety check instead of the full benchmark.",
+    )
+    parser.add_argument(
+        "--preflight-ticks",
+        type=int,
+        default=12,
+        help="Ticks used by the short preflight run.",
+    )
+    parser.add_argument(
+        "--health-llm-model",
+        default=None,
+        help="Model used to explain red flags. Defaults to the benchmark model.",
+    )
 
     args = parser.parse_args()
 
@@ -865,12 +1160,18 @@ def main() -> None:
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    health_dir = output_dir / "health_reports"
+    health_dir.mkdir(parents=True, exist_ok=True)
 
     checkpoint_path = output_dir / "benchmark_checkpoint.json"
+    run_checkpoint_dir = output_dir / "run_checkpoints"
 
     if args.clean and checkpoint_path.exists():
         checkpoint_path.unlink()
         console.print("[yellow]Checkpoint cleared — starting fresh[/yellow]")
+    if args.clean and run_checkpoint_dir.exists():
+        for stale_checkpoint in run_checkpoint_dir.glob("*.json"):
+            stale_checkpoint.unlink()
 
     completed = _load_bm_checkpoint(checkpoint_path)
     if completed:
@@ -882,6 +1183,9 @@ def main() -> None:
     cal = _load_calibration_config(args.config)
     cal_stimulus_weights = cal.get("stimulus_weights")
     cal_debate_alpha = cal.get("debate_alpha", 2.0)
+
+    if args.preflight:
+        raise SystemExit(_run_preflight(args, cal))
 
     # Per-mode run accumulators (reload from checkpoint)
     mode_runs: dict[str, list[dict]] = {m: [] for m in args.modes}
@@ -898,6 +1202,7 @@ def main() -> None:
 
         for mode in args.modes:
             ck_key = _bm_checkpoint_key(mode, seed)
+            run_ck_path = _run_checkpoint_path(output_dir, mode, seed)
 
             if ck_key in completed:
                 console.print(
@@ -922,6 +1227,7 @@ def main() -> None:
                     initial_deficit=args.initial_deficit,
                     stimulus_weights=cal_stimulus_weights,
                     debate_alpha=cal_debate_alpha,
+                    run_checkpoint_path=run_ck_path,
                 )
             except Exception as exc:
                 _save_bm_checkpoint(checkpoint_path, completed)
@@ -961,6 +1267,27 @@ def main() -> None:
             ck_entry = {"_ck": ck_key, "_mode": mode, "_seed": seed, **metrics}
             completed[ck_key] = ck_entry
             _save_bm_checkpoint(checkpoint_path, completed)
+
+            health_report = _detect_red_flags(mode, seed, metrics, logs)
+            health_path = health_dir / f"health_{safe_mode}_seed{seed}.json"
+            if health_report["status"] != "ok":
+                explanation = _explain_red_flags_with_llm(
+                    health_report,
+                    base_url=args.base_url,
+                    api_key=args.api_key,
+                    model=args.health_llm_model or args.model,
+                )
+                if explanation is not None:
+                    health_report["llm_explanation"] = explanation
+            with open(health_path, "w", encoding="utf-8") as f:
+                json.dump(health_report, f, indent=2, ensure_ascii=False)
+
+            if health_report["status"] == "critical" and not args.no_halt_on_red_flags:
+                console.print(
+                    f"[red]Critical red flags detected for {mode} seed={seed}. "
+                    f"Health report saved to {health_path}. Benchmark halted for review.[/red]"
+                )
+                raise SystemExit(86)
 
     # Aggregate across seeds
     agg_all = {mode: _aggregate_multi_seed(runs) for mode, runs in mode_runs.items()}

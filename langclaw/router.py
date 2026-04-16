@@ -139,3 +139,17 @@ class LangGraphRouter:
         chosen = agent_ids[self._cycle_index % len(agent_ids)]
         self._cycle_index += 1
         return chosen
+
+    def to_checkpoint(self) -> dict[str, object]:
+        """Serialize router state for benchmark resume."""
+        return {
+            "cycle_index": self._cycle_index,
+            "router_call_count": self._router_call_count,
+        }
+
+    def load_checkpoint(self, payload: dict[str, object]) -> None:
+        """Restore router state from checkpoint."""
+        self._cycle_index = int(payload.get("cycle_index", self._cycle_index))
+        self._router_call_count = int(
+            payload.get("router_call_count", self._router_call_count)
+        )

@@ -30,6 +30,7 @@ Communication
 
 from __future__ import annotations
 
+import ast
 import asyncio
 import json
 import logging
@@ -818,3 +819,81 @@ class LangClawAgent:
         if start != -1 and end != -1:
             return text[start: end + 1]
         return text
+
+    def to_checkpoint(self) -> dict[str, Any]:
+        """Serialize agent state for per-tick benchmark resume."""
+        return {
+            "agent_id": self.agent_id,
+            "drive": self.drive.to_checkpoint(),
+            "memory": self.memory.to_checkpoint(),
+            "q_learner": self.q_learner.to_checkpoint(),
+            "event_buffer": [
+                {
+                    "tick": evt.tick,
+                    "node_id": evt.node_id,
+                    "agent_id": evt.agent_id,
+                    "claim": evt.claim,
+                    "delta_phi": evt.delta_phi,
+                    "attack_type": evt.attack_type,
+                    "target_node_id": evt.target_node_id,
+                    "faction": evt.faction,
+                    "targets_faction": evt.targets_faction,
+                }
+                for evt in self._event_buffer
+            ],
+            "message_buffer": [
+                {
+                    "tick": msg.tick,
+                    "from_agent": msg.from_agent,
+                    "to_agent": msg.to_agent,
+                    "content": msg.content,
+                    "performative": msg.performative,
+                }
+                for msg in self._message_buffer
+            ],
+            "pending_messages": list(self._pending_messages),
+            "state": self.state.value,
+            "rng_state": repr(self._rng.getstate()),
+        }
+
+    def load_checkpoint(self, payload: dict[str, Any]) -> None:
+        """Restore agent state from checkpoint."""
+        self.drive.load_checkpoint(payload.get("drive", {}))
+        self.memory.load_checkpoint(payload.get("memory", {}))
+        self.q_learner.load_checkpoint(payload.get("q_learner", {}))
+        self._event_buffer = [
+            NewArgumentEvent(
+                tick=int(evt.get("tick", 0)),
+                node_id=str(evt.get("node_id", "")),
+                agent_id=str(evt.get("agent_id", "")),
+                claim=str(evt.get("claim", "")),
+                delta_phi=float(evt.get("delta_phi", 0.0)),
+                attack_type=evt.get("attack_type"),
+                target_node_id=evt.get("target_node_id"),
+                faction=str(evt.get("faction", "")),
+                targets_faction=evt.get("targets_faction"),
+            )
+            for evt in payload.get("event_buffer", [])
+        ]
+        self._message_buffer = [
+            DirectMessageEvent(
+                tick=int(msg.get("tick", 0)),
+                from_agent=str(msg.get("from_agent", "")),
+                to_agent=str(msg.get("to_agent", "")),
+                content=str(msg.get("content", "")),
+                performative=str(msg.get("performative", "inform")),
+            )
+            for msg in payload.get("message_buffer", [])
+        ]
+        self._pending_messages = [
+            {
+                "to_agent": str(msg.get("to_agent", "")),
+                "content": str(msg.get("content", "")),
+                "msg_type": str(msg.get("msg_type", "inform")),
+            }
+            for msg in payload.get("pending_messages", [])
+        ]
+        self.state = AgentState(str(payload.get("state", AgentState.ACTIVE.value)))
+        rng_state = payload.get("rng_state")
+        if isinstance(rng_state, str):
+            self._rng.setstate(ast.literal_eval(rng_state))

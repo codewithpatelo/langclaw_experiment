@@ -230,3 +230,70 @@ class AgentMemory:
 
     def __len__(self) -> int:
         return len(self._episodic_cache)
+
+    def to_checkpoint(self) -> dict[str, object]:
+        """Serialize memory caches for per-tick benchmark resume."""
+        return {
+            "working": list(self.working),
+            "episodic": [
+                {
+                    "state_summary": exp.state_summary,
+                    "action": exp.action,
+                    "claim": exp.claim,
+                    "delta_phi": exp.delta_phi,
+                    "tick": exp.tick,
+                }
+                for exp in self._episodic_cache
+            ],
+            "semantic": dict(self._semantic_cache),
+        }
+
+    def load_checkpoint(self, payload: dict[str, object]) -> None:
+        """Restore memory caches and rebuild the backing store."""
+        self.working = deque(
+            [str(x) for x in payload.get("working", [])],
+            maxlen=self.MAX_WORKING,
+        )
+        self._episodic_cache = [
+            Experience(
+                state_summary=str(exp.get("state_summary", "")),
+                action=str(exp.get("action", "PASS")),
+                claim=exp.get("claim"),
+                delta_phi=float(exp.get("delta_phi", 0.0)),
+                tick=int(exp.get("tick", 0)),
+            )
+            for exp in payload.get("episodic", [])
+        ]
+        self._semantic_cache = {
+            str(k): str(v) for k, v in (payload.get("semantic", {}) or {}).items()
+        }
+
+        self._store = get_shared_store()
+        for idx, exp in enumerate(self._episodic_cache):
+            self._store.put(
+                self._ns("episodic"),
+                f"exp_{idx}",
+                {
+                    "text": (
+                        f"Action={exp.action}, Claim={exp.claim or 'N/A'}, "
+                        f"Reward(dphi)={exp.delta_phi:.4f}, Tick={exp.tick}"
+                    ),
+                    "action": exp.action,
+                    "claim": exp.claim,
+                    "delta_phi": exp.delta_phi,
+                    "tick": exp.tick,
+                    "state_summary": exp.state_summary[:200],
+                },
+            )
+        for concept, fact in self._semantic_cache.items():
+            self._store.put(
+                self._ns("semantic"),
+                concept,
+                {"text": fact, "concept": concept},
+            )
+        for idx, text in enumerate(self.working):
+            self._store.put(
+                self._ns("working"),
+                f"restore_{idx}",
+                {"text": text, "tick": idx, "source_agent": "restored", "node_id": f"restored_{idx}"},
+            )

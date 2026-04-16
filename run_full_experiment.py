@@ -42,6 +42,17 @@ def _read_json(path: Path) -> dict[str, Any]:
         return json.load(f)
 
 
+def _pid_is_alive(pid: int | None) -> bool:
+    """Best-effort process liveness check."""
+    if pid is None or pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+        return True
+    except OSError:
+        return False
+
+
 def _append_event(path: Path, event: dict[str, Any]) -> None:
     """Append one JSON event line to the experiment journal."""
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -123,6 +134,29 @@ def _build_benchmark_cmd(args: argparse.Namespace) -> list[str]:
     ]
 
 
+def _build_preflight_cmd(args: argparse.Namespace) -> list[str]:
+    return [
+        sys.executable,
+        "benchmark.py",
+        "--preflight",
+        "--preflight-ticks",
+        str(args.preflight_ticks),
+        "--seeds",
+        str(args.seeds[0]),
+        "--modes",
+        "hrrl",
+        "langgraph",
+        "--config",
+        args.calibration_output,
+        "--output-dir",
+        args.benchmark_output_dir,
+        "--api-hard-limit",
+        str(args.benchmark_api_hard_limit),
+        "--log-level",
+        args.log_level,
+    ]
+
+
 def _run_worker(args: argparse.Namespace) -> int:
     root = Path(args.project_root).resolve()
     status_path = (root / args.status_file).resolve()
@@ -131,23 +165,27 @@ def _run_worker(args: argparse.Namespace) -> int:
     state_path = (root / args.state_file).resolve()
 
     calibration_cmd = _build_calibration_cmd(args)
+    preflight_cmd = _build_preflight_cmd(args)
     benchmark_cmd = _build_benchmark_cmd(args)
     child_env = os.environ.copy()
     child_env["PYTHONIOENCODING"] = "utf-8"
     child_env["PYTHONUTF8"] = "1"
 
+    prev_status = _read_json(status_path)
     status = {
         "phase": "starting",
-        "started_at": _now_iso(),
+        "started_at": prev_status.get("started_at", _now_iso()),
         "updated_at": _now_iso(),
         "worker_pid": os.getpid(),
         "project_root": str(root),
         "commands": {
             "calibration": calibration_cmd,
+            "preflight": preflight_cmd,
             "benchmark": benchmark_cmd,
         },
-        "calibration": {"done": False, "returncode": None},
-        "benchmark": {"done": False, "returncode": None},
+        "calibration": prev_status.get("calibration", {"done": False, "returncode": None}),
+        "preflight": prev_status.get("preflight", {"done": False, "returncode": None}),
+        "benchmark": prev_status.get("benchmark", {"done": False, "returncode": None}),
         "finished": False,
         "success": False,
         "error": None,
@@ -173,96 +211,247 @@ def _run_worker(args: argparse.Namespace) -> int:
         log_file.write(f"\n[{_now_iso()}] Worker PID {os.getpid()} started\n")
         log_file.flush()
 
-        # Calibration
-        status["phase"] = "calibration"
-        status["updated_at"] = _now_iso()
-        _write_json(status_path, status)
-        _append_event(
-            events_path,
-            {
-                "timestamp": _now_iso(),
-                "event": "phase_started",
-                "phase": "calibration",
-                "message": "Calibration phase started.",
-            },
+        calibration_output_path = (root / args.calibration_output).resolve()
+        skip_calibration = (
+            status["calibration"].get("done") is True
+            and status["calibration"].get("returncode") == 0
+            and calibration_output_path.exists()
         )
-        _write_state_banner(
-            state_path,
-            state="RUNNING",
-            phase="calibration",
-            message="Calibration in progress.",
-        )
-        cal_proc = subprocess.run(
-            calibration_cmd,
-            cwd=root,
-            env=child_env,
-            stdout=log_file,
-            stderr=log_file,
-            text=True,
-            check=False,
-        )
-        status["calibration"]["done"] = True
-        status["calibration"]["returncode"] = cal_proc.returncode
-        status["updated_at"] = _now_iso()
-        _write_json(status_path, status)
-        _append_event(
-            events_path,
-            {
-                "timestamp": _now_iso(),
-                "event": "phase_finished",
-                "phase": "calibration",
-                "returncode": cal_proc.returncode,
-            },
-        )
-        if cal_proc.returncode == 75:
-            status["phase"] = "paused_rate_limit"
-            status["finished"] = False
-            status["success"] = False
-            status["error"] = "paused during calibration due to API rate/quota limit"
+        if skip_calibration:
+            _append_event(
+                events_path,
+                {
+                    "timestamp": _now_iso(),
+                    "event": "phase_skipped",
+                    "phase": "calibration",
+                    "message": "Calibration output already present; reusing previous result.",
+                },
+            )
+        else:
+            status["phase"] = "calibration"
             status["updated_at"] = _now_iso()
             _write_json(status_path, status)
             _append_event(
                 events_path,
                 {
                     "timestamp": _now_iso(),
-                    "event": "paused_rate_limit",
+                    "event": "phase_started",
                     "phase": "calibration",
-                    "message": status["error"],
+                    "message": "Calibration phase started.",
                 },
             )
             _write_state_banner(
                 state_path,
-                state="PAUSED_RATE_LIMIT",
+                state="RUNNING",
                 phase="calibration",
-                message=status["error"],
+                message="Calibration in progress.",
             )
-            log_file.write(f"[{_now_iso()}] Worker paused (rate/quota) in calibration\n")
-            log_file.flush()
-            return 75
-        if cal_proc.returncode != 0:
-            status["phase"] = "failed"
-            status["finished"] = True
-            status["success"] = False
-            status["error"] = f"calibration failed with code {cal_proc.returncode}"
+            cal_proc = subprocess.run(
+                calibration_cmd,
+                cwd=root,
+                env=child_env,
+                stdout=log_file,
+                stderr=log_file,
+                text=True,
+                check=False,
+            )
+            status["calibration"]["done"] = True
+            status["calibration"]["returncode"] = cal_proc.returncode
             status["updated_at"] = _now_iso()
             _write_json(status_path, status)
             _append_event(
                 events_path,
                 {
                     "timestamp": _now_iso(),
-                    "event": "failed",
+                    "event": "phase_finished",
                     "phase": "calibration",
-                    "message": status["error"],
                     "returncode": cal_proc.returncode,
                 },
             )
+            if cal_proc.returncode == 75:
+                status["phase"] = "paused_rate_limit"
+                status["finished"] = False
+                status["success"] = False
+                status["error"] = "paused during calibration due to API rate/quota limit"
+                status["updated_at"] = _now_iso()
+                _write_json(status_path, status)
+                _append_event(
+                    events_path,
+                    {
+                        "timestamp": _now_iso(),
+                        "event": "paused_rate_limit",
+                        "phase": "calibration",
+                        "message": status["error"],
+                    },
+                )
+                _write_state_banner(
+                    state_path,
+                    state="PAUSED_RATE_LIMIT",
+                    phase="calibration",
+                    message=status["error"],
+                )
+                log_file.write(f"[{_now_iso()}] Worker paused (rate/quota) in calibration\n")
+                log_file.flush()
+                return 75
+            if cal_proc.returncode != 0:
+                status["phase"] = "failed"
+                status["finished"] = True
+                status["success"] = False
+                status["error"] = f"calibration failed with code {cal_proc.returncode}"
+                status["updated_at"] = _now_iso()
+                _write_json(status_path, status)
+                _append_event(
+                    events_path,
+                    {
+                        "timestamp": _now_iso(),
+                        "event": "failed",
+                        "phase": "calibration",
+                        "message": status["error"],
+                        "returncode": cal_proc.returncode,
+                    },
+                )
+                _write_state_banner(
+                    state_path,
+                    state="FAILED",
+                    phase="calibration",
+                    message=status["error"],
+                )
+                return cal_proc.returncode
+
+        # Preflight
+        preflight_report_path = (
+            root / args.benchmark_output_dir / "preflight" / f"preflight_seed{args.seeds[0]}.json"
+        ).resolve()
+        skip_preflight = (
+            status["preflight"].get("done") is True
+            and status["preflight"].get("returncode") == 0
+            and preflight_report_path.exists()
+        )
+        if skip_preflight:
+            _append_event(
+                events_path,
+                {
+                    "timestamp": _now_iso(),
+                    "event": "phase_skipped",
+                    "phase": "preflight",
+                    "message": "Preflight report already present; reusing previous result.",
+                },
+            )
+        else:
+            status["phase"] = "preflight"
+            status["updated_at"] = _now_iso()
+            _write_json(status_path, status)
+            _append_event(
+                events_path,
+                {
+                    "timestamp": _now_iso(),
+                    "event": "phase_started",
+                    "phase": "preflight",
+                    "message": "Preflight phase started.",
+                },
+            )
             _write_state_banner(
                 state_path,
-                state="FAILED",
-                phase="calibration",
-                message=status["error"],
+                state="RUNNING",
+                phase="preflight",
+                message="Preflight in progress.",
             )
-            return cal_proc.returncode
+            pf_proc = subprocess.run(
+                preflight_cmd,
+                cwd=root,
+                env=child_env,
+                stdout=log_file,
+                stderr=log_file,
+                text=True,
+                check=False,
+            )
+            status["preflight"]["done"] = True
+            status["preflight"]["returncode"] = pf_proc.returncode
+            status["updated_at"] = _now_iso()
+            _write_json(status_path, status)
+            _append_event(
+                events_path,
+                {
+                    "timestamp": _now_iso(),
+                    "event": "phase_finished",
+                    "phase": "preflight",
+                    "returncode": pf_proc.returncode,
+                },
+            )
+            if pf_proc.returncode == 75:
+                status["phase"] = "paused_rate_limit"
+                status["finished"] = False
+                status["success"] = False
+                status["error"] = "paused during preflight due to API rate/quota limit"
+                status["updated_at"] = _now_iso()
+                _write_json(status_path, status)
+                _append_event(
+                    events_path,
+                    {
+                        "timestamp": _now_iso(),
+                        "event": "paused_rate_limit",
+                        "phase": "preflight",
+                        "message": status["error"],
+                    },
+                )
+                _write_state_banner(
+                    state_path,
+                    state="PAUSED_RATE_LIMIT",
+                    phase="preflight",
+                    message=status["error"],
+                )
+                log_file.write(f"[{_now_iso()}] Worker paused (rate/quota) in preflight\n")
+                log_file.flush()
+                return 75
+            if pf_proc.returncode == 86:
+                status["phase"] = "needs_review"
+                status["finished"] = True
+                status["success"] = False
+                status["error"] = "preflight detected critical red flags; inspect report before benchmarking"
+                status["updated_at"] = _now_iso()
+                _write_json(status_path, status)
+                _append_event(
+                    events_path,
+                    {
+                        "timestamp": _now_iso(),
+                        "event": "paused_review",
+                        "phase": "preflight",
+                        "message": status["error"],
+                    },
+                )
+                _write_state_banner(
+                    state_path,
+                    state="NEEDS_REVIEW",
+                    phase="preflight",
+                    message=status["error"],
+                )
+                log_file.write(f"[{_now_iso()}] Worker halted for review in preflight\n")
+                log_file.flush()
+                return 86
+            if pf_proc.returncode != 0:
+                status["phase"] = "failed"
+                status["finished"] = True
+                status["success"] = False
+                status["error"] = f"preflight failed with code {pf_proc.returncode}"
+                status["updated_at"] = _now_iso()
+                _write_json(status_path, status)
+                _append_event(
+                    events_path,
+                    {
+                        "timestamp": _now_iso(),
+                        "event": "failed",
+                        "phase": "preflight",
+                        "message": status["error"],
+                        "returncode": pf_proc.returncode,
+                    },
+                )
+                _write_state_banner(
+                    state_path,
+                    state="FAILED",
+                    phase="preflight",
+                    message=status["error"],
+                )
+                return pf_proc.returncode
 
         # Benchmark
         status["phase"] = "benchmark"
@@ -330,6 +519,31 @@ def _run_worker(args: argparse.Namespace) -> int:
             log_file.write(f"[{_now_iso()}] Worker paused (rate/quota) in benchmark\n")
             log_file.flush()
             return 75
+        if bm_proc.returncode == 86:
+            status["phase"] = "needs_review"
+            status["finished"] = True
+            status["success"] = False
+            status["error"] = "benchmark halted due to critical red flags; inspect health report"
+            status["updated_at"] = _now_iso()
+            _write_json(status_path, status)
+            _append_event(
+                events_path,
+                {
+                    "timestamp": _now_iso(),
+                    "event": "paused_review",
+                    "phase": "benchmark",
+                    "message": status["error"],
+                },
+            )
+            _write_state_banner(
+                state_path,
+                state="NEEDS_REVIEW",
+                phase="benchmark",
+                message=status["error"],
+            )
+            log_file.write(f"[{_now_iso()}] Worker halted for review in benchmark\n")
+            log_file.flush()
+            return 86
         if bm_proc.returncode != 0:
             status["phase"] = "failed"
             status["finished"] = True
@@ -400,6 +614,8 @@ def _run_detached(args: argparse.Namespace) -> int:
         str(args.calibration_api_hard_limit),
         "--calibration-output",
         args.calibration_output,
+        "--preflight-ticks",
+        str(args.preflight_ticks),
         "--iterations",
         str(args.iterations),
         "--seeds",
@@ -456,6 +672,77 @@ def _run_detached(args: argparse.Namespace) -> int:
     return 0
 
 
+def _watchdog_check(args: argparse.Namespace) -> int:
+    """Hourly supervisor check: restart only when safe and necessary."""
+    root = Path(args.project_root).resolve()
+    status_path = (root / args.status_file).resolve()
+    events_path = (root / args.events_file).resolve()
+
+    status = _read_json(status_path)
+    if not status:
+        _append_event(
+            events_path,
+            {
+                "timestamp": _now_iso(),
+                "event": "watchdog_no_status",
+                "message": "No experiment status file found; starting detached worker.",
+            },
+        )
+        return _run_detached(args)
+
+    worker_pid = status.get("worker_pid")
+    if _pid_is_alive(worker_pid):
+        _append_event(
+            events_path,
+            {
+                "timestamp": _now_iso(),
+                "event": "watchdog_skip_running",
+                "worker_pid": worker_pid,
+                "phase": status.get("phase"),
+                "message": "Worker is still running; watchdog took no action.",
+            },
+        )
+        return 0
+
+    if status.get("finished") and status.get("success"):
+        _append_event(
+            events_path,
+            {
+                "timestamp": _now_iso(),
+                "event": "watchdog_skip_completed",
+                "phase": status.get("phase"),
+                "message": "Experiment already completed successfully.",
+            },
+        )
+        return 0
+
+    if status.get("finished") and not status.get("success"):
+        _append_event(
+            events_path,
+            {
+                "timestamp": _now_iso(),
+                "event": "watchdog_skip_failed",
+                "phase": status.get("phase"),
+                "worker_pid": worker_pid,
+                "error": status.get("error"),
+                "message": "Experiment is marked failed; watchdog did not auto-restart.",
+            },
+        )
+        return 1
+
+    _append_event(
+        events_path,
+        {
+            "timestamp": _now_iso(),
+            "event": "watchdog_restart",
+            "phase": status.get("phase"),
+            "worker_pid": worker_pid,
+            "message": "Worker not running and experiment not finished; restarting detached worker.",
+        },
+    )
+    return _run_detached(args)
+
+
 def _print_status(args: argparse.Namespace) -> int:
     root = Path(args.project_root).resolve()
     status_path = (root / args.status_file).resolve()
@@ -476,6 +763,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--calibration-seed", type=int, default=42)
     parser.add_argument("--calibration-api-hard-limit", type=int, default=200)
     parser.add_argument("--calibration-output", default="calibration_results.json")
+    parser.add_argument("--preflight-ticks", type=int, default=12)
     parser.add_argument("--iterations", type=int, default=80)
     parser.add_argument("--seeds", nargs="+", type=int, default=[7, 17, 42, 123, 256])
     parser.add_argument("--benchmark-api-hard-limit", type=int, default=500)
@@ -493,6 +781,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--detach", action="store_true")
     parser.add_argument("--worker", action="store_true")
     parser.add_argument("--status", action="store_true")
+    parser.add_argument("--watchdog-check", action="store_true")
     return parser.parse_args()
 
 
@@ -500,6 +789,8 @@ def main() -> int:
     args = _parse_args()
     if args.status:
         return _print_status(args)
+    if args.watchdog_check:
+        return _watchdog_check(args)
     if args.detach:
         return _run_detached(args)
     if args.worker:

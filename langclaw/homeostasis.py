@@ -169,3 +169,21 @@ class EpistemicDrive:
     def history(self) -> list[float]:
         """Full deficit trajectory for plotting."""
         return list(self._history)
+
+    def to_checkpoint(self) -> dict[str, object]:
+        """Serialize internal homeostatic state."""
+        return {
+            "deficit": self.deficit,
+            "m": self.m,
+            "history": list(self._history),
+        }
+
+    def load_checkpoint(self, payload: dict[str, object]) -> None:
+        """Restore internal homeostatic state."""
+        self.deficit = float(payload.get("deficit", self.deficit))
+        self.m = int(payload.get("m", self.m))
+        history = payload.get("history")
+        if isinstance(history, list) and history:
+            self._history = [float(x) for x in history]
+        else:
+            self._history = [self.deficit]

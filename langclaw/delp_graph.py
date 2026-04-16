@@ -67,11 +67,12 @@ class ArgumentGraph:
         target_node_id: str | None = None,
         attack_type: str | None = None,
         tick: int = 0,
+        node_id: str | None = None,
     ) -> str:
         """Thread-safe async version of add_argument (used by async agents)."""
         async with self._lock:
             return self._add_argument_inner(
-                agent_id, claim, target_node_id, attack_type, tick
+                agent_id, claim, target_node_id, attack_type, tick, node_id=node_id
             )
 
     def add_argument(
@@ -81,12 +82,15 @@ class ArgumentGraph:
         target_node_id: str | None = None,
         attack_type: str | None = None,
         tick: int = 0,
+        node_id: str | None = None,
     ) -> str:
         """Add a claim node and optionally an attack edge.
 
         Returns the generated ``node_id``.
         """
-        return self._add_argument_inner(agent_id, claim, target_node_id, attack_type, tick)
+        return self._add_argument_inner(
+            agent_id, claim, target_node_id, attack_type, tick, node_id=node_id
+        )
 
     def _add_argument_inner(
         self,
@@ -95,8 +99,9 @@ class ArgumentGraph:
         target_node_id: str | None = None,
         attack_type: str | None = None,
         tick: int = 0,
+        node_id: str | None = None,
     ) -> str:
-        node_id = f"{agent_id}_{uuid.uuid4().hex[:8]}"
+        node_id = node_id or f"{agent_id}_{uuid.uuid4().hex[:8]}"
         self._graph.add_node(node_id, agent_id=agent_id, claim=claim, tick=tick)
         self._node_order.append(node_id)
 
@@ -108,6 +113,59 @@ class ArgumentGraph:
             )
 
         return node_id
+
+    def to_checkpoint(self) -> dict[str, Any]:
+        """Serialize the argument graph for benchmark resume."""
+        return {
+            "nodes": [
+                {"node_id": node_id, **dict(self._graph.nodes[node_id])}
+                for node_id in self._node_order
+                if self._graph.has_node(node_id)
+            ],
+            "edges": [
+                {
+                    "source": source,
+                    "target": target,
+                    **dict(data),
+                }
+                for source, target, data in self._graph.edges(data=True)
+            ],
+            "node_order": list(self._node_order),
+        }
+
+    @classmethod
+    def from_checkpoint(cls, payload: dict[str, Any]) -> "ArgumentGraph":
+        """Restore a serialized argument graph."""
+        graph = cls()
+        graph._graph.clear()
+        graph._node_order = []
+
+        for node in payload.get("nodes", []):
+            node_id = node["node_id"]
+            graph._graph.add_node(
+                node_id,
+                agent_id=node.get("agent_id", ""),
+                claim=node.get("claim", ""),
+                tick=node.get("tick", 0),
+            )
+
+        for edge in payload.get("edges", []):
+            source = edge["source"]
+            target = edge["target"]
+            if graph._graph.has_node(source) and graph._graph.has_node(target):
+                graph._graph.add_edge(
+                    source,
+                    target,
+                    attack_type=edge.get("attack_type", "rebuttal"),
+                )
+
+        node_order = payload.get("node_order")
+        if node_order:
+            graph._node_order = [n for n in node_order if graph._graph.has_node(n)]
+        else:
+            graph._node_order = list(graph._graph.nodes())
+
+        return graph
 
     def calculate_phi_star_proxy(self, node_id: str) -> float:
         """Compute an IIT Φ* proxy for the newly added node.

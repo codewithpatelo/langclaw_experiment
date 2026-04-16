@@ -1,0 +1,247 @@
+{
+  "best_config": {
+    "stimulus_weights": {
+      "w_faction": 0.15,
+      "w_centrality": 0.15,
+      "w_memory": 0.15,
+      "w_novelty": 0.4,
+      "w_pressure": 0.15
+    },
+    "debate_alpha": 1.0,
+    "weight_config_name": "novelty_dominant"
+  },
+  "selection_criteria": "max avg_dphi, tiebreak by consistency",
+  "micro_sim_params": {
+    "ticks": 4,
+    "seed": 42,
+    "mode": "hrrl",
+    "api_hard_limit": 200
+  },
+  "all_configs": [
+    {
+      "weight_config_name": "novelty_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.15,
+        "w_centrality": 0.15,
+        "w_memory": 0.15,
+        "w_novelty": 0.4,
+        "w_pressure": 0.15
+      },
+      "debate_alpha": 1.0,
+      "n_debates": 16,
+      "avg_dphi": 0.172806,
+      "consistency": 0.9375,
+      "elapsed_s": 165.1
+    },
+    {
+      "weight_config_name": "centrality_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.15,
+        "w_centrality": 0.4,
+        "w_memory": 0.15,
+        "w_novelty": 0.15,
+        "w_pressure": 0.15
+      },
+      "debate_alpha": 1.0,
+      "n_debates": 7,
+      "avg_dphi": 0.158729,
+      "consistency": 0.8571,
+      "elapsed_s": 93.7
+    },
+    {
+      "weight_config_name": "equal",
+      "stimulus_weights": {
+        "w_faction": 0.2,
+        "w_centrality": 0.2,
+        "w_memory": 0.2,
+        "w_novelty": 0.2,
+        "w_pressure": 0.2
+      },
+      "debate_alpha": 3.0,
+      "n_debates": 8,
+      "avg_dphi": 0.158725,
+      "consistency": 0.875,
+      "elapsed_s": 146.6
+    },
+    {
+      "weight_config_name": "faction_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.4,
+        "w_centrality": 0.15,
+        "w_memory": 0.15,
+        "w_novelty": 0.15,
+        "w_pressure": 0.15
+      },
+      "debate_alpha": 1.0,
+      "n_debates": 6,
+      "avg_dphi": 0.158333,
+      "consistency": 0.8333,
+      "elapsed_s": 143.6
+    },
+    {
+      "weight_config_name": "centrality_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.15,
+        "w_centrality": 0.4,
+        "w_memory": 0.15,
+        "w_novelty": 0.15,
+        "w_pressure": 0.15
+      },
+      "debate_alpha": 3.0,
+      "n_debates": 7,
+      "avg_dphi": 0.157929,
+      "consistency": 0.8571,
+      "elapsed_s": 104.8
+    },
+    {
+      "weight_config_name": "pressure_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.15,
+        "w_centrality": 0.15,
+        "w_memory": 0.15,
+        "w_novelty": 0.15,
+        "w_pressure": 0.4
+      },
+      "debate_alpha": 1.0,
+      "n_debates": 15,
+      "avg_dphi": 0.15572,
+      "consistency": 0.9333,
+      "elapsed_s": 140.6
+    },
+    {
+      "weight_config_name": "equal",
+      "stimulus_weights": {
+        "w_faction": 0.2,
+        "w_centrality": 0.2,
+        "w_memory": 0.2,
+        "w_novelty": 0.2,
+        "w_pressure": 0.2
+      },
+      "debate_alpha": 2.0,
+      "n_debates": 12,
+      "avg_dphi": 0.153483,
+      "consistency": 0.9167,
+      "elapsed_s": 127.7
+    },
+    {
+      "weight_config_name": "equal",
+      "stimulus_weights": {
+        "w_faction": 0.2,
+        "w_centrality": 0.2,
+        "w_memory": 0.2,
+        "w_novelty": 0.2,
+        "w_pressure": 0.2
+      },
+      "debate_alpha": 1.0,
+      "n_debates": 15,
+      "avg_dphi": 0.153133,
+      "consistency": 0.9333,
+      "elapsed_s": 219.8
+    },
+    {
+      "weight_config_name": "centrality_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.15,
+        "w_centrality": 0.4,
+        "w_memory": 0.15,
+        "w_novelty": 0.15,
+        "w_pressure": 0.15
+      },
+      "debate_alpha": 2.0,
+      "n_debates": 9,
+      "avg_dphi": 0.152956,
+      "consistency": 0.8889,
+      "elapsed_s": 119.3
+    },
+    {
+      "weight_config_name": "pressure_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.15,
+        "w_centrality": 0.15,
+        "w_memory": 0.15,
+        "w_novelty": 0.15,
+        "w_pressure": 0.4
+      },
+      "debate_alpha": 3.0,
+      "n_debates": 6,
+      "avg_dphi": 0.15,
+      "consistency": 0.8333,
+      "elapsed_s": 88.5
+    },
+    {
+      "weight_config_name": "novelty_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.15,
+        "w_centrality": 0.15,
+        "w_memory": 0.15,
+        "w_novelty": 0.4,
+        "w_pressure": 0.15
+      },
+      "debate_alpha": 3.0,
+      "n_debates": 16,
+      "avg_dphi": 0.148781,
+      "consistency": 0.9375,
+      "elapsed_s": 137.3
+    },
+    {
+      "weight_config_name": "novelty_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.15,
+        "w_centrality": 0.15,
+        "w_memory": 0.15,
+        "w_novelty": 0.4,
+        "w_pressure": 0.15
+      },
+      "debate_alpha": 2.0,
+      "n_debates": 15,
+      "avg_dphi": 0.141173,
+      "consistency": 0.9333,
+      "elapsed_s": 113.3
+    },
+    {
+      "weight_config_name": "faction_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.4,
+        "w_centrality": 0.15,
+        "w_memory": 0.15,
+        "w_novelty": 0.15,
+        "w_pressure": 0.15
+      },
+      "debate_alpha": 2.0,
+      "n_debates": 17,
+      "avg_dphi": 0.117018,
+      "consistency": 0.8824,
+      "elapsed_s": 164.8
+    },
+    {
+      "weight_config_name": "faction_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.4,
+        "w_centrality": 0.15,
+        "w_memory": 0.15,
+        "w_novelty": 0.15,
+        "w_pressure": 0.15
+      },
+      "debate_alpha": 3.0,
+      "n_debates": 12,
+      "avg_dphi": 0.106508,
+      "consistency": 0.8333,
+      "elapsed_s": 133.1
+    },
+    {
+      "weight_config_name": "pressure_dominant",
+      "stimulus_weights": {
+        "w_faction": 0.15,
+        "w_centrality": 0.15,
+        "w_memory": 0.15,
+        "w_novelty": 0.15,
+        "w_pressure": 0.4
+      },
+      "debate_alpha": 2.0,
+      "n_debates": 22,
+      "avg_dphi": 0.094995,
+      "consistency": 0.9091,
+      "elapsed_s": 199.8
+    }
+  ]
+}

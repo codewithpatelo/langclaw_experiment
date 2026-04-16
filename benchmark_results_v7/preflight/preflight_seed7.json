@@ -1,0 +1,559 @@
+[
+  {
+    "mode": "hrrl",
+    "elapsed_seconds": 152.836,
+    "metrics": {
+      "total_ticks": 4,
+      "total_debates": 11,
+      "avg_delta_phi": 0.0627,
+      "graph_nodes": 11,
+      "graph_edges": 7,
+      "aaf_defeat_cycles": 0,
+      "aaf_acceptance_ratio": 0.7273,
+      "aaf_dialectical_completeness": 1.0,
+      "prr_text": 0.0,
+      "prr_graph": 0.6364,
+      "ir": 1.0,
+      "router_calls": 0,
+      "avg_stimuli_per_tick": 0.0,
+      "avg_stimulus_utility": 0.0,
+      "stimulus_driven_debates": 0,
+      "avg_reward": 0.093,
+      "total_reward": 1.1157,
+      "final_q_weights": {
+        "GOV-S1": {
+          "DEBATE_STIMULUS": 0.0001,
+          "DEBATE_PROACTIVE": 0.0,
+          "SEARCH": 0.0,
+          "READ": 0.0,
+          "MESSAGE": 0.0
+        },
+        "GOV-S2": {
+          "DEBATE_STIMULUS": -0.0,
+          "DEBATE_PROACTIVE": 0.0001,
+          "SEARCH": 0.0,
+          "READ": 0.0,
+          "MESSAGE": 0.0
+        },
+        "GOV-S3": {
+          "DEBATE_STIMULUS": -0.0,
+          "DEBATE_PROACTIVE": 0.0,
+          "SEARCH": 0.0,
+          "READ": 0.0,
+          "MESSAGE": 0.0
+        },
+        "GOV-S4": {
+          "DEBATE_STIMULUS": 0.0001,
+          "DEBATE_PROACTIVE": 0.0,
+          "SEARCH": 0.0,
+          "READ": 0.0,
+          "MESSAGE": 0.0
+        },
+        "GOV-S5": {
+          "DEBATE_STIMULUS": 0.0,
+          "DEBATE_PROACTIVE": 0.0,
+          "SEARCH": 0.0,
+          "READ": 0.0,
+          "MESSAGE": 0.0
+        },
+        "OPP-S1": {
+          "DEBATE_STIMULUS": -0.0,
+          "DEBATE_PROACTIVE": 0.0001,
+          "SEARCH": 0.0,
+          "READ": 0.0,
+          "MESSAGE": 0.0
+        },
+        "OPP-S2": {
+          "DEBATE_STIMULUS": 0.0,
+          "DEBATE_PROACTIVE": 0.0,
+          "SEARCH": 0.0,
+          "READ": 0.0,
+          "MESSAGE": 0.0
+        },
+        "OPP-S3": {
+          "DEBATE_STIMULUS": 0.0001,
+          "DEBATE_PROACTIVE": 0.0,
+          "SEARCH": 0.0,
+          "READ": 0.0,
+          "MESSAGE": 0.0
+        },
+        "OPP-S4": {
+          "DEBATE_STIMULUS": 0.0001,
+          "DEBATE_PROACTIVE": 0.0,
+          "SEARCH": 0.0,
+          "READ": 0.0,
+          "MESSAGE": 0.0
+        },
+        "OPP-S5": {
+          "DEBATE_STIMULUS": -0.0,
+          "DEBATE_PROACTIVE": 0.0001,
+          "SEARCH": 0.0,
+          "READ": 0.0,
+          "MESSAGE": 0.0
+        }
+      },
+      "final_deficits": {
+        "GOV-S1": 0.5,
+        "GOV-S2": 0.5,
+        "GOV-S3": 0.7,
+        "GOV-S4": 0.3667,
+        "GOV-S5": 0.64,
+        "OPP-S1": 0.4004,
+        "OPP-S2": 0.7,
+        "OPP-S3": 0.4389,
+        "OPP-S4": 0.3905,
+        "OPP-S5": 0.2357
+      },
+      "per_agent_debates": {
+        "GOV-S1": 1,
+        "GOV-S2": 2,
+        "GOV-S3": 1,
+        "GOV-S4": 1,
+        "GOV-S5": 0,
+        "OPP-S1": 2,
+        "OPP-S2": 0,
+        "OPP-S3": 1,
+        "OPP-S4": 1,
+        "OPP-S5": 2
+      },
+      "per_agent_avg_dphi": {
+        "GOV-S1": 0.0667,
+        "GOV-S2": 0.0333,
+        "GOV-S3": 0.0,
+        "GOV-S4": 0.1111,
+        "GOV-S5": 0.0,
+        "OPP-S1": 0.05,
+        "OPP-S2": 0.0,
+        "OPP-S3": 0.087,
+        "OPP-S4": 0.1032,
+        "OPP-S5": 0.0774
+      },
+      "window_dphi": [
+        0.0,
+        0.0445,
+        0.1112
+      ],
+      "slope_dphi": 0.0556,
+      "window_acceptance": [
+        1.0,
+        0.6667,
+        0.7273
+      ],
+      "slope_acceptance": -0.13635,
+      "window_core": [
+        0.637506,
+        0.355472,
+        0.420247
+      ],
+      "slope_core": -0.10863
+    },
+    "health": {
+      "mode": "hrrl",
+      "seed": 7,
+      "status": "ok",
+      "alerts": [],
+      "summary": {
+        "total_debates": 11,
+        "aaf_acceptance_ratio": 0.7273,
+        "avg_reward": 0.093,
+        "max_abs_q_value": 0.0001,
+        "median_final_deficit": 0.4695
+      },
+      "recent_log_tail": [
+        {
+          "tick": 3,
+          "agent_id": "OPP-S4",
+          "action": "DEBATE",
+          "reward": 0.192171,
+          "delta_phi": 0.1032,
+          "deficit_after": 0.3405,
+          "q_values": {
+            "DEBATE_STIMULUS": 0.0001,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        {
+          "tick": 3,
+          "agent_id": "OPP-S5",
+          "action": "DEBATE",
+          "reward": 0.242653,
+          "delta_phi": 0.1548,
+          "deficit_after": 0.1857,
+          "q_values": {
+            "DEBATE_STIMULUS": -0.0,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        {
+          "tick": 4,
+          "agent_id": "GOV-S1",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.5,
+          "q_values": {
+            "DEBATE_STIMULUS": 0.0001,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        {
+          "tick": 4,
+          "agent_id": "GOV-S2",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.5,
+          "q_values": {
+            "DEBATE_STIMULUS": -0.0,
+            "DEBATE_PROACTIVE": 0.0001,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        {
+          "tick": 4,
+          "agent_id": "GOV-S3",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.7,
+          "q_values": {
+            "DEBATE_STIMULUS": -0.0,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        {
+          "tick": 4,
+          "agent_id": "GOV-S4",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.3667,
+          "q_values": {
+            "DEBATE_STIMULUS": 0.0001,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        {
+          "tick": 4,
+          "agent_id": "GOV-S5",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.64,
+          "q_values": {
+            "DEBATE_STIMULUS": 0.0,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        {
+          "tick": 4,
+          "agent_id": "OPP-S2",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.7,
+          "q_values": {
+            "DEBATE_STIMULUS": 0.0,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        {
+          "tick": 4,
+          "agent_id": "OPP-S4",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.3905,
+          "q_values": {
+            "DEBATE_STIMULUS": 0.0001,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        {
+          "tick": 4,
+          "agent_id": "OPP-S5",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.2357,
+          "q_values": {
+            "DEBATE_STIMULUS": -0.0,
+            "DEBATE_PROACTIVE": 0.0001,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        {
+          "tick": 4,
+          "agent_id": "OPP-S1",
+          "action": "DEBATE",
+          "reward": 0.212262,
+          "delta_phi": 0.0999,
+          "deficit_after": 0.4004,
+          "q_values": {
+            "DEBATE_STIMULUS": -0.0,
+            "DEBATE_PROACTIVE": 0.0001,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        },
+        {
+          "tick": 4,
+          "agent_id": "OPP-S3",
+          "action": "DEBATE",
+          "reward": 0.187654,
+          "delta_phi": 0.087,
+          "deficit_after": 0.4389,
+          "q_values": {
+            "DEBATE_STIMULUS": 0.0001,
+            "DEBATE_PROACTIVE": 0.0,
+            "SEARCH": 0.0,
+            "READ": 0.0,
+            "MESSAGE": 0.0
+          }
+        }
+      ],
+      "replay_validation": {
+        "live_acceptance_ratio": 0.7273,
+        "replayed_acceptance_ratio": 0.7273,
+        "live_cycles": 0,
+        "replayed_cycles": 0
+      }
+    }
+  },
+  {
+    "mode": "langgraph",
+    "elapsed_seconds": 77.776,
+    "metrics": {
+      "total_ticks": 4,
+      "total_debates": 4,
+      "avg_delta_phi": 0.2084,
+      "graph_nodes": 4,
+      "graph_edges": 3,
+      "aaf_defeat_cycles": 0,
+      "aaf_acceptance_ratio": 0.5,
+      "aaf_dialectical_completeness": 1.0,
+      "prr_text": 0.0,
+      "prr_graph": 0.75,
+      "ir": 0.0,
+      "router_calls": 40,
+      "avg_stimuli_per_tick": 1.0,
+      "avg_stimulus_utility": 0.6583,
+      "stimulus_driven_debates": 3,
+      "avg_reward": 0.2023,
+      "total_reward": 0.8093,
+      "final_q_weights": {},
+      "final_deficits": {
+        "GOV-S1": 0.8075,
+        "GOV-S2": 0.15,
+        "GOV-S3": 0.821,
+        "GOV-S4": 0.821,
+        "GOV-S5": 0.821,
+        "OPP-S1": 0.3275,
+        "OPP-S2": 0.1,
+        "OPP-S3": 0.8175,
+        "OPP-S4": 0.8175,
+        "OPP-S5": 0.8175
+      },
+      "per_agent_debates": {
+        "GOV-S1": 1,
+        "GOV-S2": 1,
+        "GOV-S3": 0,
+        "GOV-S4": 0,
+        "GOV-S5": 0,
+        "OPP-S1": 1,
+        "OPP-S2": 1,
+        "OPP-S3": 0,
+        "OPP-S4": 0,
+        "OPP-S5": 0
+      },
+      "per_agent_avg_dphi": {
+        "GOV-S1": 0.0,
+        "GOV-S2": 0.3889,
+        "GOV-S3": 0.0,
+        "GOV-S4": 0.0,
+        "GOV-S5": 0.0,
+        "OPP-S1": 0.1667,
+        "OPP-S2": 0.2778,
+        "OPP-S3": 0.0,
+        "OPP-S4": 0.0,
+        "OPP-S5": 0.0
+      },
+      "window_dphi": [
+        0.0,
+        0.1667,
+        0.3334
+      ],
+      "slope_dphi": 0.1667,
+      "window_acceptance": [
+        1.0,
+        0.5,
+        0.5
+      ],
+      "slope_acceptance": -0.25,
+      "window_core": [
+        0.0,
+        0.0,
+        0.149393
+      ],
+      "slope_core": 0.074696
+    },
+    "health": {
+      "mode": "langgraph",
+      "seed": 7,
+      "status": "ok",
+      "alerts": [],
+      "summary": {
+        "total_debates": 4,
+        "aaf_acceptance_ratio": 0.5,
+        "avg_reward": 0.2023,
+        "max_abs_q_value": 0.0,
+        "median_final_deficit": 0.8175
+      },
+      "recent_log_tail": [
+        {
+          "tick": 3,
+          "agent_id": "OPP-S4",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.709,
+          "q_values": {}
+        },
+        {
+          "tick": 3,
+          "agent_id": "OPP-S5",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.709,
+          "q_values": {}
+        },
+        {
+          "tick": 4,
+          "agent_id": "GOV-S1",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.8075,
+          "q_values": {}
+        },
+        {
+          "tick": 4,
+          "agent_id": "GOV-S2",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.15,
+          "q_values": {}
+        },
+        {
+          "tick": 4,
+          "agent_id": "GOV-S3",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.821,
+          "q_values": {}
+        },
+        {
+          "tick": 4,
+          "agent_id": "GOV-S4",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.821,
+          "q_values": {}
+        },
+        {
+          "tick": 4,
+          "agent_id": "GOV-S5",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.821,
+          "q_values": {}
+        },
+        {
+          "tick": 4,
+          "agent_id": "OPP-S1",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.3275,
+          "q_values": {}
+        },
+        {
+          "tick": 4,
+          "agent_id": "OPP-S2",
+          "action": "DEBATE",
+          "reward": 0.370881,
+          "delta_phi": 0.2778,
+          "deficit_after": 0.1,
+          "q_values": {}
+        },
+        {
+          "tick": 4,
+          "agent_id": "OPP-S3",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.8175,
+          "q_values": {}
+        },
+        {
+          "tick": 4,
+          "agent_id": "OPP-S4",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.8175,
+          "q_values": {}
+        },
+        {
+          "tick": 4,
+          "agent_id": "OPP-S5",
+          "action": "PASS",
+          "reward": 0.0,
+          "delta_phi": 0.0,
+          "deficit_after": 0.8175,
+          "q_values": {}
+        }
+      ],
+      "replay_validation": {
+        "live_acceptance_ratio": 0.5,
+        "replayed_acceptance_ratio": 0.5,
+        "live_cycles": 0,
+        "replayed_cycles": 0
+      }
+    }
+  }
+]

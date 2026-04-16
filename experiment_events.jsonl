@@ -8,3 +8,11 @@
 {"timestamp": "2026-04-15T22:09:50.624219+00:00", "event": "phase_started", "phase": "calibration", "message": "Calibration phase started."}
 {"timestamp": "2026-04-16T01:00:42.048279+00:00", "event": "phase_finished", "phase": "calibration", "returncode": 0}
 {"timestamp": "2026-04-16T01:00:42.049542+00:00", "event": "phase_started", "phase": "benchmark", "message": "Benchmark phase started."}
+{"timestamp": "2026-04-16T03:19:04.220355+00:00", "event": "phase_finished", "phase": "benchmark", "returncode": 3221225786}
+{"timestamp": "2026-04-16T03:19:04.221759+00:00", "event": "failed", "phase": "benchmark", "message": "benchmark failed with code 3221225786", "returncode": 3221225786}
+{"timestamp": "2026-04-16T04:57:47.000845+00:00", "event": "detached_started", "phase": "failed", "launcher_pid": 23720, "detached_worker_pid": 23780}
+{"timestamp": "2026-04-16T04:57:47.157936+00:00", "event": "worker_started", "phase": "starting", "worker_pid": 23780}
+{"timestamp": "2026-04-16T04:57:47.160390+00:00", "event": "phase_skipped", "phase": "calibration", "message": "Calibration output already present; reusing previous result."}
+{"timestamp": "2026-04-16T04:57:47.162593+00:00", "event": "phase_started", "phase": "preflight", "message": "Preflight phase started."}
+{"timestamp": "2026-04-16T05:02:19.534458+00:00", "event": "phase_finished", "phase": "preflight", "returncode": 0}
+{"timestamp": "2026-04-16T05:02:19.536273+00:00", "event": "phase_started", "phase": "benchmark", "message": "Benchmark phase started."}
