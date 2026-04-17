@@ -1,0 +1,269 @@
+% LangClaw — JAIIO 2026 short paper (work in development, max 4 pages
+% sin contar pagina titulo + abstracts).
+% Anonymous submission.
+%
+\documentclass{llncs}
+
+\usepackage[a4paper, top=4.5cm, bottom=4.5cm, left=4.0cm, right=4.0cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
+\setlength{\intextsep}{6pt plus 2pt minus 2pt}
+\raggedbottom
+
+\usepackage[style=apa]{biblatex}
+\addbibresource{references.bib}
+
+\begin{document}
+
+% ============================================================
+% TITLE + ABSTRACTS (pagina separada, no cuenta para 4 paginas)
+% ============================================================
+\title{LangClaw: Regulaci\'on Homeost\'atica End\'ogena para Mitigar el
+Colapso del Contexto en Sistemas de Debate Multi-Agente basados en
+LLM\thanks{Durante la preparaci\'on de este trabajo, los autores
+utilizaron GPT-5.4 con el fin de mejorar el lenguaje y la legibilidad
+del manuscrito. Tras utilizar esta herramienta, los autores revisaron y
+editaron el contenido seg\'un fue necesario y asumen plena
+responsabilidad por el contenido de la publicaci\'on. Detalle completo
+de tooling de IA en el repositorio del proyecto.}}
+
+\author{}
+\institute{}
+
+\maketitle
+
+\begin{abstract}
+Los sistemas multi-agente de LLM tienden a perder coherencia a medida
+que la interacci\'on se extiende ---\emph{colapso del contexto}.
+Enrutadores, grafos y heartbeats peri\'odicos amplian capacidades sin
+alterar un supuesto: la frecuencia de participaci\'on es ex\'ogena.
+Este trabajo, en desarrollo, propone invertir ese supuesto. Cada agente
+mantiene un d\'eficit epist\'emico
+$\delta_i \in [\varepsilon,\infty)$ con impulso $D(\delta)=(\delta-\varepsilon)^2$;
+la recompensa es reducci\'on de impulso $r_t=D(\delta_t)-D(\delta_{t+1})$
+(Keramati y Gutkin, 2014). Un evaluador AAF act\'ua como sensor; un
+Q-learner con TD(0) selecciona acciones. La participaci\'on no se
+enruta: \emph{emerge}. Resultados preliminares ($n{=}3$ pares de
+semillas, $T{=}80$ heartbeats): bajo presupuesto temporal equiparable,
+HRRL produce $5.5\times$ m\'as debates con mayor aceptaci\'on AAF
+($0.681 \pm 0.010$ vs $0.540 \pm 0.029$), sin agentes silenciados, y
+mejora estructural en el tiempo, mientras LangGraph se degrada.
+Quedan dos semillas en ejecuci\'on.
+
+\keywords{sistemas multi-agente \and modelos de lenguaje \and homeostasis
+\and aprendizaje por refuerzo \and colapso del contexto}
+\end{abstract}
+
+\clearpage
+\setcounter{page}{1}
+
+% ============================================================
+% Pag 1: motivacion + research question
+% ============================================================
+\section{Motivaci\'on}
+
+Los sistemas multiagente basados en LLM se emplean cada vez m\'as en
+deliberaciones extendidas ---an\'alisis de pol\'iticas, revisi\'on
+cient\'ifica, decisiones institucionales. Una recomendaci\'on basada en
+un debate internamente viciado puede afectar a millones; una revisi\'on
+cient\'ifica con premisas alucinadas contamina la literatura sobre la
+que se construye m\'as ciencia. La p\'erdida de coherencia ---repetici\'on,
+mon\'ologos, contradicciones internas--- conocida como \emph{colapso
+del contexto}~\parencite{park2023generative}, no es un defecto cosm\'etico:
+en deliberaci\'on adversarial \emph{invalida} el debate.
+
+Las respuestas vigentes ---enrutadores, grafos
+(AutoGen~\parencite{wu2023autogen}, MetaGPT~\parencite{hong2023metagpt}),
+LangGraph, heartbeats~\parencite{openclaw2025heartbeat}--- ampliaron
+expresividad y persistencia, pero comparten un supuesto estructural: la
+decisi\'on de \emph{cu\'ando} y \emph{con qu\'e frecuencia} participa
+cada agente es ex\'ogena, fijada por el dise\~nador.
+\textcite{huang2024masresilience} y \textcite{becker2025problemdrift}
+documentan que esta forma organizacional sufre degradaci\'on temporal y
+\emph{problem drift} en horizontes extendidos.
+
+En biolog\'ia, la homeostasis~\parencite{sterling1988allostasis} regula
+desequilibrios sin control externo: variables internas acumulan
+tensi\'on, desencadenan respuesta y retornan al equilibrio.
+HRRL~\parencite{keramati2014homeostatic} formaliz\'o este principio:
+la recompensa puede entenderse como reducci\'on de impulso. La
+analog\'ia con un agente deliberativo es precisa: donde el organismo
+acumula hambre, el agente acumula \emph{d\'eficit epist\'emico}.
+
+\paragraph{Pregunta de investigaci\'on.}
+¿Pueden las variables internas de un agente gobernar su activaci\'on y
+aprendizaje en un lazo regulatorio expl\'icito, cerrando el circuito que
+las propuestas previas dejan abierto?
+
+% ============================================================
+% Pag 2: teoria T_HA compacta + arquitectura
+% ============================================================
+\section{Teor\'ia de agencia homeost\'atica $T_{HA}$}
+
+Tres postulados fijan qu\'e requiere la autonom\'ia, qu\'e desencadena
+la acci\'on y qu\'e hace valiosa una contribuci\'on.
+
+\noindent\textsc{P1} (Autonom\'ia~\parencite{ashby1956introduction,beer1972brain}).
+La pol\'itica del agente depende de su estado interno:
+$\mathrm{Aut}(a_i) \iff \exists\,\delta_i:\,\pi_i = \pi_i(\delta_i(t))$.
+
+\noindent\textsc{P2} (Impulso~\parencite{sterling1988allostasis}).
+Un impulso interno crece con el desv\'io del equilibrio y modula
+mon\'otonamente la activaci\'on:
+$D(\varepsilon)=0$, $D'>0$ para $\delta>\varepsilon$,
+$p_i(t) = \sigma(D(\delta_i(t)))$.
+
+\noindent\textsc{P3} (Compuerta de calidad~\parencite{ryan2001happiness}).
+El impulso decrece proporcionalmente al cambio efectivo en el entorno
+regulado: $\Delta\delta_i = -\alpha \cdot g(e(t),e(t{+}1))$.
+
+\noindent\textsc{T1} (Implicaci\'on derivada de \textsc{P1}--\textsc{P3}).
+Dado un agente expuesto a perturbaciones, cuyo impulso interno crece
+con el desv\'io del equilibrio y s\'olo decrece ante cambio efectivo,
+emerger\'a acci\'on sostenida de calidad, con probabilidad de activaci\'on
+creciente en el d\'eficit. Bajo TD(0) con recompensa acotada y tasa
+$\sum\eta_t=\infty,\,\sum\eta_t^2<\infty$, la pol\'itica greedy maximiza
+en expectativa la reducci\'on de impulso.
+
+\paragraph{Instanciaci\'on.} El impulso de \textsc{P2} se instancia como
+d\'eficit epist\'emico $\delta_i \in [\varepsilon, \infty)$
+($\varepsilon{=}0.1$). Decaimiento basal $\delta^{t+1} = \delta^t + \lambda$
+($\lambda{=}0.05$); estimulaci\'on $+\gamma_{\text{stim}}\cdot r$
+($\gamma_{\text{stim}}{=}0.1$); saciedad
+$\delta^{\text{new}} = \max(\varepsilon, \delta - \alpha\cdot\Delta\varphi^*)$.
+Activaci\'on: compuerta sigmoide $p^t = 1/(1+e^{-k(\delta-\theta)})$
+($k{=}10$, $\theta{=}0.7$). Recompensa $r_t = D(\delta_t)-D(\delta_{t+1})$
+con $D(\delta)=(\delta-\varepsilon)^2$. Acciones \{DEBATE, SEARCH, READ,
+MESSAGE, PASS\} v\'ia Q-learning lineal con TD(0).
+
+\paragraph{Sensor de calidad estructural.} El proxy
+$\Delta\varphi^* = \tfrac{1}{3}C_B(u) + \tfrac{1}{3}\mathbb{1}_{\text{cycle}} + \tfrac{1}{3}\mathrm{Div}(u)$
+combina centralidad del nodo atacado, formaci\'on de ciclos dial\'ecticos
+y diversidad de atacantes sobre un AAF~\parencite{dung1995acceptability}.
+Cumple el rol que \textsc{P3} demanda: medida computable del cambio en
+el entorno regulado.
+
+% ============================================================
+% Pag 3: diseno + resultados preliminares
+% ============================================================
+\section{Dise\~no experimental}
+
+Diez agentes GPT-5-nano~\parencite{openai2025gpt5nano} en dos facciones
+espejo (Gobierno/Oposici\'on), cada una con los cinco subsistemas del
+VSM~\parencite{beer1972brain} (S1--S5), debaten un escenario pol\'itico
+de suma cero inspirado en Sotopia~\parencite{zhou2024sotopia} durante
+$T{=}80$ heartbeats. Variable independiente: estrategia de
+orquestaci\'on. \textbf{HRRL} (end\'ogena): cada agente se autorregula
+v\'ia Ec.~de la sigmoide y Q-learning con recompensa homeost\'atica.
+\textbf{LangGraph} (ex\'ogena): un enrutador LLM decide qu\'e agente
+ingresa al lazo cognitivo; mismas capacidades locales. Cinco semillas
+$\{7,17,42,123,256\}$.
+
+El heartbeat opera como discretizaci\'on temporal uniforme: ambas
+condiciones disponen del mismo n\'umero de tics, mismo presupuesto de
+tokens y llamadas API. La diferencia en \emph{densidad deliberativa}
+(debates por heartbeat) refleja, por construcci\'on, capacidad
+end\'ogena de auto-activaci\'on bajo presi\'on epist\'emica, no un
+ajuste de presupuesto.
+
+\section{Resultados preliminares}
+
+\begin{table}[H]
+\caption{Resultados preliminares (n${=}3$ pares de semillas $\{7,17,42\}$,
+$T=80$). Filas con ${}^\dagger$: media $\pm$ desviaci\'on; restantes,
+semilla 7 representativa, a la espera de las semillas 123 y 256.}
+\label{tab:results-short}
+\centering\small
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{M\'etrica} & \textbf{HRRL} & \textbf{LangGraph} \\
+\hline
+Total debates${}^\dagger$  & $387.0 \pm 3.0$ & $69.3 \pm 6.7$ \\
+Densidad deliberativa (deb./hb.) & 4.84 & 0.87 \\
+$\sigma_s$ por agente (s.\ 7) & 4.65 & 8.30 \\
+Agentes con 0 debates (s.\ 7) & 0 / 10 & 3 / 10 \\
+Aceptaci\'on AAF${}^\dagger$ & $0.681 \pm 0.010$ & $0.540 \pm 0.029$ \\
+$\overline{\Delta\varphi^*}$ por debate (s.\ 7) & 0.142 & 0.092 \\
+Pendiente $\Delta\varphi^*$ (s.\ 7) & $+0.018$ & $-0.016$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{¿Qui\'en habla?} Bajo HRRL los 10 agentes intervienen
+($\sigma_s{=}4.65$). Bajo LangGraph 3 agentes no participan y uno
+concentra el 38\% de los debates ($\sigma_s{=}8.30$); los silenciados
+acumulan d\'eficits de 7.5--7.8 ($\sim$10$\times\theta$) que el
+enrutador no corrige. Consistente con \textsc{T1}.
+
+\textbf{¿La densidad sacrifica calidad?} No. Bajo presupuesto temporal
+equiparable HRRL exhibe $5.5\times$ mayor densidad deliberativa y, a la
+vez, mayor aceptaci\'on AAF agregada (0.681 vs 0.540, $n{=}3$);
+$\overline{\Delta\varphi^*}$ por debate es superior y mejora en el
+tiempo, mientras LangGraph se degrada. La consistencia direccional es
+estricta en los tres pares; un Wilcoxon signed-rank pareado da
+$p{=}0.25$ (l\'imite te\'orico para $n{=}3$). La inferencia formal se
+completar\'a con las cinco semillas.
+
+\textbf{¿Opera el mecanismo en su r\'egimen te\'orizado?} No plenamente:
+la recompensa media bajo HRRL es $-1.85 \pm 0.15$ ($n{=}3$); la
+calibraci\'on de $\alpha$ se realiz\'o antes de activar la difusi\'on
+completa de eventos y qued\'o sub-dimensionada. Las m\'etricas macro
+mejoran a\'un bajo este r\'egimen sub\'optimo, sugiriendo robustez del
+efecto emergente.
+
+% ============================================================
+% Pag 4: discusion + future work
+% ============================================================
+\section{Discusi\'on y trabajo futuro}
+
+Los hallazgos preliminares son consistentes con \textsc{T1}: bajo
+capacidades locales equiparables y horizonte equiparable, la regulaci\'on
+end\'ogena distribuye la participaci\'on, sostiene calidad por
+intervenci\'on y mejora la coherencia estructural agregada en el tiempo,
+mientras la orquestaci\'on ex\'ogena se degrada. El hallazgo m\'as
+inesperado ---el aumento monot\'onico de la aceptaci\'on AAF a pesar
+del incremento en densidad--- sugiere que la diversidad de
+participaci\'on puede estabilizar la estructura argumentativa, una
+manifestaci\'on de la variedad requerida~\parencite{ashby1956introduction}.
+
+\paragraph{Limitaciones.} $n{=}3$ semillas limita la potencia
+inferencial; $n{=}5$ se cerrar\'a con las semillas restantes. La
+calibraci\'on de $\alpha$ qued\'o sub-dimensionada y se reportar\'a
+recalibraci\'on bajo flujo real en la versi\'on extendida. Resultados
+espec\'ificos a GPT-5-nano. La integraci\'on formal de DeLP
+~\parencite{garcia2004defeasible} y validaci\'on cruzada en semillas
+disjuntas quedan como trabajo futuro.
+
+\paragraph{Pr\'oximos pasos.} (i) cierre de las dos semillas restantes,
+prueba de Welch unilateral con correcci\'on de Bonferroni;
+(ii) validaci\'on externa mediante LLM-as-judge con rubrica AHP
+(Lu et al., EMNLP 2024; Iyer et al., 2026) sobre dos jueces
+independientes;
+(iii) escalamiento poblacional y sensibilidad de
+$\theta, \alpha, \lambda$;
+(iv) integraci\'on formal de DeLP para incorporar garant\'ias y
+derrotabilidad expl\'icita.
+
+\paragraph{Aporte.} El trabajo abre una pregunta testeable: ¿puede la
+coherencia en MAS-LLM sostenerse end\'ogenamente como propiedad
+autoorganizada, en lugar de imponerse externamente? Los datos
+preliminares justifican continuar la investigaci\'on en esa direcci\'on.
+
+% ============================================================
+\section*{Reproducibilidad}
+
+C\'odigo, instrucciones y log de versi\'on extendida:
+\url{https://github.com/pgerpe/langclaw_experiment}
+
+\printbibliography
+
+\end{document}

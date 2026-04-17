@@ -1,7 +1,19 @@
+# --- secrets & local env ---
 .env
+.env.*
+!.env.example
+
+# --- python ---
 __pycache__/
 *.pyc
-*.pdf
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# --- LaTeX build artefacts (PDF tracked manually if needed) ---
 *.aux
 *.bbl
 *.bcf
@@ -10,5 +22,39 @@ __pycache__/
 *.out
 *.run.xml
 *.synctex.gz
+*.toc
+*.fdb_latexmk
+*.fls
+
+# --- experiment runtime state ---
+experiment_state.txt
+experiment_status.json
+experiment_events.jsonl
+experiment_run.log
+auto_monitor.log
+auto_monitor_state.json
+auto_monitor_pid.txt
+final_runner.log
+final_runner_state.json
+final_runner_pid.txt
+final_runner_bench.log
+watchdog.log
+watchdog_pid.txt
+benchmark_checkpoint.json
+calibration_checkpoint.json
+
+# --- experiment outputs ---
 benchmark_results/
-benchmark_results_v2/
+benchmark_results_*/
+results_*.json
+results.json
+_graph.html
+_build_*.log
+_check_status.py
+_clean_ckpt.py
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+.DS_Store

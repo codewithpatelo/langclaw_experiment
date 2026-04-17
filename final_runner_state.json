@@ -2,15 +2,12 @@
   "phase": "running",
   "pid": 27692,
   "started_at": "2026-04-16T17:51:32.992891+00:00",
-  "attempts": 1,
+  "attempts": 4,
   "consecutive_failures": 0,
-  "updated_at": "2026-04-16T17:51:32.994298+00:00",
+  "updated_at": "2026-04-17T00:35:10.425077+00:00",
   "missing": [
     "hrrl__seed123",
-    "hrrl__seed17",
     "hrrl__seed256",
-    "hrrl__seed42",
-    "hrrl__seed7",
     "langgraph__seed123",
     "langgraph__seed256"
   ]

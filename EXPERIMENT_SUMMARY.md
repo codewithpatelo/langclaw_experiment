@@ -1,230 +1,107 @@
-# LangClaw: Homeostatic Regulation Prevents Context Collapse in Multi-Agent LLM Systems
+# LangClaw — Experiment Summary
 
-## Project Summary
-
-LangClaw is an experimental Multi-Agent System (MAS) framework designed to test the hypothesis that **endogenous homeostatic regulation (HRRL)** prevents context collapse more effectively than static orchestration in adversarial, zero-sum debate environments.
-
-The core insight draws from biological homeostasis: rather than externally scheduling when agents speak (static orchestration), each agent has an internal *epistemic deficit* that grows over time and is reduced only by producing high-quality, structurally integrated arguments. A sigmoid activation function converts this deficit into a probability of participation, creating a self-regulating system where agents speak when they have something meaningful to contribute.
-
-The framework includes a **comparative benchmark** (`benchmark.py`) that runs the same simulation under HRRL, Round-Robin, and Random orchestration modes with the same master seed, producing side-by-side comparison tables and charts.
-
----
-
-## Theoretical Foundation
-
-### Homeostatic Regulation via Reinforcement Learning (HRRL)
-
-Each agent maintains an internal state variable, the **epistemic deficit** (delta), governed by three mechanisms:
-
-**1. Decay (Drive Accumulation)**
-
-The deficit increases linearly each tick, modelling the pressure to contribute:
-
-$$\delta_{t+1} = \delta_t + \lambda$$
-
-where lambda = 0.05 is the decay rate.
-
-**2. Sigmoid Activation**
-
-The probability of acting is computed via a sigmoid function:
-
-$$p = \frac{1}{1 + e^{-k(\delta - \theta)}}$$
-
-where k = 10 controls steepness and theta = 0.7 is the activation threshold. When delta < theta, agents are unlikely to act; when delta > theta, they are compelled to participate.
-
-**3. Satiation (Drive Reduction)**
-
-After producing an argument, the deficit is reduced proportionally to the argument's informational value:
-
-$$\delta_{\text{new}} = \max(\varepsilon, \delta - \alpha \cdot \Delta\varphi^*)$$
-
-where epsilon = 0.1 is the resting baseline, alpha = 0.5 is the learning rate, and Delta-Phi-star is the Integrated Information Theory proxy.
-
-### IIT Phi-star Proxy
-
-Computing true Integrated Information (Phi-star) is intractable. LangClaw uses a network-theoretic proxy:
-
-$$\Phi^* \approx w_c \cdot C_{\text{betweenness}}(\text{target}) + w_{\text{cycle}} \cdot \mathbb{1}_{\text{cycle}} + w_{\text{div}} \cdot D_{\text{agents}}$$
-
-with weights w_c = 0.35, w_cycle = 0.35, w_div = 0.30. This captures the intuition that an argument is informationally valuable when it:
-- Targets a central node (betweenness centrality)
-- Creates dialectical cycles (refutation loops)
-- Bridges perspectives from different agents (diversity)
-
-### In-Context Reinforcement Learning
-
-Agents learn without fine-tuning. The last 3 experiences (state, action, reward) are injected into the LLM prompt, guiding the model to repeat argument styles that produced high Delta-Phi-star values.
+> Concise summary of the artefact accompanying the JAIIO 2026 paper
+> *“LangClaw: Homeostatic Regulation Prevents Context Collapse in
+> Multi-Agent LLM Debate Systems.”*
+>
+> For installation, reproduction, Docker setup, output formats,
+> recovery, troubleshooting and AI tooling disclosure, see
+> [`README.md`](README.md).
 
 ---
 
-## Architecture
+## 1. Hypothesis under test
 
-```
-langclaw_experiment/
-├── langclaw/
-│   ├── homeostasis.py    # EpistemicDrive: decay, sigmoid, satiation
-│   ├── delp_graph.py     # ArgumentGraph: networkx DiGraph + Phi* proxy
-│   ├── agent.py          # LangClawAgent: HRRL cycle + In-Context RL
-│   ├── actions.py        # UtilitySelector + Tavily/fallback search
-│   ├── memory.py         # Three-layer memory (episodic, semantic, working)
-│   ├── budget.py         # APIBudget: per-agent rate limiting
-│   ├── seeds.py          # Deterministic prime seed factory
-│   ├── events.py         # Event dataclasses (tick, argument, shutdown)
-│   ├── schemas.py        # Pydantic models: AgentAction, SimulationLog
-│   └── simulation.py     # SotopiaEnvironment: 4-agent debate loop
-├── main.py               # CLI entry point (single mode)
-├── benchmark.py          # Comparative benchmark: HRRL vs baselines
-├── dashboard.py          # Streamlit real-time visualization
-├── paper_jaiio.tex       # JAIIO 2025/2026 submission (llncs format)
-├── references.bib        # Bibliography (APA 7 format)
-├── llncs.cls             # LNCS document class
-├── requirements.txt
-└── README.md
-```
+In adversarial, zero-sum debates with asymmetric information, **endogenous
+homeostatic regulation (HRRL)** of LLM agents prevents *context
+collapse* — loss of dialectical coherence over time — more robustly
+than **exogenous orchestration** (a deterministic LangGraph router),
+when both are evaluated under **comparable temporal budgets** (same
+heartbeats, same per-agent capabilities, same memory infrastructure).
 
-### Component Flow (HRRL mode)
-
-```
-For each tick (1..T):
-  Broadcast TickElapsedEvent to all agents (async)
-  Each agent concurrently:
-    1. decay()                        → deficit increases
-    2. get_activation_probability()   → sigmoid(deficit)
-    3. random sample vs p             → activate or rest
-    4. If activated:
-       a. UtilitySelector picks action (DEBATE / SEARCH / READ / PASS)
-       b. DEBATE: call LLM → parse JSON → add to graph → Phi* → satiate
-       c. SEARCH: query Tavily (or fallback pool) → store in semantic memory
-       d. READ: absorb recent working-memory entry as fact
-    5. Broadcast NewArgumentEvents to peers
-    6. Log metrics
-```
-
-### Orchestration Modes (for comparative benchmarks)
-
-| Mode | Description |
-|------|-------------|
-| `hrrl` | Agents run as async coroutines, regulated by epistemic drive. No external scheduler. |
-| `round-robin` | Every agent is forced to speak every tick (bypasses drive). Control baseline. |
-| `random` | One randomly selected agent speaks each tick. Control baseline. |
+The contrast is not “HRRL produces more debates” (it does, by design)
+but “for the same heartbeat budget, HRRL sustains coherence per debate
+while LangGraph degrades.”
 
 ---
 
-## Experimental Setup
+## 2. Theoretical core (T_HA)
 
-### Environment: Sotopia Zero-Sum Political Survival
+The Homeostatic Agency Theory `T_HA` is built on three postulates and
+yields one experimentally tractable derivation. Full statements (in
+natural language and in formal notation) live in
+`paper_jaiio.tex`, Section *Marco teórico*. The mechanistic equations
+implemented in code are:
 
-Four agents in a political debate, split into two opposing factions. Each faction has one **Analytical** and one **Strategic** archetype, ensuring symmetric cognitive profiles across sides:
+- **Decay (drive accumulation):** `δ_{t+1} = δ_t + λ`, with `λ = 0.05`.
+- **Sigmoid activation gate:** `p = 1 / (1 + exp(-k(δ - θ)))`, with
+  `k = 10`, `θ = 0.7`.
+- **Satiation (drive reduction):** `δ_new = max(ε, δ - α · Δφ*)`, with
+  `ε = 0.1` and `α` taken from `calibration_results.json`.
+- **Q-learner:** linear TD(0) over 4 normalised features, with TD-error
+  and weight clipping plus L2 regularisation; warm-starts the policy.
 
-| Agent | Faction | Archetype | Objective |
-|-------|---------|-----------|-----------|
-| GOV-1 | Government | Analytical | Defend the government using data, statistics, and historical comparisons. Find factual inconsistencies in opposition arguments. |
-| GOV-2 | Government | Strategic | Protect the official narrative by reframing criticism as out-of-context. Challenge premises, logic, and fallacies in opposition attacks. |
-| OPP-1 | Opposition | Analytical | Attack the government using data, statistics, and historical comparisons. Find factual inconsistencies in government arguments. |
-| OPP-2 | Opposition | Strategic | Dismantle the official narrative by reframing government defenses as insufficient. Challenge premises, logic, and fallacies in government justifications. |
-
-This symmetric design ensures that differences in agent performance are attributable to the orchestration mode, not to role asymmetry.
-
-### Search Capability
-
-The SEARCH action uses the **Tavily Search API** for real web search when `TAVILY_API_KEY` is set in the `.env` file. When the key is absent, a static fallback knowledge pool is used, ensuring the simulation runs offline.
-
-### Configuration
-
-- **LLM**: OpenAI gpt-4o-mini
-- **Iterations**: 50 ticks (30 for benchmarks)
-- **Agents**: 4 (2v2 zero-sum, symmetric archetypes)
-- **Decay rate (lambda)**: 0.05
-- **Activation threshold (theta)**: 0.7
-- **Sigmoid steepness (k)**: 10
-- **Satiation rate (alpha)**: 2.0 (HRRL async path)
-- **Baseline deficit (epsilon)**: 0.1
-- **Initial deficit**: 0.5
-
-### Metrics
-
-- **tau-bench**: Fraction of debate turns that are logically consistent (argument connects to an existing node via a valid attack). tau = consistent_turns / total_debate_turns.
-- **Avg Delta-Phi-star**: Mean informational value across all DEBATE actions.
-- **Deficit trajectories**: Per-agent deficit over time.
-- **Graph statistics**: Nodes, edges, density, components.
-- **Per-agent debate count and quality**: Number of debates and average Delta-Phi-star per agent.
+The Φ\* surrogate is a network-theoretic proxy combining target
+betweenness centrality, dialectical-cycle indicator, and inter-agent
+diversity (true Integrated Information is intractable; this is
+explicitly flagged as a limitation).
 
 ---
 
-## Running the Benchmark
+## 3. Setup at a glance
 
-```bash
-# Run all three modes with seed 42, 30 iterations each
-python benchmark.py --model gpt-4o-mini --iterations 30 --seed 42
+| dimension                 | value                                                          |
+|---------------------------|----------------------------------------------------------------|
+| Agents                    | 10 (2 factions × 5 VSM subsystems S1–S5)                       |
+| Cognitive loop            | event-driven `THINK → PLAN → EXECUTE → OBSERVE` per heartbeat  |
+| Inter-agent messaging     | directed FIPA-like (`request`, `inform`, `propose`, `confirm`, `query`) |
+| Actions                   | `DEBATE`, `SEARCH`, `READ`, `PASS`                              |
+| Memory                    | 3-layer (episodic / semantic / working), shared across modes   |
+| LLM backbone              | OpenAI `gpt-5-nano-2025-08-07`                                 |
+| Heartbeats per run        | 80 (canonical paper config)                                    |
+| Modes compared            | `hrrl` vs `langgraph` (round-robin / random kept as sanity)    |
+| Seeds                     | `{7, 17, 42, 123, 256}` (preliminary results: n=3, seeds 7/17/42) |
 
-# Run only HRRL vs Round-Robin
-python benchmark.py --modes hrrl round-robin --iterations 50 --seed 42
+Paper-relevant performance measures, all defined in `langclaw/metrics.py`
+and `langclaw/core_metric.py`:
 
-# Results are saved to benchmark_results/
-#   benchmark_report.json     — aggregate metrics
-#   logs_hrrl.json            — per-tick logs for HRRL
-#   logs_round_robin.json     — per-tick logs for Round-Robin
-#   logs_random.json          — per-tick logs for Random
-#   tau_bench_comparison.html — interactive bar chart
-#   debates_comparison.html   — debate volume & quality chart
-#   deficit_evolution.html    — deficit trajectories per mode
-#   agent_debates.html        — per-agent debate contribution
-```
-
----
-
-## Key Findings
-
-1. **HRRL prevents context collapse**: High tau-bench scores indicate that the vast majority of debate turns produce logically connected arguments rather than isolated monologues.
-
-2. **Self-regulating participation**: Without any external scheduler, agents naturally converge to a sustainable participation rhythm. The deficit-sigmoid loop creates an endogenous governor that prevents both over-participation (flooding) and under-participation (silence).
-
-3. **Quality-driven satiation**: Agents producing higher-quality arguments (higher Delta-Phi-star) reduce their deficit faster, creating a natural selection pressure toward structurally integrated contributions.
-
-4. **Symmetric role design eliminates bias**: The mirrored Analytical/Strategic archetypes across factions ensure that performance differences reflect orchestration dynamics, not role-inherent advantages.
-
-5. **Comparative baseline**: The benchmark script enables direct comparison of tau-bench, debate volume, argument quality, and deficit dynamics across HRRL, Round-Robin, and Random modes.
+- AAF acceptance ratio and its temporal slope.
+- Peer-Reference Rate (PRR_G) and Initiative Ratio (IR).
+- CORE (Conversational Robustness Evaluation).
+- Δφ\* mean, slope, and per-agent dispersion.
+- Deliberative density (debates per heartbeat).
+- Mean reward (drive reduction).
 
 ---
 
-## Limitations
+## 4. Reproducibility
 
-1. **Phi-star is a proxy**: The IIT proxy uses betweenness centrality + cycle detection + agent diversity rather than true integrated information. This is explicitly acknowledged as a tractability constraint.
+- Pinned `requirements.txt` and a `python:3.11-slim` Dockerfile.
+- Deterministic seed factory (`langclaw/seeds.py`).
+- Per-tick checkpoints in calibration and benchmark.
+- Detached supervisor with watchdog auto-restart
+  (`run_full_experiment.py`, `final_runner.py`).
+- Per-run health reports with optional LLM explanation of red flags.
 
-2. **Statistical power**: Rigorous conclusions require multiple runs with different seeds. The benchmark supports seeded reproducibility.
-
-3. **LLM non-determinism**: Even with temperature=0.7, LLM outputs are stochastic. The HRRL mechanism itself uses random sampling for activation.
-
-4. **Spanish-language debate**: The simulation was conducted in Spanish, which may affect LLM performance compared to English.
-
-5. **Scale**: The 4-agent, 50-tick setup is small. Behavior at larger scales (more agents, longer horizons) is unknown.
-
----
-
-## How to Reproduce
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-
-# Set up environment variables
-echo "OPEN_AI_API_KEY=sk-..." > .env
-echo "TAVILY_API_KEY=tvly-..." >> .env   # optional, for real web search
-
-# Run a single HRRL simulation
-python main.py --model gpt-4o-mini --iterations 50 --output results.json
-
-# Run the comparative benchmark
-python benchmark.py --model gpt-4o-mini --iterations 30 --seed 42
-
-# Launch the visualization dashboard
-python -m streamlit run dashboard.py
-```
+The minimal reproduction command is documented in
+[`README.md` §5](README.md#5-reproducing-the-paper-end-to-end).
 
 ---
 
-## Citation
+## 5. Acknowledged limitations
 
-If referencing this experiment:
+1. Φ\* is a tractability surrogate, not Integrated Information itself.
+2. Calibration was performed on a single seed (`42`) due to compute
+   constraints; this is disclosed in the paper.
+3. n = 3 seed pairs at submission time; statistical claims are
+   preliminary (Wilcoxon signed-rank, p ≈ 0.25 under low power) and
+   labelled as such.
+4. LLM stochasticity is bounded by temperature but not eliminated.
+5. The simulation runs in Spanish, mirroring the paper's evaluation
+   context; behaviour in other languages is unstudied.
 
-> Gerpe, P. (2026). *LangClaw: Homeostatic Regulation Prevents Context Collapse in Multi-Agent LLM Debate Systems*. Experimental framework and simulation results.
+A planned post-hoc LLM-as-judge protocol (two judges with an
+AHP-weighted rubric, blind anonymisation, Krippendorff's α, Linear
+Mixed-Effects Model with Bonferroni correction) is described in the
+paper's *Trabajo futuro* section and is implemented incrementally in
+`tools/`.
