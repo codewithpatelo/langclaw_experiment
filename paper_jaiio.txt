@@ -603,7 +603,7 @@ para sostener los efectos macro aún sin convergencia del lazo de aprendizaje. E
 es también metodológico: una forma testeable de preguntar si la coherencia en MAS
 puede ser propiedad autoorganizada y no resultado de un planificador central.
 Reproducibilidad
-Código e instrucciones de reproducibilidad: https://github.com/pgerpe/langclaw_experiment
+Código e instrucciones de reproducibilidad: https://github.com/codewithpatelo/langclaw_experiment
 
 References
 Ashby, W. R. (1956). An introduction to cybernetics. Chapman & Hall.

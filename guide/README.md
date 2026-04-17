@@ -52,7 +52,7 @@ draft. These are consulted material, not output of this repo.
 | `paper_review.pdf`                                     | Aggregated reviewer comments from AI Reviewer 3 and peer feedback.      |
 | `DEEPRESEARCH3.pdf`                                    | Deep-research brief consulted during framing.                           |
 | `2-ASAID_HermannVignoloGerard.pdf`                     | Example ASAID-track short paper (structure and tone reference).         |
-| `Markopoulos_17-Modeling decision-making -Gerpe_Patricio_2086.pdf` | Prior work by the author on decision-making modelling (context).        |
+| `Markopoulos_17-Modeling_decision-making_2086.pdf`     | Prior author work on decision-making modelling (context, anonymised).   |
 | `metrics.pdf`                                          | Reference on argumentation / MAS evaluation metrics.                    |
 | `ref_goo.pdf`                                          | Supporting reference consulted while drafting.                          |
 | `TP2_CyT (1).pdf`                                      | Prior course-level report used as context.                              |

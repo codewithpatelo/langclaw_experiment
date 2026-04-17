@@ -492,15 +492,16 @@ required by JAIIO; this README contains the full breakdown.
 If you use or reference this artefact, please cite:
 
 ```bibtex
-@misc{gerpe2026driveplexity,
-  author       = {Gerpe, Patricio},
+@unpublished{anonymous2026driveplexity,
+  author       = {{Anonymous Authors}},
   title        = {Driveplexity: Endogenous Activation via Homeostasis
                   in LLM-based Multi-Agent Debate},
   year         = {2026},
-  howpublished = {JAIIO 2026 (Jornadas Argentinas de Inform\'atica),
-                  ASAID Track},
-  note         = {Experimental framework and source code,
-                  \url{https://github.com/<owner>/langclaw_experiment}}
+  note         = {Manuscript submitted to JAIIO 2026
+                  (Jornadas Argentinas de Inform\'atica),
+                  ASAID Track. Under review.
+                  Experimental framework and source code:
+                  \url{https://anonymous.4open.science/r/langclaw_experiment-45BF}}
 }
 ```
 
