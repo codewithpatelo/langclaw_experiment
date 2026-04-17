@@ -1,7 +1,7 @@
 # Writing Style Guidelines — Patricio Gerpe
 
 These guidelines capture the author's scientific writing voice, distilled from
-multiple iterations on the LangClaw paper. They are intended as a reference for
+multiple iterations on the Driveplexity paper. They are intended as a reference for
 AI assistants, co-authors, or the author himself when drafting future papers.
 
 ---
@@ -125,7 +125,7 @@ This framing elevates a technical comparison to a conceptual contribution.
 - Discuss broader implications (what would change if the hypothesis holds at
   scale).
 - End with the value of *asking the question*, not just answering it: "the value
-  of LangClaw lies not only in the mechanism itself, but in providing a testable
+  of Driveplexity lies not only in the mechanism itself, but in providing a testable
   way to ask whether..."
 
 ## 9. Characteristic Phrases
@@ -207,7 +207,7 @@ argument can be sharpened by grounding it in one of these:
 - **Corrección**: the regulatory act of reducing the gap between actual
   and desired state. Correction presupposes a sensor (to detect the
   gap), a comparator (to evaluate it), and an effector (to act on it).
-  In LangClaw, satiation is the correction mechanism: it reduces the
+  In Driveplexity, satiation is the correction mechanism: it reduces the
   deficit proportionally to argument quality.
 - **Viabilidad**: the capacity of a system to maintain its identity and
   adapt to a changing environment over time (Beer). A system is viable

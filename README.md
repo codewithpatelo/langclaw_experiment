@@ -1,13 +1,24 @@
-# Driveplexity — Homeostatic Multi-Agent Debate Framework
+# Driveplexity — Endogenous Activation via Homeostasis in Multi-Agent LLM Debate
 
-> Experimental framework that contrasts **endogenous homeostatic regulation
-> (HRRL)** against **exogenous orchestration (LangGraph router)** in
-> adversarial, zero-sum LLM debates.
+> Experimental framework that contrasts **endogenous homeostatic
+> activation (Driveplexity)** against **exogenous orchestration
+> (LangGraph router)** in adversarial, zero-sum LLM debates.
+>
+> This repository contains the codebase, reproducibility tooling and
+> LaTeX source of the paper submitted to **JAIIO 2026** (ASAID Track).
+> The full-length draft lives in `paper_jaiio.tex`; the 4-page short
+> version submitted to the conference is `paper_jaiio_short.tex`
+> (`paper_jaiio_short.pdf`).
 
-This repository contains the full codebase, reproducibility tooling, and
-LaTeX source of the paper submitted to **JAIIO 2026** (Jornadas Argentinas
-de Informática). The paper PDF is `paper_jaiio.pdf`; a 4-page short version
-is `paper_jaiio_short.pdf`.
+---
+
+> **Note on naming.** The Python package directory is still named
+> `langclaw/` for historical reasons (the project's internal codename
+> during development). It is the implementation of the **Driveplexity**
+> framework described in the paper, and renaming the folder would break
+> imports across logs, checkpoints and analysis scripts. Treat
+> `langclaw/` and *Driveplexity* as referring to the same artefact
+> throughout this repo.
 
 ---
 
@@ -32,63 +43,93 @@ is `paper_jaiio_short.pdf`.
 
 ## 1. What this is
 
-Driveplexity is a Multi-Agent System (MAS) of **10 LLM agents** organised in two
-opposing factions of 5 (one agent per Viable System Model subsystem,
-S1–S5). Each agent runs a `THINK → PLAN → EXECUTE → OBSERVE` event-driven
-cognitive loop and can perform `DEBATE`, `SEARCH`, `READ` or `PASS`
-actions, plus directed FIPA-like messaging (`request`, `inform`,
-`propose`, `confirm`, `query`).
+**Driveplexity (DPLXY)** is a Multi-Agent System (MAS) of **10 LLM
+agents** organised in two opposing factions of 5. Inside each faction
+every agent maps to one of the five subsystems of the Viable System
+Model (S1–S5), used here as a minimal social-organisation unit.
 
-Two orchestration strategies are compared **under matched temporal
-budgets** (same number of heartbeats, same per-agent capabilities, same
-memory infrastructure):
+Each agent runs an event-driven `THINK → PLAN → EXECUTE → OBSERVE`
+cognitive loop and can perform `DEBATE`, `SEARCH`, `READ`, `MESSAGE`
+or `PASS` actions, plus directed FIPA-like messaging (`request`,
+`inform`, `propose`, `confirm`, `query`).
 
-- **HRRL (proposed)** — each agent owns an *epistemic deficit* `δ` that
-  decays over time and is reduced by producing high-quality arguments. A
-  sigmoid gate over `δ` decides activation. A linear TD(0) Q-learner over
-  4 normalised features warm-starts policy preferences.
-- **LangGraph (baseline)** — a deterministic graph router fires agents
+Two activation strategies are compared **under matched temporal budgets**
+(same number of heartbeats, same per-agent capabilities, same memory
+infrastructure):
+
+- **Driveplexity / DPLXY (proposed).** Each agent owns an *epistemic
+  deficit* `δ_i` that drifts upward during inactivity and is reduced
+  after a useful contribution. A sigmoid gate over `δ_i` turns the
+  drive into activation probability; reward comes from a Δφ\* proxy
+  defined over an Abstract Argumentation Framework. A linear TD(0)
+  Q-learner is added as an *experimental extension* whose convergence
+  remains an open question (deadly-triad regime).
+- **LangGraph (baseline).** A deterministic graph router fires agents
   exogenously, with the same per-agent action set.
 
+The framework is grounded on three ontological axioms of autonomy
+(**AAH, A1–A3**: autonomy, drive, quality gate) that state the
+minimal commitments the design makes. The HRRL tradition
+(Keramati & Gutkin, 2014) is used only as the *theoretical
+antecedent* that inspired the drive formulation; the measured system
+is Driveplexity, not a vanilla HRRL port.
+
 The scientific question is whether endogenous regulation prevents
-**context collapse** more robustly than static routing in zero-sum
+**context collapse** — the loss of dialectical coherence over
+extended interaction — more robustly than static routing in zero-sum
 deliberation.
+
+Two control conditions guard against the most obvious alternative
+readings:
+
+- **DPLXY-no-Q** — disables the TD(0) Q-learner while keeping the
+  homeostatic closure, isolating the effect of regulation from
+  learning.
+- **LangGraph-informed** — hands the exogenous router the same
+  structural features and `δ_i` that DPLXY uses internally, via
+  JSON; isolates endogenous-vs-exogenous from informed-vs-uninformed.
 
 ---
 
 ## 2. Repository layout
 
 ```text
-langclaw_experiment/
-├── langclaw/
-│   ├── homeostasis.py     # Epistemic drive: decay, sigmoid gate, satiation
-│   ├── q_learner.py       # Online linear TD(0) with normalisation + clipping
-│   ├── delp_graph.py      # Argument graph (AAF) + Φ* proxy
-│   ├── agent.py           # Agent loop, prompts, FIPA messaging
-│   ├── simulation.py      # Environment, both orchestration modes
-│   ├── langgraph_flow.py  # LangGraph baseline router
-│   ├── router.py          # Inter-agent message routing
-│   ├── memory.py          # Three-layer memory (episodic/semantic/working)
-│   ├── budget.py          # Hard / soft API rate limits
-│   ├── actions.py         # Action utilities and search fallback
-│   ├── core_metric.py     # CORE temporal coherence metric
-│   ├── metrics.py         # PRR_G, IR, AAF acceptance, slopes
-│   ├── events.py          # Tick/argument/shutdown events
-│   ├── schemas.py         # Pydantic logging schemas
-│   └── seeds.py           # Deterministic prime-seed factory
-├── benchmark.py                # Multi-seed benchmark (HRRL vs LangGraph)
-├── calibrate_hyperparams.py    # Ablation micro-simulation calibration
+driveplexity/
+├── langclaw/                   # Python package implementing Driveplexity
+│   ├── homeostasis.py          # Epistemic drive: decay, sigmoid gate, satiation
+│   ├── q_learner.py            # Online linear TD(0) with normalisation + clipping
+│   ├── delp_graph.py           # Argument graph (AAF) + Φ* proxy
+│   ├── agent.py                # Agent loop, prompts, FIPA messaging
+│   ├── simulation.py           # Environment, both orchestration modes
+│   ├── langgraph_flow.py       # LangGraph baseline router
+│   ├── router.py               # Inter-agent message routing
+│   ├── router_informed.py      # LangGraph-informed fair-baseline router
+│   ├── memory.py               # Three-layer memory (episodic/semantic/working)
+│   ├── budget.py               # Hard / soft API rate limits
+│   ├── actions.py              # Action utilities, StimulusEvaluator, search fallback
+│   ├── core_metric.py          # CORE temporal coherence metric
+│   ├── metrics.py              # PRR_G, IR, AAF acceptance, slopes
+│   ├── events.py               # Tick/argument/shutdown events
+│   ├── schemas.py              # Pydantic logging schemas
+│   └── seeds.py                # Deterministic prime-seed factory
+├── benchmark.py                # Multi-seed benchmark (DPLXY vs LangGraph)
+├── run_ablation.py             # Ablation runner (DPLXY-no-Q, LG-informed)
+├── calibrate_hyperparams.py    # Micro-simulation hyperparameter calibration
 ├── run_full_experiment.py      # Detached supervisor with watchdog
 ├── final_runner.py             # Watchdog auto-restart loop
 ├── auto_monitor.py             # Lightweight progress monitor
 ├── dashboard.py                # Streamlit live dashboard
 ├── main.py                     # Single-mode CLI entry
 ├── tools/
-│   └── ahp_weights.py          # AHP weights for the LLM-as-judge rubric
+│   ├── volume_matched_analysis.py  # first-K / last-K volume-matched control
+│   ├── agent_stats.py              # per-agent share / distribution stats
+│   └── ahp_weights.py              # AHP weights for the LLM-as-judge rubric
 ├── paper_jaiio.tex             # Full paper (LNCS class)
-├── paper_jaiio_short.tex       # 4-page work-in-progress version
-├── references.bib              # Bibliography (Biber/BibLaTeX)
+├── paper_jaiio_short.tex       # 4-page JAIIO short version (submitted)
+├── references.bib              # Bibliography (Biber / BibLaTeX APA)
 ├── llncs.cls / splncs04.bst    # LNCS document class
+├── guide/                      # Authoring guide, review PDFs, LNCS templates
+├── docs/                       # Supplementary docs (architecture, theory, etc.)
 ├── Dockerfile                  # Reproducible image (python:3.11-slim)
 ├── docker-compose.yml          # One-command full run inside container
 ├── requirements.txt            # Pinned Python dependencies
@@ -107,7 +148,7 @@ patches should also work.
 # 1) Create and activate a virtual environment
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1     # PowerShell
-# source .venv/bin/activate       # bash/zsh
+# source .venv/bin/activate      # bash/zsh
 
 # 2) Install pinned dependencies
 pip install -r requirements.txt
@@ -119,23 +160,29 @@ copy .env.example .env           # cp .env.example .env on Linux
 # 4) Sanity check (very small run, ~2-3 minutes)
 python benchmark.py --preflight --preflight-ticks 4 --seeds 7
 
-# 5) Real benchmark for one seed pair (HRRL + LangGraph)
+# 5) Real benchmark for one seed pair (DPLXY + LangGraph)
 python benchmark.py --iterations 80 --seeds 7 --modes hrrl langgraph
 ```
 
-Results land under `benchmark_results/` (or wherever `--output-dir` points).
+> The `--modes hrrl` flag name is kept for backward compatibility with
+> existing logs and checkpoints. It activates the Driveplexity
+> endogenous strategy.
+
+Results land under `benchmark_results/` (or wherever `--output-dir`
+points).
 
 ---
 
 ## 4. Quick start (Docker)
 
-The provided `Dockerfile` ships a self-contained `python:3.11-slim` image
-with all pinned dependencies. `docker-compose.yml` mounts the repo into
-`/app`, so checkpoints, logs and outputs persist on the host.
+The provided `Dockerfile` ships a self-contained `python:3.11-slim`
+image with all pinned dependencies. `docker-compose.yml` mounts the
+repo into `/app`, so checkpoints, logs and outputs persist on the
+host.
 
 ```bash
 # Build the image once
-docker build -t langclaw:latest .
+docker build -t driveplexity:latest .
 
 # Run the full experiment (calibration + 5-seed benchmark)
 # Requires .env with OPEN_AI_API_KEY in the project root
@@ -146,22 +193,31 @@ Notes:
 
 - The container runs in the foreground; use `docker compose up -d` for
   detached mode, or rely on the in-process watchdog (Section 8).
-- Set `OPEN_AI_API_KEY` in `.env` *before* `docker compose up`; the file
-  is loaded via `env_file:` and is **not** baked into the image.
-- The default command in `docker-compose.yml` mirrors the canonical paper
-  configuration (`--iterations 80 --seeds 7 17 42 123 256`, hard API
-  limit 500, output dir `benchmark_results_v7`).
+- Set `OPEN_AI_API_KEY` in `.env` *before* `docker compose up`; the
+  file is loaded via `env_file:` and is **not** baked into the image.
+- The default command in `docker-compose.yml` mirrors the canonical
+  paper configuration (`--iterations 80 --seeds 7 17 99 123 256`,
+  hard API limit 500, output dir `benchmark_results_v7`).
 
 ---
 
 ## 5. Reproducing the paper end-to-end
 
-The paper reports preliminary results for seeds **{7, 17, 42}** of the
-canonical seed set **{7, 17, 42, 123, 256}** (chosen with the deterministic
-prime factory in `langclaw/seeds.py`).
+The short paper reports preliminary results for the evaluation seed
+set **{7, 17, 99, 123, 256}**. Seed **42** was used only for *a
+priori* hyperparameter calibration and is explicitly **excluded from
+evaluation** to prevent calibration leakage.
 
-The supervisor `run_full_experiment.py` chains calibration → benchmark
-under a single resilient process with checkpointing and a watchdog loop:
+Two ablation conditions complete the design:
+
+- `DPLXY-no-Q` (`n = 1`) — `hrrl` mode with the Q-learner disabled.
+- `LangGraph-informed` (`n = 2`) — `langgraph` mode with the router
+  receiving the same structural features and `δ_i` as DPLXY.
+
+### 5.1. One-shot supervisor (recommended)
+
+`run_full_experiment.py` chains calibration → benchmark under a
+resilient process with checkpointing and a watchdog:
 
 ```powershell
 python run_full_experiment.py --detach `
@@ -170,7 +226,7 @@ python run_full_experiment.py --detach `
   --calibration-seed 42 `
   --calibration-api-hard-limit 200 `
   --iterations 80 `
-  --seeds 7 17 42 123 256 `
+  --seeds 7 17 99 123 256 `
   --benchmark-api-hard-limit 500 `
   --benchmark-output-dir benchmark_results_v7 `
   --status-file experiment_status.json `
@@ -193,18 +249,53 @@ Get-Content .\experiment_events.jsonl -Tail 20
 Get-Content .\experiment_run.log -Tail 60
 ```
 
-If you only want to *reproduce* (i.e. you already trust the calibration
-results in `calibration_results.json`), skip the supervisor and run:
+### 5.2. Reproduction only (skip calibration)
+
+If you trust the released `calibration_results.json`, skip the
+supervisor and run the benchmark directly:
 
 ```bash
 python benchmark.py \
   --iterations 80 \
-  --seeds 7 17 42 123 256 \
+  --seeds 7 17 99 123 256 \
   --modes hrrl langgraph \
   --config calibration_results.json \
   --api-hard-limit 500 \
   --output-dir benchmark_results_v7
 ```
+
+### 5.3. Ablations and fair baseline
+
+```bash
+# DPLXY-no-Q
+python run_ablation.py --variant no_q \
+  --seeds 7 --iterations 80 \
+  --output-dir benchmark_results_v7_ablation
+
+# LangGraph-informed
+python run_ablation.py --variant langgraph_informed \
+  --seeds 7 17 --iterations 80 \
+  --output-dir benchmark_results_v7_fairbaseline
+```
+
+### 5.4. Volume-matched analysis
+
+Addresses the confound that DPLXY produces more debates per heartbeat
+than LangGraph (by design — endogenous drive fires when `δ_i`
+justifies it). The analysis truncates DPLXY to `K = N_LG` debates
+per seed, in two windows:
+
+- **vm-1** — first `K` debates (short context).
+- **vm-ℓ** — last `K` debates (context volume comparable to LangGraph).
+
+```bash
+python tools/volume_matched_analysis.py \
+  --seeds 7 17 99 123 256 \
+  --logs-dir benchmark_results_v7
+```
+
+Outputs `volume_matched_results.csv` and `volume_matched_summary.json`
+under `tools/`.
 
 Expected wall-clock time on a typical laptop with default OpenAI rate
 limits is **≈4–6 hours per (mode, seed) pair**, dominated by API
@@ -216,20 +307,22 @@ latency.
 
 ### Seeds
 
-The canonical paper seed set is `{7, 17, 42, 123, 256}` (declared in
-`langclaw/seeds.py`). Every random source — Python `random`, `numpy`,
-LLM sampling salt, agent-id assignment — is derived deterministically
-from a master seed via `seeds.py`. Re-running with the same seed and the
-same `requirements.txt` reproduces the same trajectory modulo OpenAI
-non-determinism (temperature `> 0` is the only remaining source of
-stochasticity).
+The canonical paper evaluation seed set is `{7, 17, 99, 123, 256}`
+(declared in `langclaw/seeds.py`). Every random source — Python
+`random`, `numpy`, LLM sampling salt, agent-id assignment — is
+derived deterministically from a master seed via `seeds.py`. Seed
+`42` is kept separate, exclusively for hyperparameter calibration.
+
+Re-running with the same seed and the same `requirements.txt`
+reproduces the same trajectory modulo OpenAI non-determinism
+(temperature `> 0` is the only remaining source of stochasticity).
 
 ### Calibration
 
-`calibrate_hyperparams.py` runs an **ablation micro-simulation** that
-sweeps key HRRL hyperparameters (`λ`, `θ`, `α`, `k`, Q-learner
-`α_q`, `γ`, ε-greedy) and writes the chosen values to
-`calibration_results.json`. The canonical paper run used:
+`calibrate_hyperparams.py` runs an ablation micro-simulation that
+sweeps key hyperparameters (`λ`, `θ`, `α`, `k`, Q-learner `α_q`, `γ`,
+ε-greedy) and writes the chosen values to `calibration_results.json`.
+The canonical paper run used:
 
 ```bash
 python calibrate_hyperparams.py \
@@ -238,22 +331,26 @@ python calibrate_hyperparams.py \
   --api-hard-limit 200
 ```
 
-The `--config calibration_results.json` flag of `benchmark.py` then loads
-the calibrated hyperparameters automatically. Single-seed calibration is
-acknowledged as a methodological limitation in the paper.
+The `--config calibration_results.json` flag of `benchmark.py` then
+loads the calibrated hyperparameters automatically. Two *a priori*
+criteria fix the selection — debate density in the operating range
+and deficit stability around the set-point `ε` — and the values are
+frozen across all evaluation seeds so that no comparison benefits
+from a post-hoc retune.
 
 ### Orchestration modes
 
 `benchmark.py --modes` accepts `hrrl`, `langgraph`, `round-robin`,
-`random`. The paper compares only `hrrl` vs `langgraph`; `round-robin`
-and `random` are kept for sanity-check baselines.
+`random`. The paper contrasts `hrrl` (Driveplexity) against
+`langgraph`; `round-robin` and `random` are kept as sanity-check
+baselines.
 
-| mode         | activation source             | budget per run            |
-|--------------|-------------------------------|---------------------------|
-| `hrrl`       | endogenous (sigmoid over δ)   | `--iterations` heartbeats |
-| `langgraph`  | exogenous deterministic router| same heartbeat budget     |
-| `round-robin`| every agent each tick         | sanity baseline           |
-| `random`     | one random agent per tick     | sanity baseline           |
+| mode          | activation source                | budget per run             |
+|---------------|----------------------------------|----------------------------|
+| `hrrl`        | endogenous (sigmoid over `δ_i`)  | `--iterations` heartbeats  |
+| `langgraph`   | exogenous deterministic router   | same heartbeat budget      |
+| `round-robin` | every agent each tick            | sanity baseline            |
+| `random`      | one random agent per tick        | sanity baseline            |
 
 ---
 
@@ -262,7 +359,7 @@ and `random` are kept for sanity-check baselines.
 Each `(mode, seed)` pair produces, under `--output-dir`:
 
 - `results_<mode>__seed<N>.json` — aggregated metrics for that run
-  (debates, AAF acceptance, PRR_G, IR, CORE, Δφ\* slopes, deliberative
+  (debates, AAF acceptance, PRR\_G, IR, CORE, Δφ\* slopes, deliberative
   density, mean reward, …).
 - `logs_<mode>__seed<N>.json` — per-tick events and per-agent
   trajectories (deficit, action, message routing).
@@ -310,11 +407,11 @@ power outages, API rate limits). Three layers cooperate:
 
 Special exit codes the supervisor recognises:
 
-| code | meaning                                                        |
-|------|----------------------------------------------------------------|
-| 0    | Clean completion                                               |
-| 75   | Rate limit — pause and resume on next launch                   |
-| 86   | Critical health flag — manual review required                  |
+| code | meaning                                                 |
+|------|---------------------------------------------------------|
+| 0    | Clean completion                                        |
+| 75   | Rate limit — pause and resume on next launch            |
+| 86   | Critical health flag — manual review required           |
 
 ---
 
@@ -376,17 +473,17 @@ were used **as assistants under continuous human supervision and
 review**. The authors retain full responsibility for the published
 content.
 
-| tool                                                | role in this work                                              |
-|-----------------------------------------------------|----------------------------------------------------------------|
-| **GPT-5.4** (OpenAI)                                | Manuscript redaction and language polishing                    |
-| **Cursor + Claude Opus 4.7** / **Claude Code Opus 4.7** | Code authoring, refactoring and debugging assistance       |
-| **Perplexity Pro**                                  | Bibliographic research assistance                              |
-| **Figurelabs.ai**                                   | Diagram and illustration drafting                              |
-| **AI Reviewer 3**                                   | Adversarial peer-review of the manuscript (reviewer-style critique)  |
-| **GPT-5-nano** (OpenAI, `gpt-5-nano-2025-08-07`)    | LLM backbone of the experimental agents (part of the artefact) |
+| tool                                                    | role in this work                                                    |
+|---------------------------------------------------------|----------------------------------------------------------------------|
+| **GPT-5.4** (OpenAI)                                    | Manuscript redaction and language polishing                          |
+| **Cursor + Claude Opus 4.7** / **Claude Code Opus 4.7** | Code authoring, refactoring and debugging assistance                 |
+| **Perplexity Pro**                                      | Bibliographic research assistance                                    |
+| **Figurelabs.ai**                                       | Diagram and illustration drafting                                    |
+| **AI Reviewer 3**                                       | Adversarial peer-review of the manuscript (reviewer-style critique)  |
+| **GPT-5-nano** (OpenAI, `gpt-5-nano-2025-08-07`)        | LLM backbone of the experimental agents (part of the artefact)       |
 
-The footnote in the paper title summarises this disclosure as required
-by JAIIO; this README contains the full breakdown.
+The footnote in the paper title summarises this disclosure as
+required by JAIIO; this README contains the full breakdown.
 
 ---
 
@@ -395,10 +492,10 @@ by JAIIO; this README contains the full breakdown.
 If you use or reference this artefact, please cite:
 
 ```bibtex
-@misc{gerpe2026langclaw,
+@misc{gerpe2026driveplexity,
   author       = {Gerpe, Patricio},
-  title        = {Driveplexity: Homeostatic Regulation Prevents Context Collapse
-                  in Multi-Agent LLM Debate Systems},
+  title        = {Driveplexity: Endogenous Activation via Homeostasis
+                  in LLM-based Multi-Agent Debate},
   year         = {2026},
   howpublished = {JAIIO 2026 (Jornadas Argentinas de Inform\'atica),
                   ASAID Track},

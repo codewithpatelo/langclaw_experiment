@@ -2,14 +2,14 @@
   "seeds_processed": [
     7,
     17,
-    42,
+    99,
     123,
     256
   ],
   "metrics": {
     "hrrl_full_acceptance": {
-      "mean": 0.6695,
-      "std": 0.0256,
+      "mean": 0.6622,
+      "std": 0.0244,
       "n": 5
     },
     "hrrl_full_defeat_cycles": {
@@ -23,13 +23,13 @@
       "n": 5
     },
     "hrrl_full_prr_g": {
-      "mean": 0.9906,
-      "std": 0.0015,
+      "mean": 0.9895,
+      "std": 0.0019,
       "n": 5
     },
     "hrrl_full_mean_dphi": {
-      "mean": 0.1181,
-      "std": 0.0239,
+      "mean": 0.1214,
+      "std": 0.0241,
       "n": 5
     },
     "hrrl_full_acc_slope": {
@@ -38,8 +38,8 @@
       "n": 5
     },
     "hrrl_vm_acceptance": {
-      "mean": 0.6399,
-      "std": 0.0349,
+      "mean": 0.6461,
+      "std": 0.0426,
       "n": 5
     },
     "hrrl_vm_defeat_cycles": {
@@ -53,23 +53,23 @@
       "n": 5
     },
     "hrrl_vm_prr_g": {
-      "mean": 0.9665,
-      "std": 0.0177,
+      "mean": 0.9637,
+      "std": 0.0172,
       "n": 5
     },
     "hrrl_vm_mean_dphi": {
-      "mean": 0.098,
-      "std": 0.0046,
+      "mean": 0.102,
+      "std": 0.0113,
       "n": 5
     },
     "hrrl_vm_acc_slope": {
-      "mean": -0.0015,
-      "std": 0.001,
+      "mean": -0.0014,
+      "std": 0.0011,
       "n": 5
     },
     "hrrl_vm_last_acceptance": {
-      "mean": 0.7235,
-      "std": 0.0546,
+      "mean": 0.7083,
+      "std": 0.0613,
       "n": 5
     },
     "hrrl_vm_last_defeat_cycles": {
@@ -88,18 +88,18 @@
       "n": 5
     },
     "hrrl_vm_last_mean_dphi": {
-      "mean": 0.1182,
-      "std": 0.0397,
+      "mean": 0.1248,
+      "std": 0.042,
       "n": 5
     },
     "hrrl_vm_last_acc_slope": {
-      "mean": -0.0025,
-      "std": 0.0005,
+      "mean": -0.0028,
+      "std": 0.001,
       "n": 5
     },
     "lg_acceptance": {
-      "mean": 0.5462,
-      "std": 0.0228,
+      "mean": 0.5654,
+      "std": 0.0216,
       "n": 5
     },
     "lg_defeat_cycles": {
@@ -113,33 +113,33 @@
       "n": 5
     },
     "lg_prr_g": {
-      "mean": 0.986,
+      "mean": 0.9859,
       "std": 0.0012,
       "n": 5
     },
     "lg_mean_dphi": {
-      "mean": 0.1019,
-      "std": 0.0163,
+      "mean": 0.1046,
+      "std": 0.014,
       "n": 5
     },
     "lg_acc_slope": {
-      "mean": -0.0009,
-      "std": 0.0006,
+      "mean": -0.0007,
+      "std": 0.0007,
       "n": 5
     },
     "n_debates_hrrl_full": {
-      "mean": 384.0,
-      "std": 6.0415,
+      "mean": 382.2,
+      "std": 6.261,
       "n": 5
     },
     "n_debates_langgraph": {
-      "mean": 71.8,
-      "std": 5.8907,
+      "mean": 71.4,
+      "std": 5.6833,
       "n": 5
     },
     "volume_ratio_hrrl_over_lg": {
-      "mean": 5.3802,
-      "std": 0.4936,
+      "mean": 5.3838,
+      "std": 0.4916,
       "n": 5
     }
   }

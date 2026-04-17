@@ -23,8 +23,9 @@
 \usepackage[style=apa,maxcitenames=2,mincitenames=1,maxbibnames=2,minbibnames=1]{biblatex}
 \DeclareLanguageMapping{spanish}{spanish-apa}
 \addbibresource{references.bib}
-\setlength{\bibitemsep}{2pt plus 0.5pt}
+\setlength{\bibitemsep}{3pt plus 0.5pt}
 \renewcommand*{\bibfont}{\scriptsize}
+\renewcommand{\bibhang}{1em}
 
 \begin{document}
 
@@ -66,8 +67,8 @@ alongside a \emph{DPLXY-no-Q} ablation ($n{=}1$) and a
 compatible with DPLXY reducing floor monopolization (top share
 $\sim$1/8 vs $\sim$1/3 under LangGraph, preserved under volume
 matching in both early and late windows) and being directionally
-associated with higher AAF acceptance ($\Delta\approx{+}0.09$ to
-${+}0.18$; preliminary, non-significant), even while the TD loop
+associated with higher AAF acceptance ($\Delta\approx{+}0.08$ to
+${+}0.14$; preliminary, non-significant), even while the TD loop
 fails to converge. The two ablations are compatible with the
 effect residing in the regulatory closure rather than in learning
 or information access: \emph{DPLXY-no-Q} reproduces or intensifies
@@ -111,7 +112,7 @@ compatibles con que DPLXY reduzca la concentraci\'on de turnos
 (cuota m\'axima $\sim$1/8 vs $\sim$1/3 en LangGraph, preservada
 bajo volume-matching en ventanas temprana y tard\'ia) y se asocie
 direccionalmente con mayor aceptaci\'on AAF
-($\Delta\approx{+}0.09$ a ${+}0.18$; preliminar, no significativo),
+($\Delta\approx{+}0.08$ a ${+}0.14$; preliminar, no significativo),
 incluso con el lazo TD sin converger. Las dos ablaciones son
 compatibles con que el efecto resida en el cierre regulatorio
 antes que en el aprendizaje o en el acceso informacional:
@@ -306,21 +307,19 @@ $\{7,17,99,123,256\}$; DPLXY-sin-Q: $n{=}1$; LangGraph-informado:
 $n{=}2$ (seed 42 excluida por fuga de calibraci\'on, $T{=}80$).
 \emph{vm-1}: primeros $K{=}N_{\text{LG}}$ debates de DPLXY;
 \emph{vm-$\ell$}: \'ultimos $K$. Ablaciones en m\'etricas
-\emph{full} ($\dagger$). M\'etricas vm computadas sobre
-$\{7,17,123,256\}$ hasta cierre de la corrida 99. Media $\pm$
-desviaci\'on muestral.}
+\emph{full} ($\dagger$). Media $\pm$ desviaci\'on muestral.}
 \label{tab:results-short}
 \centering\small
 \begin{tabular}{|l|c|c|c|c|}
 \hline
 \textbf{M\'etrica} & \textbf{DPLXY} & \textbf{LangGraph} & \textbf{DPLXY$-$Q} & \textbf{LG-inf.} \\
 \hline
-Total debates                      & $384\pm6$        & $72\pm6$          & $604$            & $75\pm0$         \\
-Densidad (deb./hb.)                & $4.80$           & $0.90$            & $7.55$           & $0.94$           \\
-Cuota m\'ax.\ (vm-1)               & $0.133\pm0.007$  & $0.349\pm0.052$   & $0.106^\dagger$  & $0.260\pm0.010^\dagger$ \\
-Cuota m\'ax.\ (vm-$\ell$)          & $0.158\pm0.009$  & $0.349\pm0.052$   & --               & --               \\
-AAF acc.\ (vm-1)                   & $0.640\pm0.035$  & $0.546\pm0.023$   & $0.729^\dagger$  & $0.540\pm0.010^\dagger$ \\
-AAF acc.\ (vm-$\ell$)              & $0.724\pm0.055$  & $0.546\pm0.023$   & --               & --               \\
+Total debates                      & $382\pm6$        & $71\pm6$          & $604$            & $75\pm0$         \\
+Densidad (deb./hb.)                & $4.78$           & $0.89$            & $7.55$           & $0.94$           \\
+Cuota m\'ax.\ (vm-1)               & $0.131\pm0.008$  & $0.342\pm0.046$   & $0.106^\dagger$  & $0.260\pm0.010^\dagger$ \\
+Cuota m\'ax.\ (vm-$\ell$)          & $0.154\pm0.012$  & $0.342\pm0.046$   & --               & --               \\
+AAF acc.\ (vm-1)                   & $0.646\pm0.043$  & $0.565\pm0.022$   & $0.729^\dagger$  & $0.540\pm0.010^\dagger$ \\
+AAF acc.\ (vm-$\ell$)              & $0.708\pm0.061$  & $0.565\pm0.022$   & --               & --               \\
 \hline
 \end{tabular}
 \end{table}
@@ -336,9 +335,9 @@ actividad sostiene coherencia o s\'olo suma ruido.
 
 \paragraph{¿Sostiene coherencia bajo control de volumen?} Truncando
 DPLXY a $K{=}N_{\text{LG}}$ debates por semilla, \emph{primeros-$K$}
-(contexto corto) da $0.640$ vs $0.546$ ($\Delta{\approx}{+}0.09$);
+(contexto corto) da $0.646$ vs $0.565$ ($\Delta{\approx}{+}0.08$);
 \emph{\'ultimos-$K$} (contexto equivalente a LangGraph) sube a
-$0.724$ ($\Delta{\approx}{+}0.18$). La direcci\'on se sostiene,
+$0.708$ ($\Delta{\approx}{+}0.14$). La direcci\'on se sostiene,
 aunque vm-$\ell$ no neutraliza el \emph{burn-in}: los \'ultimos-$K$
 de DPLXY ocurren tras ${\sim}300$ debates previos ---una
 condici\'on sim\'etrica con presupuesto extendido para LangGraph
@@ -350,10 +349,10 @@ $\alpha_{\text{adj}}{=}0.025$ con independencia del efecto.
 pensarse que DPLXY mejora coherencia silenciando a los d\'ebiles,
 o que su cuota baja sea artefacto del mayor volumen. La
 \emph{cuota m\'axima} es inconsistente con ambas: macro cae de
-$0.362$ (LG) a $0.126$ ---cerca del uniforme $1/N{=}0.10$, con
+$0.342$ (LG) a $0.123$ ---cerca del uniforme $1/N{=}0.10$, con
 $\sigma$ un orden de magnitud m\'as estable ($0.006$ vs
-$0.052$)--- y se mantiene baja en ambas ventanas vm (vm-1:
-$0.133$; vm-$\ell$: $0.158$). Los datos son consistentes con una
+$0.046$)--- y se mantiene baja en ambas ventanas vm (vm-1:
+$0.131$; vm-$\ell$: $0.154$). Los datos son consistentes con una
 din\'amica end\'ogena donde cada agente contribuye cuando su
 $\delta_i$ lo justifica, distinta del r\'egimen ex\'ogeno
 ``quien ya habl\'o vuelve a hablar''.
@@ -395,6 +394,6 @@ parte del esfuerzo actual en orquestaci\'on ex\'ogena podr\'ia
 estar tratando un s\'intoma antes que la causa. C\'odigo, semillas
 y logs se liberar\'an al desanonimizar.
 
-\printbibliography
+{\setstretch{1.0}\printbibliography}
 
 \end{document}
