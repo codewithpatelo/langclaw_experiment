@@ -89,6 +89,25 @@ readings:
   structural features and `δ_i` that DPLXY uses internally, via
   JSON; isolates endogenous-vs-exogenous from informed-vs-uninformed.
 
+### 1.1. Architecture at a glance
+
+**Single-agent architecture.** Each agent closes a perception →
+cognition → action loop around a homeostatic drive. The epistemic
+deficit `δ_i` is fed by sensors and updated by satiation; the
+sigmoid gate over `δ_i` turns it into activation probability; an
+optional TD(0) Q-learner shapes action selection within the
+cognitive loop.
+
+![Driveplexity agent architecture](langclaw/figs/illustration_1.png)
+
+**Faction-level organisation (VSM).** Inside each faction the five
+agents map onto the five subsystems of Beer's Viable System Model
+(S1 operation, S2 coordination, S3 control, S4 intelligence, S5
+strategy). VSM is used here as a minimal viable social-organisation
+unit, not as an empirical claim about VSM itself.
+
+![Faction-level VSM organisation (S1–S5)](langclaw/figs/illustration_2.png)
+
 ---
 
 ## 2. Repository layout
