@@ -198,18 +198,27 @@ class LangClawAgent:
         faction_agents: list[str] | None = None,
         stimulus_weights: dict[str, float] | None = None,
         debate_alpha: float = 2.0,
+        q_disabled: bool = False,
     ) -> None:
         self.agent_id = agent_id
         self.role_prompt = role_prompt
         self.vsm_system = vsm_system
         self.faction_agents = faction_agents or []
         self._debate_alpha = debate_alpha
+        # Ablation: when True the Q-learner does not select actions and does
+        # not learn.  The cognitive loop falls back to a deterministic
+        # heuristic (best stimulus -> DEBATE_STIMULUS, otherwise DEBATE_PROACTIVE).
+        # Used by the HRRL_NO_Q condition; sigmoide+drive+StimulusEvaluator
+        # remain active so this isolates the contribution of the Q-learner
+        # from the rest of the homeostatic activation machinery.
+        self.q_disabled = bool(q_disabled)
         self.drive = EpistemicDrive(initial_deficit=initial_deficit)
         self.memory = AgentMemory(agent_id=agent_id)
         self.stimulus_evaluator = StimulusEvaluator(**(stimulus_weights or {}))
         self.utility_selector = UtilitySelector()
         self.q_learner = HomeostaticQLearner(
             eta=0.01, gamma=0.95, epsilon=0.1, rng_seed=rng_seed,
+            no_learning=self.q_disabled,
         )
         self._base_url = base_url
         self._api_key = api_key
@@ -359,10 +368,20 @@ class LangClawAgent:
                 stimulus_scored.append((evt, u))
             best_stimulus_event, best_stimulus_utility = max(stimulus_scored, key=lambda x: x[1])
 
-        # 4. PLAN + EXECUTE: Q-learner selects action, may loop
+        # 4. PLAN + EXECUTE: Q-learner selects action, may loop.
+        # Ablation (q_disabled): bypass Q-learner; pick action heuristically
+        # from the StimulusEvaluator output. Action menu is restricted to the
+        # two debate actions to keep the ablation a clean isolation of the
+        # learning component (SEARCH/READ/MESSAGE are Q-mediated in HRRL).
         for loop_iter in range(MAX_COGNITIVE_LOOPS):
             result["cognitive_phase"] = CognitivePhase.PLAN.value
-            q_action = self.q_learner.select_action(state_features)
+            if self.q_disabled:
+                if best_stimulus_event is not None and best_stimulus_utility > 0:
+                    q_action = "DEBATE_STIMULUS"
+                else:
+                    q_action = "DEBATE_PROACTIVE"
+            else:
+                q_action = self.q_learner.select_action(state_features)
 
             result["cognitive_phase"] = CognitivePhase.EXECUTE.value
 

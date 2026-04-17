@@ -43,6 +43,7 @@ from langclaw.events import (
     TickElapsedEvent,
 )
 from langclaw.router import LangGraphRouter
+from langclaw.router_informed import LangGraphInformedRouter
 from langclaw.schemas import AgentState, SimulationLog
 
 logger = logging.getLogger(__name__)
@@ -54,6 +55,18 @@ class OrchestrationMode(str, Enum):
     LANGGRAPH = "langgraph"
     ROUND_ROBIN = "round-robin"
     RANDOM = "random"
+    # Ablation: HRRL minus Q-learning. Sigmoide + drive + StimulusEvaluator
+    # remain active; action selection collapses to a deterministic heuristic
+    # over {DEBATE_STIMULUS, DEBATE_PROACTIVE}. Used to isolate the
+    # contribution of the learning component from the rest of the homeostatic
+    # activation machinery.
+    HRRL_NO_Q = "hrrl_no_q"
+    # Fair baseline: LangGraph router with access to the same structural
+    # features used by HRRL's StimulusEvaluator (factional relevance,
+    # centrality proxy, memory match, novelty, unanswered pressure) plus
+    # per-agent deficit. Isolates "endogenous vs exogenous" from "informed
+    # vs uninformed" routing.
+    LANGGRAPH_INFORMED = "langgraph_informed"
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -236,6 +249,9 @@ class SotopiaEnvironment:
             self._seed_factory.get("simulation") if self._seed_factory else None
         )
 
+        # HRRL_NO_Q ablation: agents skip Q-learning but keep the rest of the
+        # homeostatic machinery intact (sigmoide, drive, StimulusEvaluator).
+        q_disabled = self.orchestration_mode == OrchestrationMode.HRRL_NO_Q
         self.agents: list[LangClawAgent] = [
             LangClawAgent(
                 agent_id=role["id"],
@@ -256,6 +272,7 @@ class SotopiaEnvironment:
                 faction_agents=_faction_agents(role["id"]),
                 stimulus_weights=stimulus_weights,
                 debate_alpha=debate_alpha,
+                q_disabled=q_disabled,
             )
             for role in AGENT_ROLES
         ]
@@ -266,6 +283,16 @@ class SotopiaEnvironment:
                 self._seed_factory.get("router_llm") if self._seed_factory else None
             )
             self._router = LangGraphRouter(
+                base_url=base_url,
+                api_key=api_key,
+                model=model,
+                seed=router_seed,
+            )
+        elif self.orchestration_mode == OrchestrationMode.LANGGRAPH_INFORMED:
+            router_seed = (
+                self._seed_factory.get("router_llm") if self._seed_factory else None
+            )
+            self._router = LangGraphInformedRouter(
                 base_url=base_url,
                 api_key=api_key,
                 model=model,
@@ -300,7 +327,7 @@ class SotopiaEnvironment:
             for component, prime in self._seed_factory.summary().items():
                 console.print(f"  [dim]  {component:<30} -> {prime}[/dim]")
 
-        if self.orchestration_mode == OrchestrationMode.HRRL:
+        if self.orchestration_mode in (OrchestrationMode.HRRL, OrchestrationMode.HRRL_NO_Q):
             first_agent = self.agents[0]
             d0 = first_agent.drive.deficit
             theta = 0.7
@@ -311,8 +338,13 @@ class SotopiaEnvironment:
                 f"-> 50% activation at tick ~{ticks_to_50pct:.0f}[/dim]"
             )
             asyncio.run(self._run_hrrl())
-        elif self.orchestration_mode == OrchestrationMode.LANGGRAPH:
+        elif self.orchestration_mode in (
+            OrchestrationMode.LANGGRAPH,
+            OrchestrationMode.LANGGRAPH_INFORMED,
+        ):
             self._run_langgraph()
+        elif self.orchestration_mode == OrchestrationMode.HRRL_NO_Q:
+            asyncio.run(self._run_hrrl())
         else:
             self._run_baseline()
 
@@ -321,9 +353,12 @@ class SotopiaEnvironment:
         return self.logs
 
     def run_single_tick(self, tick: int) -> list[SimulationLog]:
-        if self.orchestration_mode == OrchestrationMode.HRRL:
+        if self.orchestration_mode in (OrchestrationMode.HRRL, OrchestrationMode.HRRL_NO_Q):
             tick_logs = asyncio.run(self._hrrl_single_tick(tick))
-        elif self.orchestration_mode == OrchestrationMode.LANGGRAPH:
+        elif self.orchestration_mode in (
+            OrchestrationMode.LANGGRAPH,
+            OrchestrationMode.LANGGRAPH_INFORMED,
+        ):
             tick_logs = self._langgraph_single_tick(tick)
         else:
             tick_logs = self._baseline_tick(tick)
@@ -531,6 +566,53 @@ class SotopiaEnvironment:
             if self._on_tick:
                 self._on_tick(tick, tick_logs, self)
 
+    def _compute_router_features(self) -> list[dict[str, Any]]:
+        """Build per-agent structural snapshot for the informed router.
+
+        For each agent: deficit, structural utility of the most recent
+        unanswered argument (via the same StimulusEvaluator HRRL uses
+        internally), recent argument count, and VSM role. This exposes to
+        the exogenous router the same sensor signal HRRL agents use,
+        isolating "endogenous vs exogenous" from "informed vs uninformed".
+        """
+        last_event: NewArgumentEvent | None = None
+        for agent in self.agents:
+            if agent._event_buffer:
+                last_event = agent._event_buffer[-1]
+                break
+
+        recent_counts: dict[str, int] = {a.agent_id: 0 for a in self.agents}
+        try:
+            recent_logs = self.logs[-min(len(self.logs), len(self.agents) * 10):]
+            for log in recent_logs:
+                aid = getattr(log, "agent_id", None)
+                action = getattr(log, "action_type", None)
+                if aid in recent_counts and action == "DEBATE":
+                    recent_counts[aid] += 1
+        except Exception:
+            pass
+
+        features: list[dict[str, Any]] = []
+        for agent in self.agents:
+            stim_u = 0.0
+            if last_event is not None:
+                try:
+                    stim_u = float(
+                        agent.stimulus_evaluator.evaluate(
+                            last_event, agent.agent_id, agent.memory, self.graph
+                        )
+                    )
+                except Exception:
+                    stim_u = 0.0
+            features.append({
+                "agent_id": agent.agent_id,
+                "deficit": round(float(agent.drive.deficit), 3),
+                "stimulus_utility": round(stim_u, 3),
+                "recent_arguments": recent_counts.get(agent.agent_id, 0),
+                "vsm_role": agent.vsm_system or "",
+            })
+        return features
+
     def _langgraph_single_tick(self, tick: int) -> list[SimulationLog]:
         from langclaw.langgraph_flow import build_cognitive_graph
 
@@ -539,10 +621,18 @@ class SotopiaEnvironment:
         cognitive_graph = build_cognitive_graph()
 
         discourse_context = self.graph.get_recent_context(last_n=6)
-        selected_id = self._router.select_next_agent(
-            discourse_context=discourse_context,
-            agent_ids=agent_ids,
-        )
+
+        if isinstance(self._router, LangGraphInformedRouter):
+            agent_features = self._compute_router_features()
+            selected_id = self._router.select_next_agent_informed(
+                discourse_context=discourse_context,
+                agent_features=agent_features,
+            )
+        else:
+            selected_id = self._router.select_next_agent(
+                discourse_context=discourse_context,
+                agent_ids=agent_ids,
+            )
 
         tick_results: list[dict[str, Any]] = []
 

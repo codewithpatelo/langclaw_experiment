@@ -1,10 +1,10 @@
-% LangClaw — JAIIO 2026 short paper (work in development, max 4 pages
+% Driveplexity - JAIIO 2026 short paper (work in development, max 4 pages
 % sin contar pagina titulo + abstracts).
 % Anonymous submission.
 %
 \documentclass{llncs}
 
-\usepackage[a4paper, top=4.5cm, bottom=4.5cm, left=4.0cm, right=4.0cm]{geometry}
+\usepackage[a4paper, top=5.2cm, bottom=5.2cm, left=4.4cm, right=4.4cm]{geometry}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{mathptmx}
@@ -13,28 +13,29 @@
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage{enumitem}
+\usepackage{setspace}
 
 \setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
 \setlength{\floatsep}{6pt plus 2pt minus 2pt}
 \setlength{\intextsep}{6pt plus 2pt minus 2pt}
-\raggedbottom
+\flushbottom
 
-\usepackage[style=apa]{biblatex}
+\usepackage[style=apa,maxcitenames=2,mincitenames=1,maxbibnames=2,minbibnames=1]{biblatex}
+\DeclareLanguageMapping{spanish}{spanish-apa}
 \addbibresource{references.bib}
+\setlength{\bibitemsep}{2pt plus 0.5pt}
+\renewcommand*{\bibfont}{\scriptsize}
 
 \begin{document}
 
 % ============================================================
 % TITLE + ABSTRACTS (pagina separada, no cuenta para 4 paginas)
 % ============================================================
-\title{LangClaw: Regulaci\'on Homeost\'atica End\'ogena para Mitigar el
-Colapso del Contexto en Sistemas de Debate Multi-Agente basados en
-LLM\thanks{Durante la preparaci\'on de este trabajo, los autores
-utilizaron GPT-5.4 con el fin de mejorar el lenguaje y la legibilidad
-del manuscrito. Tras utilizar esta herramienta, los autores revisaron y
-editaron el contenido seg\'un fue necesario y asumen plena
-responsabilidad por el contenido de la publicaci\'on. Detalle completo
-de tooling de IA en el repositorio del proyecto.}}
+\title{Driveplexity: Endogenous Activation via Homeostasis in
+LLM-based Multi-Agent Debate\thanks{During the preparation of this
+manuscript the authors used GPT-5.4 to improve readability; authors
+reviewed and edited the content and assume full responsibility. Full
+AI-tooling detail in the project repository.}}
 
 \author{}
 \institute{}
@@ -42,25 +43,85 @@ de tooling de IA en el repositorio del proyecto.}}
 \maketitle
 
 \begin{abstract}
-Los sistemas multi-agente de LLM tienden a perder coherencia a medida
-que la interacci\'on se extiende ---\emph{colapso del contexto}.
-Enrutadores, grafos y heartbeats peri\'odicos amplian capacidades sin
-alterar un supuesto: la frecuencia de participaci\'on es ex\'ogena.
-Este trabajo, en desarrollo, propone invertir ese supuesto. Cada agente
-mantiene un d\'eficit epist\'emico
-$\delta_i \in [\varepsilon,\infty)$ con impulso $D(\delta)=(\delta-\varepsilon)^2$;
-la recompensa es reducci\'on de impulso $r_t=D(\delta_t)-D(\delta_{t+1})$
-(Keramati y Gutkin, 2014). Un evaluador AAF act\'ua como sensor; un
-Q-learner con TD(0) selecciona acciones. La participaci\'on no se
-enruta: \emph{emerge}. Resultados preliminares ($n{=}3$ pares de
-semillas, $T{=}80$ heartbeats): bajo presupuesto temporal equiparable,
-HRRL produce $5.5\times$ m\'as debates con mayor aceptaci\'on AAF
-($0.681 \pm 0.010$ vs $0.540 \pm 0.029$), sin agentes silenciados, y
-mejora estructural en el tiempo, mientras LangGraph se degrada.
-Quedan dos semillas en ejecuci\'on.
+LLM-based multi-agent systems tend to lose coherence as interaction
+extends ---\emph{context collapse}---, which in adversarial
+deliberation can invalidate the debate with social consequences.
+Contemporary frameworks (AutoGen, MetaGPT, LangGraph) keep
+activation exogenous: when each agent speaks is decided outside its
+internal state, a choice that may treat the symptom rather than the
+cause. Biology suggests an alternative: internal variables
+accumulate tension, trigger a response and return to equilibrium
+without external instruction ---homeostasis. We propose
+\textbf{Driveplexity} (DPLXY), an endogenous orchestration
+strategy where each agent accrues an epistemic deficit $\delta_i$
+that drifts upward during inactivity and is reduced after a useful
+contribution; a sigmoid turns it into action probability. A linear
+TD(0) Q-learner is added as an experimental extension whose
+convergence remains an open question. Explicit \emph{Axioms of
+Homeostatic Autonomy} (AAH, A1--A3) state its ontological
+commitments. We contrast DPLXY with a LangGraph router in
+adversarial political debate ($n{=}5$ pairs, GPT-5-nano),
+alongside a \emph{DPLXY-no-Q} ablation ($n{=}1$) and a
+\emph{LangGraph-informed} fair baseline ($n{=}2$). The data are
+compatible with DPLXY reducing floor monopolization (top share
+$\sim$1/8 vs $\sim$1/3 under LangGraph, preserved under volume
+matching in both early and late windows) and being directionally
+associated with higher AAF acceptance ($\Delta\approx{+}0.09$ to
+${+}0.18$; preliminary, non-significant), even while the TD loop
+fails to converge. The two ablations are compatible with the
+effect residing in the regulatory closure rather than in learning
+or information access: \emph{DPLXY-no-Q} reproduces or intensifies
+the macro pattern, and \emph{LangGraph-informed} ---given the same
+internal features--- does not close the gap with DPLXY.
 
-\keywords{sistemas multi-agente \and modelos de lenguaje \and homeostasis
-\and aprendizaje por refuerzo \and colapso del contexto}
+\keywords{multi-agent systems \and large language models \and
+homeostatic activation \and endogenous orchestration \and
+multi-agent debate}
+\end{abstract}
+
+\clearpage
+
+\title{Driveplexity: Activaci\'on End\'ogena por Homeostasis en
+Debate Multi-Agente con LLMs}
+\maketitle
+
+\begin{abstract}
+Los sistemas multiagente basados en LLMs tienden a perder coherencia
+al extenderse la interacci\'on ---\emph{colapso del contexto}---,
+fen\'omeno que en deliberaci\'on adversarial puede invalidar el
+debate con consecuencias sociales. Los frameworks contempor\'aneos
+(AutoGen, MetaGPT, LangGraph) mantienen la activaci\'on ex\'ogena:
+cu\'ando habla cada agente se decide por fuera de su estado
+interno, decisi\'on que podr\'ia tratar el s\'intoma y no la causa.
+La biolog\'ia sugiere una alternativa: variables internas acumulan
+tensi\'on, disparan respuesta y retornan al equilibrio sin
+instrucci\'on externa ---la homeostasis. Proponemos
+\textbf{Driveplexity} (DPLXY), una estrategia end\'ogena en la
+que cada agente acumula un d\'eficit epist\'emico $\delta_i$ que
+deriva hacia arriba al permanecer inactivo y se reduce tras una
+contribuci\'on \'util; una sigmoide lo traduce en probabilidad de
+acci\'on. Un Q-learner lineal TD(0) se incluye como extensi\'on
+experimental cuya convergencia queda como pregunta abierta. Los
+\emph{Axiomas de Autonom\'ia Homeost\'atica} (AAH, A1--A3)
+explicitan sus compromisos ontol\'ogicos. Contrastamos DPLXY con
+un enrutador LangGraph en debate pol\'itico adversarial ($n{=}5$
+pares, GPT-5-nano), ablaci\'on \emph{DPLXY-sin-Q} ($n{=}1$) y
+l\'inea base \emph{LangGraph-informada} ($n{=}2$). Los datos son
+compatibles con que DPLXY reduzca la concentraci\'on de turnos
+(cuota m\'axima $\sim$1/8 vs $\sim$1/3 en LangGraph, preservada
+bajo volume-matching en ventanas temprana y tard\'ia) y se asocie
+direccionalmente con mayor aceptaci\'on AAF
+($\Delta\approx{+}0.09$ a ${+}0.18$; preliminar, no significativo),
+incluso con el lazo TD sin converger. Las dos ablaciones son
+compatibles con que el efecto resida en el cierre regulatorio
+antes que en el aprendizaje o en el acceso informacional:
+\emph{DPLXY-sin-Q} reproduce o intensifica el patr\'on macro, y
+\emph{LangGraph-informado} ---dotado de los mismos rasgos
+internos--- no cierra la brecha con DPLXY.
+
+\keywords{sistemas multi-agente \and modelos de lenguaje \and
+activaci\'on homeost\'atica \and orquestaci\'on end\'ogena \and
+debate multi-agente}
 \end{abstract}
 
 \clearpage
@@ -70,199 +131,269 @@ Quedan dos semillas en ejecuci\'on.
 % Pag 1: motivacion + research question
 % ============================================================
 \section{Motivaci\'on}
+\label{sec:motivation}
 
-Los sistemas multiagente basados en LLM se emplean cada vez m\'as en
-deliberaciones extendidas ---an\'alisis de pol\'iticas, revisi\'on
-cient\'ifica, decisiones institucionales. Una recomendaci\'on basada en
-un debate internamente viciado puede afectar a millones; una revisi\'on
-cient\'ifica con premisas alucinadas contamina la literatura sobre la
-que se construye m\'as ciencia. La p\'erdida de coherencia ---repetici\'on,
-mon\'ologos, contradicciones internas--- conocida como \emph{colapso
-del contexto}~\parencite{park2023generative}, no es un defecto cosm\'etico:
-en deliberaci\'on adversarial \emph{invalida} el debate.
+Los sistemas multiagente basados en LLMs prometen sostener
+deliberaci\'on extendida en pol\'iticas p\'ublicas, revisi\'on
+cient\'ifica o soporte institucional. Dominios en los que un debate
+viciado afecta decisiones que trascienden al software. En horizontes
+prolongados, de hecho, suelen reportarse p\'erdidas de registro
+argumentativo, repetici\'on de puntos y mon\'ologos
+desconectados~\parencite{park2023generative}: el \emph{colapso del
+contexto}~\parencite{huang2024masresilience}.
 
-Las respuestas vigentes ---enrutadores, grafos
-(AutoGen~\parencite{wu2023autogen}, MetaGPT~\parencite{hong2023metagpt}),
-LangGraph, heartbeats~\parencite{openclaw2025heartbeat}--- ampliaron
-expresividad y persistencia, pero comparten un supuesto estructural: la
-decisi\'on de \emph{cu\'ando} y \emph{con qu\'e frecuencia} participa
-cada agente es ex\'ogena, fijada por el dise\~nador.
-\textcite{huang2024masresilience} y \textcite{becker2025problemdrift}
-documentan que esta forma organizacional sufre degradaci\'on temporal y
-\emph{problem drift} en horizontes extendidos.
-
-En biolog\'ia, la homeostasis~\parencite{sterling1988allostasis} regula
-desequilibrios sin control externo: variables internas acumulan
-tensi\'on, desencadenan respuesta y retornan al equilibrio.
-HRRL~\parencite{keramati2014homeostatic} formaliz\'o este principio:
-la recompensa puede entenderse como reducci\'on de impulso. La
-analog\'ia con un agente deliberativo es precisa: donde el organismo
-acumula hambre, el agente acumula \emph{d\'eficit epist\'emico}.
-
-\paragraph{Pregunta de investigaci\'on.}
-¿Pueden las variables internas de un agente gobernar su activaci\'on y
-aprendizaje en un lazo regulatorio expl\'icito, cerrando el circuito que
-las propuestas previas dejan abierto?
+El paradigma dominante lo aborda por fuera del agente. Los
+\emph{frameworks} contempor\'aneos ---AutoGen~\parencite{wu2023autogen},
+MetaGPT~\parencite{hong2023metagpt}, LangGraph--- estructuran la
+interacci\'on con grafos y enrutadores centralizados, y el
+\emph{heartbeat}~\parencite{openclaw2025heartbeat} suma persistencia
+temporal; en todos, \emph{cu\'ando} habla cada agente se decide fuera
+de su estado interno. Esa activaci\'on ex\'ogena no captura la
+presi\'on epist\'emica que cada agente acumula y podr\'ia tratar el
+s\'intoma sin explicar la causa. Un mecanismo bien establecido en
+biolog\'ia describe c\'omo los sistemas regulan desequilibrios sin
+control externo ---la homeostasis, formalizada como reducci\'on de
+impulso por HRRL~\parencite{keramati2014homeostatic}. A primera vista,
+un mecanismo visceral parece ajeno a orquestar agentes de software;
+la analog\'ia estructural, sin embargo, es precisa: donde un
+organismo acumula hambre y act\'ua para reducirla, un agente
+deliberativo podr\'ia acumular d\'eficit epist\'emico y actuar para
+reducirlo. De ah\'i la \emph{l\'inea de investigaci\'on}: ¿puede un
+agente con estado regulatorio interno sostener acci\'on valiosa y
+coherente sin que un planificador externo decida cu\'ando participa?
+La \emph{l\'inea de desarrollo} articula una teor\'ia ontol\'ogica,
+una arquitectura, un protocolo experimental y \emph{resultados
+preliminares} sobre cinco semillas, con \emph{acciones futuras} que
+derivan de ellos.
 
 % ============================================================
-% Pag 2: teoria T_HA compacta + arquitectura
+% Pag 2: TAH compacta + arquitectura
 % ============================================================
-\section{Teor\'ia de agencia homeost\'atica $T_{HA}$}
+\section{Axiomas de Autonom\'ia Homeost\'atica}
+\label{sec:tah}
 
-Tres postulados fijan qu\'e requiere la autonom\'ia, qu\'e desencadena
-la acci\'on y qu\'e hace valiosa una contribuci\'on.
+Responder la pregunta exige precisar \emph{qu\'e constituye un
+agente aut\'onomo}, \emph{qu\'e lo hace actuar} y \emph{qu\'e hace
+valiosa una acci\'on} ---supuestos que MAS-LLM suele dejar
+impl\'icitos. A1--A3 no son un teorema: formalizan los supuestos
+m\'inimos sobre los que se compromete el dise\~no.
 
-\noindent\textsc{P1} (Autonom\'ia~\parencite{ashby1956introduction,beer1972brain}).
-La pol\'itica del agente depende de su estado interno:
-$\mathrm{Aut}(a_i) \iff \exists\,\delta_i:\,\pi_i = \pi_i(\delta_i(t))$.
+\textsc{A1, Autonom\'ia}~\parencite{ashby1956introduction,beer1972brain}
+---\emph{¿qu\'e es autonom\'ia?}---: que la pol\'itica del agente
+dependa de su estado interno.
+\vspace{-0.6em}
+\begin{equation}
+\mathrm{Aut}(a_i) \iff \exists\,\delta_i \in S_L(a_i):\;
+\pi_i = \pi_i\!\left(\delta_i(t)\right). \label{eq:a1}
+\end{equation}
+\vspace{-1.4em}
 
-\noindent\textsc{P2} (Impulso~\parencite{sterling1988allostasis}).
-Un impulso interno crece con el desv\'io del equilibrio y modula
-mon\'otonamente la activaci\'on:
-$D(\varepsilon)=0$, $D'>0$ para $\delta>\varepsilon$,
-$p_i(t) = \sigma(D(\delta_i(t)))$.
+\textsc{A2, Impulso}~\parencite{sterling1988allostasis}
+---\emph{¿qu\'e hace a un agente actuar?}---: un impulso interno que
+crece con el desv\'io del equilibrio y cuya magnitud determina
+mon\'otonamente la probabilidad de activaci\'on.
+\vspace{-0.6em}
+\begin{equation}
+D(\varepsilon){=}0,\quad D'(\delta_i){>}0\ \forall\delta_i{>}\varepsilon,\quad
+p_i(t) = \sigma\!\left(D(\delta_i(t))\right). \label{eq:a2}
+\end{equation}
+\vspace{-1.4em}
 
-\noindent\textsc{P3} (Compuerta de calidad~\parencite{ryan2001happiness}).
-El impulso decrece proporcionalmente al cambio efectivo en el entorno
-regulado: $\Delta\delta_i = -\alpha \cdot g(e(t),e(t{+}1))$.
+\textsc{A3, Compuerta de calidad}~\parencite{ryan2001happiness}
+---\emph{¿qu\'e hace valiosa a una acci\'on?}---: un cambio efectivo
+$g(e^{(t)},e^{(t+1)}){\ge}0$ en el estado del entorno regulado; el
+impulso decrece proporcionalmente a ese cambio.
+\vspace{-0.6em}
+\begin{equation}
+\Delta\delta_i = -\alpha\cdot g\!\left(e^{(t)},e^{(t+1)}\right),\quad
+\alpha{>}0. \label{eq:a3}
+\end{equation}
+\vspace{-1.4em}
 
-\noindent\textsc{T1} (Implicaci\'on derivada de \textsc{P1}--\textsc{P3}).
-Dado un agente expuesto a perturbaciones, cuyo impulso interno crece
-con el desv\'io del equilibrio y s\'olo decrece ante cambio efectivo,
-emerger\'a acci\'on sostenida de calidad, con probabilidad de activaci\'on
-creciente en el d\'eficit. Bajo TD(0) con recompensa acotada y tasa
-$\sum\eta_t=\infty,\,\sum\eta_t^2<\infty$, la pol\'itica greedy maximiza
-en expectativa la reducci\'on de impulso.
+\textsc{Pr1} (derivada de A1--A3). Dado un agente expuesto a
+perturbaciones, cuyo impulso crece con el desv\'io del equilibrio y
+s\'olo decrece ante cambio efectivo, se esperar\'ia que emerja
+acci\'on sostenida de calidad, con probabilidad de activaci\'on
+creciente en el d\'eficit. La implementaci\'on
+(\S\ref{sec:agent-arch}) usa aproximaci\'on lineal off-policy ---la
+\emph{tr\'iada mortal}~\parencite{sutton2018reinforcement}--- por lo
+que la convergencia TD queda como pregunta emp\'irica, no como
+supuesto.
 
-\paragraph{Instanciaci\'on.} El impulso de \textsc{P2} se instancia como
-d\'eficit epist\'emico $\delta_i \in [\varepsilon, \infty)$
-($\varepsilon{=}0.1$). Decaimiento basal $\delta^{t+1} = \delta^t + \lambda$
-($\lambda{=}0.05$); estimulaci\'on $+\gamma_{\text{stim}}\cdot r$
-($\gamma_{\text{stim}}{=}0.1$); saciedad
-$\delta^{\text{new}} = \max(\varepsilon, \delta - \alpha\cdot\Delta\varphi^*)$.
-Activaci\'on: compuerta sigmoide $p^t = 1/(1+e^{-k(\delta-\theta)})$
-($k{=}10$, $\theta{=}0.7$). Recompensa $r_t = D(\delta_t)-D(\delta_{t+1})$
-con $D(\delta)=(\delta-\varepsilon)^2$. Acciones \{DEBATE, SEARCH, READ,
-MESSAGE, PASS\} v\'ia Q-learning lineal con TD(0).
+\subsection{Arquitectura propuesta del agente}
+\label{sec:agent-arch}
 
-\paragraph{Sensor de calidad estructural.} El proxy
-$\Delta\varphi^* = \tfrac{1}{3}C_B(u) + \tfrac{1}{3}\mathbb{1}_{\text{cycle}} + \tfrac{1}{3}\mathrm{Div}(u)$
-combina centralidad del nodo atacado, formaci\'on de ciclos dial\'ecticos
-y diversidad de atacantes sobre un AAF~\parencite{dung1995acceptability}.
-Cumple el rol que \textsc{P3} demanda: medida computable del cambio en
-el entorno regulado.
+DPLXY operacionaliza los AAH en un MAS-LLM. A2 instancia un
+d\'eficit epist\'emico
+$\delta_i{\in}[\varepsilon,\infty)$ que deriva al permanecer
+inactivo y decae por saciedad
+$\delta{\leftarrow}\max(\varepsilon,\delta{-}\alpha\Delta\varphi^*)$;
+una sigmoide lo traduce en probabilidad de acci\'on y la
+recompensa realiza A3 con $D(\delta){=}(\delta{-}\varepsilon)^2$.
+Un \emph{StimulusEvaluator} determinista fusiona cinco rasgos
+estructurales ---relevancia faccional, centralidad del nodo
+atacado, novedad, presi\'on no respondida y memoria sem\'antica---
+por suma ponderada con pesos a priori, modulando $\delta_i$. La
+calidad $\Delta\varphi^*$ se define sobre un
+AAF~\parencite{dung1995acceptability} (centralidad, ciclos
+dial\'ecticos, diversidad); es insumo de saciedad y observable
+diagn\'ostico, circularidad parcial que obliga a priorizar
+m\'etricas estructuralmente independientes
+(\S\ref{sec:resultados}). Entre acciones (\textsc{debate},
+\textsc{search}, \textsc{read}, \textsc{message}, \textsc{pass})
+se selecciona por Q-learning lineal TD(0) sobre estado
+normalizado; el aprendizaje se incluye como extensi\'on
+experimental no cr\'itica al cierre regulatorio.
 
 % ============================================================
 % Pag 3: diseno + resultados preliminares
 % ============================================================
 \section{Dise\~no experimental}
 
-Diez agentes GPT-5-nano~\parencite{openai2025gpt5nano} en dos facciones
-espejo (Gobierno/Oposici\'on), cada una con los cinco subsistemas del
-VSM~\parencite{beer1972brain} (S1--S5), debaten un escenario pol\'itico
-de suma cero inspirado en Sotopia~\parencite{zhou2024sotopia} durante
-$T{=}80$ heartbeats. Variable independiente: estrategia de
-orquestaci\'on. \textbf{HRRL} (end\'ogena): cada agente se autorregula
-v\'ia Ec.~de la sigmoide y Q-learning con recompensa homeost\'atica.
-\textbf{LangGraph} (ex\'ogena): un enrutador LLM decide qu\'e agente
-ingresa al lazo cognitivo; mismas capacidades locales. Cinco semillas
-$\{7,17,42,123,256\}$.
+La arena debe forzar interdependencia argumentativa ---para que la
+p\'erdida de coherencia sea observable--- y mantenerse acotada en
+c\'omputo. Adoptamos debate pol\'itico de suma cero inspirado en
+Sotopia~\parencite{zhou2024sotopia} durante $T{=}80$
+\emph{heartbeats} entre diez agentes
+GPT-5-nano~\parencite{openai2025gpt5nano} en dos facciones espejo
+(Gobierno/Oposici\'on), cada una mapeada a los cinco subsistemas
+del VSM~\parencite{beer1972brain} (S1 operaci\'on, S2 coordinaci\'on,
+S3 control, S4 inteligencia, S5 pol\'itica) como unidad m\'inima
+de organizaci\'on social, lo que habilita buscar patrones
+emergentes por rol adem\'as de la regulaci\'on individual.
 
-El heartbeat opera como discretizaci\'on temporal uniforme: ambas
-condiciones disponen del mismo n\'umero de tics, mismo presupuesto de
-tokens y llamadas API. La diferencia en \emph{densidad deliberativa}
-(debates por heartbeat) refleja, por construcci\'on, capacidad
-end\'ogena de auto-activaci\'on bajo presi\'on epist\'emica, no un
-ajuste de presupuesto.
+La variable experimental es la estrategia de activaci\'on:
+\textbf{DPLXY} (end\'ogena: sigmoide homeost\'atica) vs
+\textbf{LangGraph} (ex\'ogena: enrutador LLM neutral). Ese contraste
+admite dos lecturas alternativas que el resto del dise\~no busca
+cerrar. La lectura \emph{informacional} ---DPLXY accede a rasgos
+y $\delta_i$ que LangGraph no ve--- se ataca con
+\textbf{LangGraph-informado}, que recibe los mismos rasgos por
+JSON; la lectura \emph{mecan\'istica} ---el efecto podr\'ia
+provenir s\'olo del cierre regulatorio determinista--- se ataca
+con \textbf{DPLXY-sin-Q}, que desactiva el aprendizaje y conserva
+la regulaci\'on. Cinco semillas $\{7,17,99,123,256\}$ pareadas
+por Wilcoxon \emph{signed-rank} alimentan el contraste base; los
+controles se corren sobre un subconjunto por costo. Los
+hiperpar\'ametros se fijan \emph{antes} sobre la semilla 42 con
+dos criterios a priori ---densidad en rango operativo y
+estabilidad del d\'eficit alrededor del \emph{set-point}
+$\varepsilon$--- y se congelan; la semilla 42 queda \emph{excluida}
+de la evaluaci\'on para prevenir fuga de calibraci\'on. Igualar
+tokens o aplicar \emph{rate limit} a DPLXY anular\'ia la
+auto-activaci\'on que se quiere medir; por eso adoptamos
+\emph{heartbeats id\'enticos} y tratamos la asimetr\'ia de volumen
+con control \emph{volume-matched} en dos ventanas
+(\S\ref{sec:resultados}).
 
 \section{Resultados preliminares}
+\label{sec:resultados}
+
+Dos m\'etricas estructuralmente independientes del sensor sostienen
+el contraste: \emph{aceptaci\'on AAF} (sem\'antica
+grounded~\parencite{dung1995acceptability}, proxy de resiliencia)
+y \emph{cuota m\'axima} (proxy de monopolizaci\'on).
+$\mathrm{PRR}_G$ satura $>\!0.98$ en todas las condiciones (control
+nulo); $\Delta\varphi^*$ queda como auxiliar por circularidad
+parcial con el sensor. Una evaluaci\'on externa (juez humano o
+LLM-as-judge) queda como acci\'on futura. La
+Tabla~\ref{tab:results-short} sintetiza; cada bloque contrasta una
+observaci\'on contra lecturas alternativas.
 
 \begin{table}[H]
-\caption{Resultados preliminares (n${=}3$ pares de semillas $\{7,17,42\}$,
-$T=80$). Filas con ${}^\dagger$: media $\pm$ desviaci\'on; restantes,
-semilla 7 representativa, a la espera de las semillas 123 y 256.}
+\caption{Resultados preliminares. DPLXY/LangGraph: $n{=}5$ semillas
+$\{7,17,99,123,256\}$; DPLXY-sin-Q: $n{=}1$; LangGraph-informado:
+$n{=}2$ (seed 42 excluida por fuga de calibraci\'on, $T{=}80$).
+\emph{vm-1}: primeros $K{=}N_{\text{LG}}$ debates de DPLXY;
+\emph{vm-$\ell$}: \'ultimos $K$. Ablaciones en m\'etricas
+\emph{full} ($\dagger$). M\'etricas vm computadas sobre
+$\{7,17,123,256\}$ hasta cierre de la corrida 99. Media $\pm$
+desviaci\'on muestral.}
 \label{tab:results-short}
 \centering\small
-\begin{tabular}{|l|c|c|}
+\begin{tabular}{|l|c|c|c|c|}
 \hline
-\textbf{M\'etrica} & \textbf{HRRL} & \textbf{LangGraph} \\
+\textbf{M\'etrica} & \textbf{DPLXY} & \textbf{LangGraph} & \textbf{DPLXY$-$Q} & \textbf{LG-inf.} \\
 \hline
-Total debates${}^\dagger$  & $387.0 \pm 3.0$ & $69.3 \pm 6.7$ \\
-Densidad deliberativa (deb./hb.) & 4.84 & 0.87 \\
-$\sigma_s$ por agente (s.\ 7) & 4.65 & 8.30 \\
-Agentes con 0 debates (s.\ 7) & 0 / 10 & 3 / 10 \\
-Aceptaci\'on AAF${}^\dagger$ & $0.681 \pm 0.010$ & $0.540 \pm 0.029$ \\
-$\overline{\Delta\varphi^*}$ por debate (s.\ 7) & 0.142 & 0.092 \\
-Pendiente $\Delta\varphi^*$ (s.\ 7) & $+0.018$ & $-0.016$ \\
+Total debates                      & $384\pm6$        & $72\pm6$          & $604$            & $75\pm0$         \\
+Densidad (deb./hb.)                & $4.80$           & $0.90$            & $7.55$           & $0.94$           \\
+Cuota m\'ax.\ (vm-1)               & $0.133\pm0.007$  & $0.349\pm0.052$   & $0.106^\dagger$  & $0.260\pm0.010^\dagger$ \\
+Cuota m\'ax.\ (vm-$\ell$)          & $0.158\pm0.009$  & $0.349\pm0.052$   & --               & --               \\
+AAF acc.\ (vm-1)                   & $0.640\pm0.035$  & $0.546\pm0.023$   & $0.729^\dagger$  & $0.540\pm0.010^\dagger$ \\
+AAF acc.\ (vm-$\ell$)              & $0.724\pm0.055$  & $0.546\pm0.023$   & --               & --               \\
 \hline
 \end{tabular}
 \end{table}
 
-\textbf{¿Qui\'en habla?} Bajo HRRL los 10 agentes intervienen
-($\sigma_s{=}4.65$). Bajo LangGraph 3 agentes no participan y uno
-concentra el 38\% de los debates ($\sigma_s{=}8.30$); los silenciados
-acumulan d\'eficits de 7.5--7.8 ($\sim$10$\times\theta$) que el
-enrutador no corrige. Consistente con \textsc{T1}.
+\paragraph{¿Se sostiene la acci\'on?} DPLXY produce $4.8$
+debates/heartbeat frente a $0.9$ en LangGraph ---factor
+$5.4\times$ a igual presupuesto temporal, no a igual presupuesto de
+tokens, ya que el enrutador consume los suyos y la comparaci\'on se
+lee por heartbeat. La presi\'on end\'ogena sugiere una tendencia a
+sostener la actividad a lo largo del horizonte, all\'i donde la
+orquestaci\'on ex\'ogena decae. Queda por determinar si esa
+actividad sostiene coherencia o s\'olo suma ruido.
 
-\textbf{¿La densidad sacrifica calidad?} No. Bajo presupuesto temporal
-equiparable HRRL exhibe $5.5\times$ mayor densidad deliberativa y, a la
-vez, mayor aceptaci\'on AAF agregada (0.681 vs 0.540, $n{=}3$);
-$\overline{\Delta\varphi^*}$ por debate es superior y mejora en el
-tiempo, mientras LangGraph se degrada. La consistencia direccional es
-estricta en los tres pares; un Wilcoxon signed-rank pareado da
-$p{=}0.25$ (l\'imite te\'orico para $n{=}3$). La inferencia formal se
-completar\'a con las cinco semillas.
+\paragraph{¿Sostiene coherencia bajo control de volumen?} Truncando
+DPLXY a $K{=}N_{\text{LG}}$ debates por semilla, \emph{primeros-$K$}
+(contexto corto) da $0.640$ vs $0.546$ ($\Delta{\approx}{+}0.09$);
+\emph{\'ultimos-$K$} (contexto equivalente a LangGraph) sube a
+$0.724$ ($\Delta{\approx}{+}0.18$). La direcci\'on se sostiene,
+aunque vm-$\ell$ no neutraliza el \emph{burn-in}: los \'ultimos-$K$
+de DPLXY ocurren tras ${\sim}300$ debates previos ---una
+condici\'on sim\'etrica con presupuesto extendido para LangGraph
+queda como acci\'on futura. Wilcoxon pareado ($W{=}0$,
+$p{=}0.0625$) es piso mec\'anico para $n{=}5$: no cruza
+$\alpha_{\text{adj}}{=}0.025$ con independencia del efecto.
 
-\textbf{¿Opera el mecanismo en su r\'egimen te\'orizado?} No plenamente:
-la recompensa media bajo HRRL es $-1.85 \pm 0.15$ ($n{=}3$); la
-calibraci\'on de $\alpha$ se realiz\'o antes de activar la difusi\'on
-completa de eventos y qued\'o sub-dimensionada. Las m\'etricas macro
-mejoran a\'un bajo este r\'egimen sub\'optimo, sugiriendo robustez del
-efecto emergente.
+\paragraph{¿C\'omo se sostiene? Reparto de turnos.} Podr\'ia
+pensarse que DPLXY mejora coherencia silenciando a los d\'ebiles,
+o que su cuota baja sea artefacto del mayor volumen. La
+\emph{cuota m\'axima} es inconsistente con ambas: macro cae de
+$0.362$ (LG) a $0.126$ ---cerca del uniforme $1/N{=}0.10$, con
+$\sigma$ un orden de magnitud m\'as estable ($0.006$ vs
+$0.052$)--- y se mantiene baja en ambas ventanas vm (vm-1:
+$0.133$; vm-$\ell$: $0.158$). Los datos son consistentes con una
+din\'amica end\'ogena donde cada agente contribuye cuando su
+$\delta_i$ lo justifica, distinta del r\'egimen ex\'ogeno
+``quien ya habl\'o vuelve a hablar''.
+
+\paragraph{¿Qu\'e componente sostiene el efecto? Ablaciones.} La
+recompensa TD media es negativa ($-2.03\pm0.38$): el lazo Q no
+converge, compatible con la tr\'iada mortal. Las ablaciones
+---$n{=}1$ y $n{=}2$, evidencia anecd\'otica--- acotan
+direccionalmente las lecturas alternativas. \emph{DPLXY-sin-Q}
+reproduce o intensifica el patr\'on macro (cuota $0.106$, AAF
+$0.729$): el aprendizaje no aparece como condici\'on necesaria.
+\emph{LangGraph-informado}, con acceso a los mismos rasgos y a
+$\delta_i$ por JSON, mantiene cuota $0.260\pm0.010$ y AAF
+$0.540\pm0.010$ ---indistinguibles de LangGraph base---: entregar
+la informaci\'on no acerca al r\'egimen end\'ogeno. La lectura
+parsimoniosa es compatible con que el efecto resida en el cierre
+regulatorio (A2{+}A3) antes que en el aprendizaje o el acceso
+informacional; confirmarlo exige escalar los controles.
 
 % ============================================================
 % Pag 4: discusion + future work
 % ============================================================
-\section{Discusi\'on y trabajo futuro}
+\section{Discusi\'on, limitaciones y acciones futuras}
+\label{sec:discussion}
 
-Los hallazgos preliminares son consistentes con \textsc{T1}: bajo
-capacidades locales equiparables y horizonte equiparable, la regulaci\'on
-end\'ogena distribuye la participaci\'on, sostiene calidad por
-intervenci\'on y mejora la coherencia estructural agregada en el tiempo,
-mientras la orquestaci\'on ex\'ogena se degrada. El hallazgo m\'as
-inesperado ---el aumento monot\'onico de la aceptaci\'on AAF a pesar
-del incremento en densidad--- sugiere que la diversidad de
-participaci\'on puede estabilizar la estructura argumentativa, una
-manifestaci\'on de la variedad requerida~\parencite{ashby1956introduction}.
-
-\paragraph{Limitaciones.} $n{=}3$ semillas limita la potencia
-inferencial; $n{=}5$ se cerrar\'a con las semillas restantes. La
-calibraci\'on de $\alpha$ qued\'o sub-dimensionada y se reportar\'a
-recalibraci\'on bajo flujo real en la versi\'on extendida. Resultados
-espec\'ificos a GPT-5-nano. La integraci\'on formal de DeLP
-~\parencite{garcia2004defeasible} y validaci\'on cruzada en semillas
-disjuntas quedan como trabajo futuro.
-
-\paragraph{Pr\'oximos pasos.} (i) cierre de las dos semillas restantes,
-prueba de Welch unilateral con correcci\'on de Bonferroni;
-(ii) validaci\'on externa mediante LLM-as-judge con rubrica AHP
-(Lu et al., EMNLP 2024; Iyer et al., 2026) sobre dos jueces
-independientes;
-(iii) escalamiento poblacional y sensibilidad de
-$\theta, \alpha, \lambda$;
-(iv) integraci\'on formal de DeLP para incorporar garant\'ias y
-derrotabilidad expl\'icita.
-
-\paragraph{Aporte.} El trabajo abre una pregunta testeable: ¿puede la
-coherencia en MAS-LLM sostenerse end\'ogenamente como propiedad
-autoorganizada, en lugar de imponerse externamente? Los datos
-preliminares justifican continuar la investigaci\'on en esa direcci\'on.
-
-% ============================================================
-\section*{Reproducibilidad}
-
-C\'odigo, instrucciones y log de versi\'on extendida:
-\url{https://github.com/pgerpe/langclaw_experiment}
+\paragraph{Alcance y acciones futuras.} Con $n{=}5$ base y
+$n{=}1,2$ en ablaciones, Wilcoxon no cruza Bonferroni aun con
+direcci\'on consistente: reportamos tendencia, no prueba. El dual
+primeros-$K$/\'ultimos-$K$ acota el confound de contexto y las
+ablaciones los de mecanismo e informaci\'on; sensibilidad a
+$(\theta,k)$, ablaci\'on VSM y burn-in de vm-$\ell$ quedan
+abiertos. La evaluaci\'on se apoya en un \'unico LLM y dominio
+adversarial de suma cero. Como \emph{acciones futuras}: escalar a
+$n{\geq}20$ con $k$-fold; sustituir \emph{heartbeats id\'enticos}
+por \emph{rate limit} que iguale densidad; estudiar patrones
+sociales emergentes por rol VSM; y replicar en dominios
+cooperativos y multi-LLM. Si la l\'inea resiste mayor escrutinio,
+parte del esfuerzo actual en orquestaci\'on ex\'ogena podr\'ia
+estar tratando un s\'intoma antes que la causa. C\'odigo, semillas
+y logs se liberar\'an al desanonimizar.
 
 \printbibliography
 

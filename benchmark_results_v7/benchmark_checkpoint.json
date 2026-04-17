@@ -709,5 +709,479 @@
       0.003418
     ],
     "slope_core": -0.000882
+  },
+  {
+    "_ck": "hrrl__seed123",
+    "_mode": "hrrl",
+    "_seed": 123,
+    "total_ticks": 80,
+    "total_debates": 374,
+    "avg_delta_phi": 0.0923,
+    "graph_nodes": 374,
+    "graph_edges": 370,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.6257,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.0508,
+    "prr_graph": 0.9893,
+    "ir": 1.0,
+    "router_calls": 0,
+    "avg_stimuli_per_tick": 4.22,
+    "avg_stimulus_utility": 0.8171,
+    "stimulus_driven_debates": 198,
+    "avg_reward": -2.5721,
+    "total_reward": -1764.4829,
+    "final_q_weights": {
+      "GOV-S1": {
+        "DEBATE_STIMULUS": -0.2358,
+        "DEBATE_PROACTIVE": -0.2306,
+        "SEARCH": -0.2409,
+        "READ": -0.2281,
+        "MESSAGE": -0.2385
+      },
+      "GOV-S2": {
+        "DEBATE_STIMULUS": -0.169,
+        "DEBATE_PROACTIVE": -0.1667,
+        "SEARCH": -0.1653,
+        "READ": -0.1713,
+        "MESSAGE": -0.1731
+      },
+      "GOV-S3": {
+        "DEBATE_STIMULUS": -0.1977,
+        "DEBATE_PROACTIVE": -0.1916,
+        "SEARCH": -0.1949,
+        "READ": -0.1825,
+        "MESSAGE": -0.1968
+      },
+      "GOV-S4": {
+        "DEBATE_STIMULUS": -0.1465,
+        "DEBATE_PROACTIVE": -0.1914,
+        "SEARCH": -0.1669,
+        "READ": -0.1794,
+        "MESSAGE": -0.1735
+      },
+      "GOV-S5": {
+        "DEBATE_STIMULUS": -0.1283,
+        "DEBATE_PROACTIVE": -0.1436,
+        "SEARCH": -0.1651,
+        "READ": -0.1586,
+        "MESSAGE": -0.1355
+      },
+      "OPP-S1": {
+        "DEBATE_STIMULUS": -0.1712,
+        "DEBATE_PROACTIVE": -0.1582,
+        "SEARCH": -0.1712,
+        "READ": -0.1733,
+        "MESSAGE": -0.1637
+      },
+      "OPP-S2": {
+        "DEBATE_STIMULUS": -0.1872,
+        "DEBATE_PROACTIVE": -0.1758,
+        "SEARCH": -0.182,
+        "READ": -0.1797,
+        "MESSAGE": -0.1759
+      },
+      "OPP-S3": {
+        "DEBATE_STIMULUS": -0.0857,
+        "DEBATE_PROACTIVE": -0.0999,
+        "SEARCH": -0.1066,
+        "READ": -0.1078,
+        "MESSAGE": -0.1043
+      },
+      "OPP-S4": {
+        "DEBATE_STIMULUS": -0.1724,
+        "DEBATE_PROACTIVE": -0.1712,
+        "SEARCH": -0.1869,
+        "READ": -0.192,
+        "MESSAGE": -0.18
+      },
+      "OPP-S5": {
+        "DEBATE_STIMULUS": -0.1428,
+        "DEBATE_PROACTIVE": -0.0993,
+        "SEARCH": -0.1421,
+        "READ": -0.1228,
+        "MESSAGE": -0.1159
+      }
+    },
+    "final_deficits": {
+      "GOV-S1": 19.1115,
+      "GOV-S2": 11.8876,
+      "GOV-S3": 17.1698,
+      "GOV-S4": 15.0588,
+      "GOV-S5": 14.6452,
+      "OPP-S1": 14.502,
+      "OPP-S2": 16.6051,
+      "OPP-S3": 10.5319,
+      "OPP-S4": 15.1451,
+      "OPP-S5": 12.3414
+    },
+    "per_agent_debates": {
+      "GOV-S1": 32,
+      "GOV-S2": 41,
+      "GOV-S3": 27,
+      "GOV-S4": 37,
+      "GOV-S5": 39,
+      "OPP-S1": 40,
+      "OPP-S2": 38,
+      "OPP-S3": 46,
+      "OPP-S4": 29,
+      "OPP-S5": 45
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.0653,
+      "GOV-S2": 0.1046,
+      "GOV-S3": 0.1039,
+      "GOV-S4": 0.0896,
+      "GOV-S5": 0.0946,
+      "OPP-S1": 0.0865,
+      "OPP-S2": 0.0749,
+      "OPP-S3": 0.1012,
+      "OPP-S4": 0.1055,
+      "OPP-S5": 0.0955
+    },
+    "window_dphi": [
+      0.0931,
+      0.0988,
+      0.0901,
+      0.1037,
+      0.0765
+    ],
+    "slope_dphi": -0.00283,
+    "window_acceptance": [
+      0.6081,
+      0.6486,
+      0.6351,
+      0.6385,
+      0.6257
+    ],
+    "slope_acceptance": 0.00251,
+    "window_core": [
+      0.008808,
+      0.009802,
+      0.005794,
+      0.007029,
+      0.013285
+    ],
+    "slope_core": 0.000618
+  },
+  {
+    "_ck": "langgraph__seed123",
+    "_mode": "langgraph",
+    "_seed": 123,
+    "total_ticks": 80,
+    "total_debates": 74,
+    "avg_delta_phi": 0.1093,
+    "graph_nodes": 74,
+    "graph_edges": 73,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.5541,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.1081,
+    "prr_graph": 0.9865,
+    "ir": 0.0,
+    "router_calls": 800,
+    "avg_stimuli_per_tick": 1.0,
+    "avg_stimulus_utility": 0.6686,
+    "stimulus_driven_debates": 64,
+    "avg_reward": 0.4025,
+    "total_reward": 30.991,
+    "final_q_weights": {},
+    "final_deficits": {
+      "GOV-S1": 2.4627,
+      "GOV-S2": 2.7816,
+      "GOV-S3": 7.1174,
+      "GOV-S4": 7.6889,
+      "GOV-S5": 7.6889,
+      "OPP-S1": 7.6794,
+      "OPP-S2": 5.3354,
+      "OPP-S3": 0.1,
+      "OPP-S4": 7.9111,
+      "OPP-S5": 7.9111
+    },
+    "per_agent_debates": {
+      "GOV-S1": 18,
+      "GOV-S2": 17,
+      "GOV-S3": 1,
+      "GOV-S4": 0,
+      "GOV-S5": 0,
+      "OPP-S1": 1,
+      "OPP-S2": 9,
+      "OPP-S3": 28,
+      "OPP-S4": 0,
+      "OPP-S5": 0
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.1021,
+      "GOV-S2": 0.1042,
+      "GOV-S3": 0.1803,
+      "GOV-S4": 0.0,
+      "GOV-S5": 0.0,
+      "OPP-S1": 0.1667,
+      "OPP-S2": 0.1728,
+      "OPP-S3": 0.0921,
+      "OPP-S4": 0.0,
+      "OPP-S5": 0.0
+    },
+    "window_dphi": [
+      0.1745,
+      0.0945,
+      0.0906,
+      0.1086,
+      0.0853
+    ],
+    "slope_dphi": -0.01643,
+    "window_acceptance": [
+      0.5714,
+      0.5357,
+      0.5714,
+      0.5714,
+      0.5541
+    ],
+    "slope_acceptance": 0.00011,
+    "window_core": [
+      0.06834,
+      0.021694,
+      0.023629,
+      0.022414,
+      0.013988
+    ],
+    "slope_core": -0.010798
+  },
+  {
+    "_ck": "hrrl__seed256",
+    "_mode": "hrrl",
+    "_seed": 256,
+    "total_ticks": 80,
+    "total_debates": 385,
+    "avg_delta_phi": 0.0995,
+    "graph_nodes": 385,
+    "graph_edges": 380,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.6779,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.1273,
+    "prr_graph": 0.9922,
+    "ir": 1.0,
+    "router_calls": 0,
+    "avg_stimuli_per_tick": 4.37,
+    "avg_stimulus_utility": 0.7949,
+    "stimulus_driven_debates": 223,
+    "avg_reward": -2.5199,
+    "total_reward": -1695.8913,
+    "final_q_weights": {
+      "GOV-S1": {
+        "DEBATE_STIMULUS": -0.2162,
+        "DEBATE_PROACTIVE": -0.2255,
+        "SEARCH": -0.2219,
+        "READ": -0.2136,
+        "MESSAGE": -0.2325
+      },
+      "GOV-S2": {
+        "DEBATE_STIMULUS": -0.1817,
+        "DEBATE_PROACTIVE": -0.1824,
+        "SEARCH": -0.2029,
+        "READ": -0.2007,
+        "MESSAGE": -0.1989
+      },
+      "GOV-S3": {
+        "DEBATE_STIMULUS": -0.1371,
+        "DEBATE_PROACTIVE": -0.1525,
+        "SEARCH": -0.1438,
+        "READ": -0.1635,
+        "MESSAGE": -0.1458
+      },
+      "GOV-S4": {
+        "DEBATE_STIMULUS": -0.1462,
+        "DEBATE_PROACTIVE": -0.1662,
+        "SEARCH": -0.1856,
+        "READ": -0.1756,
+        "MESSAGE": -0.1641
+      },
+      "GOV-S5": {
+        "DEBATE_STIMULUS": -0.103,
+        "DEBATE_PROACTIVE": -0.1243,
+        "SEARCH": -0.1248,
+        "READ": -0.1243,
+        "MESSAGE": -0.1356
+      },
+      "OPP-S1": {
+        "DEBATE_STIMULUS": -0.0666,
+        "DEBATE_PROACTIVE": 0.0928,
+        "SEARCH": -0.0632,
+        "READ": -0.0703,
+        "MESSAGE": -0.071
+      },
+      "OPP-S2": {
+        "DEBATE_STIMULUS": -0.2027,
+        "DEBATE_PROACTIVE": -0.2241,
+        "SEARCH": -0.2011,
+        "READ": -0.2216,
+        "MESSAGE": -0.2237
+      },
+      "OPP-S3": {
+        "DEBATE_STIMULUS": -0.1567,
+        "DEBATE_PROACTIVE": -0.1609,
+        "SEARCH": -0.1442,
+        "READ": -0.1579,
+        "MESSAGE": -0.1557
+      },
+      "OPP-S4": {
+        "DEBATE_STIMULUS": -0.1011,
+        "DEBATE_PROACTIVE": -0.1244,
+        "SEARCH": -0.1137,
+        "READ": -0.1262,
+        "MESSAGE": -0.11
+      },
+      "OPP-S5": {
+        "DEBATE_STIMULUS": 0.0797,
+        "DEBATE_PROACTIVE": -0.0836,
+        "SEARCH": -0.0949,
+        "READ": -0.1052,
+        "MESSAGE": -0.1028
+      }
+    },
+    "final_deficits": {
+      "GOV-S1": 19.6006,
+      "GOV-S2": 19.838,
+      "GOV-S3": 16.437,
+      "GOV-S4": 17.3312,
+      "GOV-S5": 14.376,
+      "OPP-S1": 8.3151,
+      "OPP-S2": 15.2243,
+      "OPP-S3": 12.0695,
+      "OPP-S4": 11.6963,
+      "OPP-S5": 8.7138
+    },
+    "per_agent_debates": {
+      "GOV-S1": 33,
+      "GOV-S2": 29,
+      "GOV-S3": 37,
+      "GOV-S4": 36,
+      "GOV-S5": 41,
+      "OPP-S1": 51,
+      "OPP-S2": 34,
+      "OPP-S3": 41,
+      "OPP-S4": 35,
+      "OPP-S5": 48
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.0696,
+      "GOV-S2": 0.0737,
+      "GOV-S3": 0.0875,
+      "GOV-S4": 0.0829,
+      "GOV-S5": 0.0961,
+      "OPP-S1": 0.1145,
+      "OPP-S2": 0.0984,
+      "OPP-S3": 0.1082,
+      "OPP-S4": 0.1271,
+      "OPP-S5": 0.118
+    },
+    "window_dphi": [
+      0.1043,
+      0.0875,
+      0.0897,
+      0.1337,
+      0.0825
+    ],
+    "slope_dphi": 0.00026,
+    "window_acceptance": [
+      0.6104,
+      0.6429,
+      0.658,
+      0.6851,
+      0.6779
+    ],
+    "slope_acceptance": 0.01772,
+    "window_core": [
+      0.006006,
+      0.004835,
+      0.002755,
+      0.001969,
+      0.003912
+    ],
+    "slope_core": -0.000705
+  },
+  {
+    "_ck": "langgraph__seed256",
+    "_mode": "langgraph",
+    "_seed": 256,
+    "total_ticks": 80,
+    "total_debates": 77,
+    "avg_delta_phi": 0.0957,
+    "graph_nodes": 77,
+    "graph_edges": 76,
+    "aaf_defeat_cycles": 0,
+    "aaf_acceptance_ratio": 0.5584,
+    "aaf_dialectical_completeness": 1.0,
+    "prr_text": 0.2597,
+    "prr_graph": 0.987,
+    "ir": 0.0,
+    "router_calls": 800,
+    "avg_stimuli_per_tick": 1.0,
+    "avg_stimulus_utility": 0.6682,
+    "stimulus_driven_debates": 72,
+    "avg_reward": 0.3992,
+    "total_reward": 31.9383,
+    "final_q_weights": {},
+    "final_deficits": {
+      "GOV-S1": 3.903,
+      "GOV-S2": 5.7297,
+      "GOV-S3": 3.8841,
+      "GOV-S4": 7.5002,
+      "GOV-S5": 8.1242,
+      "OPP-S1": 6.3026,
+      "OPP-S2": 1.1694,
+      "OPP-S3": 6.4111,
+      "OPP-S4": 7.6279,
+      "OPP-S5": 7.6279
+    },
+    "per_agent_debates": {
+      "GOV-S1": 15,
+      "GOV-S2": 7,
+      "GOV-S3": 15,
+      "GOV-S4": 2,
+      "GOV-S5": 0,
+      "OPP-S1": 7,
+      "OPP-S2": 28,
+      "OPP-S3": 3,
+      "OPP-S4": 0,
+      "OPP-S5": 0
+    },
+    "per_agent_avg_dphi": {
+      "GOV-S1": 0.0939,
+      "GOV-S2": 0.1595,
+      "GOV-S3": 0.0857,
+      "GOV-S4": 0.0993,
+      "GOV-S5": 0.0,
+      "OPP-S1": 0.1166,
+      "OPP-S2": 0.0771,
+      "OPP-S3": 0.1283,
+      "OPP-S4": 0.0,
+      "OPP-S5": 0.0
+    },
+    "window_dphi": [
+      0.1625,
+      0.0876,
+      0.0975,
+      0.066,
+      0.0685
+    ],
+    "slope_dphi": -0.02096,
+    "window_acceptance": [
+      0.6,
+      0.5667,
+      0.5778,
+      0.5667,
+      0.5584
+    ],
+    "slope_acceptance": -0.00832,
+    "window_core": [
+      0.030546,
+      0.012552,
+      0.009369,
+      0.01058,
+      0.011778
+    ],
+    "slope_core": -0.003951
   }
 ]

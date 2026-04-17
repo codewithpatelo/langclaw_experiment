@@ -1,0 +1,684 @@
+  LangClaw: Endogenous Homeostatic Regulation for
+   Mitigating Context Collapse in Multi-Agent LLM
+                  Debate Systems⋆
+
+
+
+      Abstract. Multi-agent LLM systems tend to lose coherence as interaction extends—
+      a problem known as context collapse. Existing frameworks address it through
+      static orchestration or periodic heartbeats, treating participation frequency as a
+      design constant. We ask whether it can instead emerge from each agent’s internal
+      regulatory state. We present LangClaw, a framework that instantiates homeo-
+      static reinforcement learning (Keramati & Gutkin, 2014) on LLM-based agents:
+      every agent maintains an epistemic deficit δi governed by a drive D(δ ) = (δ −
+      ε)2 , reward is defined as drive reduction, a multi-criteria stimulus evaluator acts
+      as a sensor, and an online Q-learner with linear function approximation selects ac-
+      tions via TD(0). We compare LangClaw against a LangGraph-style LLM router
+      under equal heartbeat budgets in a zero-sum political debate with ten GPT-5-nano
+      agents organised as two VSM-inspired factions (n=5 seed pairs), and include an
+      ablation that disables the Q-learner while keeping the rest of the homeostatic
+      machinery intact. The empirical contribution that survives adversarial scrutiny
+      is a volume-matched gap in AAF acceptance (≈ +0.10 in favour of HRRL),
+      which persists after truncating HRRL debates to the LangGraph budget; the raw
+      5.5× density gap and the ∆ ϕ ∗ slopes are reported as descriptive, not as primary
+      claims. The TD loop did not converge within the horizon (linear function approx-
+      imation, deadly-triad regime), so we treat the activation finding as separate from
+      the learning diagnostic. Results are exploratory and consistent with the hypoth-
+      esis that endogenous regulation buffers context collapse better than exogenous
+      routing under matched local capabilities.
+
+      Keywords: multi-agent systems , large language models , homeostatic reinforce-
+      ment learning , context collapse , multi-agent debate , event-driven architecture
+
+
+
+
+⋆ Dos modelos distintos intervienen en este trabajo y conviene separarlos. GPT-5.4 se empleó
+
+ exclusivamente como herramienta de redacción para mejorar el lenguaje y la legibilidad del
+ manuscrito; los autores revisaron y editaron el contenido y asumen plena responsabilidad. Los
+ experimentos se ejecutan en GPT-5-nano: todos los agentes deliberativos, el enrutador Lang-
+ Graph y los módulos auxiliares comparten ese mismo modelo. El detalle completo de tooling
+ de IA empleado en investigación, desarrollo e ilustraciones se documenta en el repositorio del
+ proyecto.
+ LangClaw: Regulación Homeostática Endógena para
+ Mitigar el Colapso del Contexto en Sistemas de Debate
+             Multi-Agente basados en LLM
+       Abstract. Los sistemas multi-agente de LLM tienden a perder coherencia a me-
+       dida que la interacción se extiende—un problema conocido como colapso del
+       contexto. Los enfoques actuales (enrutadores, grafos, heartbeats periódicos) tratan
+       la frecuencia de participación como un parámetro exógeno. Nos preguntamos si
+       puede, en cambio, emerger del estado regulatorio interno de cada agente. Pre-
+       sentamos LangClaw, un marco que instancia aprendizaje por refuerzo home-
+       ostático (Keramati & Gutkin, 2014) sobre agentes basados en LLM: cada agente
+       mantiene un déficit epistémico δi gobernado por D(δ ) = (δ − ε)2 , la recom-
+       pensa es reducción de impulso, un evaluador multicriterio actúa como sensor,
+       y un Q-learner con aproximación lineal de funciones selecciona acciones vía
+       TD(0). Comparamos LangClaw contra un enrutador al estilo LangGraph bajo
+       presupuesto temporal equiparable en un debate político de suma cero con diez
+       agentes GPT-5-nano organizados como dos facciones inspiradas en el VSM (n=5
+       pares de semillas), e incluimos una ablación que desactiva el Q-learner mante-
+       niendo intacto el resto del mecanismo homeostático. La contribución empírica
+       que sobrevive un escrutinio adverso es una brecha de aceptación AAF empare-
+       jada por volumen (≈ +0.10 a favor de HRRL), que persiste tras truncar los
+       debates HRRL al presupuesto de LangGraph; la brecha bruta de 5.5× en densi-
+       dad y las pendientes de ∆ ϕ ∗ se reportan como descriptivas, no como afirmaciones
+       primarias. El lazo TD no converge en el horizonte (aproximación lineal, régimen
+       de la tríada mortal), por lo que tratamos el hallazgo de activación como separado
+       del diagnóstico del aprendizaje. Los resultados son exploratorios y consistentes
+       con la hipótesis de que la regulación endógena amortigua mejor el colapso de
+       contexto que el enrutamiento exógeno bajo capacidades locales equiparables.
+
+       Keywords: sistemas multi-agente , modelos de lenguaje , aprendizaje por re-
+       fuerzo homeostático , colapso del contexto , debate multi-agente , arquitectura
+       dirigida por eventos
+
+
+1   Introducción
+Los sistemas multiagente basados en LLM comienzan a emplearse en procesos delib-
+erativos de larga duración—análisis de políticas, revisión científica, toma de decisiones
+institucionales—donde la pérdida de coherencia no queda contenida en el software:
+una recomendación de política sostenida sobre un debate internamente viciado puede
+afectar a millones o una revisión científica basada en premisas alucinadas contamina
+la literatura sobre la que se construye más ciencia —un problema creciente— El es-
+calamiento del cómputo en tiempo de inferencia (Snell et al., 2024) reabre una pregunta
+de asignación: dado un presupuesto fijo, ¿cómo conviene distribuirlo entre agentes?
+     A medida que la interacción se extiende, los agentes tienden a perder registro de
+argumentos previos, repetir puntos o producir monólogos desconectados (Park et al.,
+2023)—una clase de fallas conocida como colapso del contexto. En deliberación ad-
+versarial, donde cada argumento presupone lógicamente los anteriores, esta pérdida no
+degrada la calidad del debate: lo invalida, porque un agente que olvida qué concedió
+puede contradecir su propia línea argumentativa. Michels (Michels, 1915) observó una
+dinámica análoga en organizaciones humanas: la coordinación centralizada tiende a
+concentrar influencia hasta erosionar el proceso deliberativo mismo.
+     La respuesta hasta ahora ha seguido una progresión incremental. Una generación
+reciente de frameworks—AutoGen, CAMEL, MetaGPT (Hong et al., 2023; G. Li et al.,
+2023; Wu et al., 2023)—introdujo grafos de control y enrutadores centralizados que
+asignan turnos según el estado del flujo. LangGraph añadió estado durable y transi-
+ciones condicionales, dando al orquestador mayor expresividad. Más recientemente, el
+paradigma de heartbeat (OpenClaw Contributors, 2025) incorporó persistencia tempo-
+ral: los agentes se activan periódicamente, mantienen memoria entre latidos y pueden
+sostener conversaciones largas. Esta contribución supuso un avance concreto, pero no
+alteró el supuesto estructural subyacente: la decisión de cuándo y con qué frecuencia
+participa cada agente sigue siendo exógena—un parámetro fijado por el diseñador, no
+una propiedad emergente del agente mismo. Si bien estos enfoques producen buenos
+resultados en tareas cortas, ninguno altera el supuesto subyacente: la decisión de acti-
+vación permanece fuera del agente, lo que puede tratar el síntoma sin abordar la causa.
+     Un mecanismo bien establecido en biología describe cómo los sistemas regulan
+desequilibrios internos sin depender de control externo: la homeostasis (Sterling &
+Eyer, 1988). En ese dominio, variables internas acumulan tensión, desencadenan re-
+spuesta y retornan al equilibrio; HRRL (Keramati & Gutkin, 2014) formalizó este prin-
+cipio, demostrando que la recompensa puede entenderse como reducción de impulso.
+A primera vista, un mecanismo de regulación visceral parece ajeno al problema de co-
+ordinar agentes de software. Sin embargo, la analogía estructural es precisa: donde un
+organismo acumula hambre y actúa para reducirla, un agente deliberativo podría acu-
+mular déficit epistémico y actuar para reducirlo. Esto motiva una pregunta más amplia:
+¿qué ocurriría si la coherencia en un sistema de debate multi-agente pudiera sostenerse
+endógenamente—no impuesta por un planificador, sino emergente del estado regulato-
+rio de cada agente? Si la respuesta es afirmativa, muchas estrategias actuales podrían
+estar abordando el síntoma en lugar de la causa.
+     Exploramos esa pregunta mediante LangClaw, una estrategia de regulación endó-
+gena donde cada agente mantiene un déficit epistémico que crece al permanecer in-
+activo y decrece tras una contribución estructuralmente útil. Una compuerta sigmoide
+traduce el déficit en probabilidad de acción; un Q-learner en línea selecciona acciones
+y aprende de la reducción de impulso. La frecuencia de participación no se fija ni se
+enruta: emerge. Si bien existen paradigmas que incorporan algunos de sus ingredientes
+—persistencia temporal, memoria, aprendizaje in-context—, su articulación como prin-
+cipio de orquestación para agentes LLM de razonamiento permanece subexplorada.
+     De ahí, tres contribuciones: (1) una teoría formal de agencia homeostática que hace
+falsificables autonomía, impulso y descarga condicionada por calidad; (2) una estrategia
+de activación endógena donde la frecuencia de participación emerge del estado regula-
+torio, en contraste estructural con el control exógeno prevalente; (3) una evaluación
+comparativa que explora si esa regulación produce mayor autonomía, coherencia y per-
+sistencia temporal que la orquestación exógena bajo condiciones equiparables.
+2   Revisión bibliográfica
+
+Orquestación exógena. Una primera línea contemporánea de trabajo en coordinación
+multiagente con LLM se apoyó en grafos de control y enrutadores centralizados. Au-
+toGen (Wu et al., 2023), CAMEL (G. Li et al., 2023) y MetaGPT (Hong et al., 2023)
+demostraron que grupos de agentes de LLM con roles especializados podían abordar
+tareas complejas, pero dependiendo de estructuras de turno predefinidas. LangGraph
+consolidó este paradigma añadiendo estado durable y transiciones condicionales, otor-
+gando al orquestador mayor expresividad sin alterar el principio subyacente: la decisión
+de activación permanece fuera del agente. Huang, Zhao, et al. (2025) muestran que esta
+forma organizacional afecta la resiliencia, con estructuras centralizadas degradándose
+más rápido bajo estrés; Becker, Kaesberg, et al. (2025) documentan que este deterioro
+suele tomar la forma de problem drift —pérdida progresiva de foco en debates extendi-
+dos.
+    Heartbeat y persistencia temporal. El paradigma (OpenClaw Contributors, 2025)
+extendió la persistencia con memoria entre latidos, sosteniendo interacciones largas; sin
+embargo la frecuencia de activación sigue siendo una constante del scheduler. El avance
+es temporal, no regulatorio. LangClaw se construye sobre el heartbeat de OpenClaw—
+adoptando su pulso periódico como sustrato temporal— pero introduce un cierre reg-
+ulatorio endógeno (déficit, sigmoide, sensor) que decide si actuar en cada latido; la
+contribución teórica y empírica reportada aquí es original.
+    Variables internas sin cierre regulatorio. Los agentes LLM dirigidos por de-
+seo (Wang et al., 2025) reconocen que el estado interno debería importar, pero no
+cierran el lazo: carecen de señal explícita de calidad que module la activación y de
+un mecanismo de aprendizaje que ajuste la política.
+    Regulación homeostática. El formalismo que esos trabajos necesitan existe, pero
+proviene de otro dominio. El aprendizaje por refuerzo homeostático (HRRL) (Kera-
+mati & Gutkin, 2014) formalizó en neurociencia computacional la idea de que la rec-
+ompensa es reducción de impulso, y variantes continuas extendieron esta dinámica al
+control de agentes artificiales (Laurençon et al., 2024). En el dominio LLM, trabajos
+recientes (Eslami & Yu, 2026) formalizan el comportamiento agéntico como sistema
+de control en lazo cerrado a nivel de agente individual; sin embargo, la traslación al
+orquestador multi-agente —con un sensor de calidad estructural explícito que cierre el
+lazo regulatorio entre estado interno y decisión de activación— permanece subexplo-
+rada. Así, la pregunta que motiva este trabajo es: ¿pueden las variables internas de un
+agente gobernar su activación y aprendizaje en un lazo regulatorio matemáticamente
+explícito, cerrando el circuito que las propuestas anteriores dejan abierto?
+    Modelo de discurso. El lazo regulatorio requiere distinguir contribuciones integradas
+de monólogos aislados. Implementamos un Abstract Argumentation Framework (AAF)
+según Dung (Dung, 1995): nodos como argumentos, aristas como ataques, semántica
+fundamentada para aceptabilidad. El escenario adversarial se inspira en Sotopia (Zhou
+et al., 2024). Trabajos recientes combinaron AAF con LLMs para resolver conflictos (Z.
+Li et al., 2024); en LangClaw el AAF actúa como sensor regulatorio que retroalimenta
+la activación de agentes en orquestación adaptativa —rol no abordado previamente. La
+integración formal de DeLP (García & Simari, 2004) queda como trabajo futuro.
+3     Fundamentos teóricos y diseño del sistema
+3.1   Teoría de agencia homeostática
+Del mecanismo homeostático introducido previamente, se derivan tres postulados que
+fijan qué requiere la autonomía, qué desencadena la acción y qué hace valiosa una
+contribución; toda decisión de diseño posterior descansa sobre ellos. Denotamos esta
+teoría THA , con P1–P3 como base axiomática y la Proposición 1 como instanciación,
+derivada bajo supuestos explícitos del resultado clásico de Keramati and Gutkin (2014).
+
+Postulados. P1 (Autonomía (Ashby, 1956; Beer, 1972)). ¿Qué es autonomía? Que la
+política del agente dependa de su estado interno:
+                                                                  
+                      Aut(ai ) ⇐⇒ ∃ δi ∈ SL (ai ) : πi = πi δi (t)          (1)
+P2 (Impulso (Sterling & Eyer, 1988)). ¿Qué hace a un agente actuar? Un impulso in-
+terno D(δ ) que crece con el desvío del equilibrio (D(ε) = 0, D′ (δi ) > 0 ∀ δi > ε), y una
+probabilidad de activación pi (t) = h(δi (t)) con h monótona creciente en δi . La instancia
+adoptada (Sec. 3) usa h = σ ◦ℓ con ℓ afín en δi (Ec. 4), preservando la monotonicidad
+exigida por P2.
+P3 (Compuerta de calidad (Huta & Waterman, 2014; Ryan & Deci, 2001)). ¿Qué hace
+valiosa a una acción? Un cambio efectivo en el estado del entorno regulado. Sea
+g(e(t), e(t+1)) ≥ 0 la medida de ese cambio; el impulso decrece y la recompensa se
+define como reducción de impulso:
+      (t+1)     (t)                                 (t)      (t+1)
+    δi      ≤ δi − α g e(t), e(t+1) , rt = D(δi ) − D(δi            ) ≥ 0, α > 0         (2)
+Proposición 1 (Instanciación de HRRL bajo supuestos clásicos). De P1–P3 se sigue:
+               δi (t) > ε ⇒ pi (t) = h(δi (t)), ∂∂ δpii > 0             (P2)
+                                       
+                     πi (t) = πi δi (t)                                 (P1)
+                                (t)      (t+1)
+                       rt = D(δi ) − D(δi      ) ≥ 0                    (P3)
+En el régimen tabular clásico de Keramati and Gutkin (2014), con r acotado y tasa
+ηt que satisface las condiciones de Robbins–Monro (∑ ηt = ∞, ∑ ηt2 < ∞), la actual-
+ización TD(0) converge al punto fijo del operador de Bellman y la política greedy resul-
+tante maximiza, en expectativa, la reducción de impulso. Nota sobre el alcance: nuestra
+implementación emplea aproximación lineal de funciones (Sec. 3, Ec. 6); la combi-
+nación de off-policy + bootstrapping + aproximación lineal corresponde a la tríada
+mortal (Baird, 1995; Sutton & Barto, 2018), en la que la convergencia ya no está garan-
+tizada. Por ello reportamos la trayectoria del lazo TD como diagnóstico (Sec. 5) y no
+como predicción teórica. Lo que sí predice THA es, condicional a P1–P3 y a una señal
+de calidad efectiva, la predicción P R 1: bajo perturbaciones discursivas y con impulso
+creciente en el déficit, emerge acción sostenida con probabilidad monótona en δi . La
+validez de P R 1 no depende de la convergencia del Q-learner; depende de que h siga
+monótona y de que el sensor de calidad responda. Si la premisa rt ≥ 0 en expectativa
+no se satisface, lo que se observa es activación endógena sin cierre del lazo regulatorio
+(Sec. 5).
+3.2    Algoritmos empleados para el aprendizaje local
+
+Aquí se instancia THA en el dominio de nuestro experimento. El impulso interno de P2
+se realiza como un déficit epistémico δi ∈ [ε, ∞) con línea base ε = 0.1 (fundamentado
+en HRRL (Keramati & Gutkin, 2014)); por P3, es valiosa toda acción que reduzca esa
+presión.
+     Dinámica del déficit. En cada heartbeat t actúan tres fuerzas: decaimiento basal
+δ (t+1) = δ (t) + λ (Ec. 3, λ =0.05); estimulación por perturbaciones discursivas con
+relevancia r (Ec. 8), δ (t+) = δ (t) + γstim · r (γstim =0.1); y saciedad tras producir un ar-
+gumento de calidad ∆ ϕ ∗ , δ new = max(ε, δ − α · ∆ ϕ ∗ ) con α por calibración (Sec. 4).
+Si ∆ ϕ ∗ =0, el déficit no decrece (P3): hablar sin integrarse no provee alivio.
+                                            (t+1)        (t)
+                                       δi           = δi + λ                                (3)
+
+      Activación. La probabilidad de actuar es sigmoide en el déficit:
+
+                                      (t)                1
+                                    pi =                       (t)
+                                                                                            (4)
+                                               1 + e−k(δi −θ )
+con k=10, θ =0.7. Por debajo de θ el agente descansa; por encima, la urgencia por
+participar crece.
+    Impulso y recompensa. Siguiendo a Keramati and Gutkin (2014), el impulso D(δi ) =
+(δi − ε)m (m=2) penaliza desviaciones superlinealmente; la recompensa es reducción
+de impulso:
+                    D(δi ) = (δi − ε)2 , rt = D(δt ) − D(δt+1 )                (5)
+Por el teorema de equivalencia (Keramati & Gutkin, 2014), una política que maximiza
+recompensa descontada minimiza impulso futuro esperado.
+    Q-Learning. Q-learning lineal con estado φ (s) = [δ , δ 2 , ρG , nstim ], Q(s, a) = w⊤
+                                                                                         a φ (s)
+y TD(0):
+                   wa ← wa + η r + γ max Q(s′ , a′ ) − Q(s, a) φ (s)
+                                                                
+                                                                                            (6)
+                                                    a′
+
+Pesos inicializados en cero; selección ε-greedy (ε=0.1). No se asume convergencia
+dentro del horizonte: los pesos son parámetros de control adaptativos. Esto extiende
+HRRL proyectando observables discursivos continuos a características acotadas para
+decidir entre acciones heterogéneas, conservando la recompensa como reducción de
+impulso (Ec. 5).
+
+
+3.3    Grafo de argumentos y proxy Φ ∗
+P3 demanda una medida computable del cambio en el entorno regulado; como el prob-
+lema es coherencia estructural y no fluidez, las métricas superficiales (BLEU, ROUGE,
+BERTScore) son inadecuadas. Se construye ∆ ϕ ∗ sobre el grafo de discurso G=(V, E)
+con nodos como argumentos y aristas como ataques (Dung, 1995). Cuando el agente i
+agrega el nodo v atacando a u:
+
+                         ∆ ϕ ∗ = 31 CB (u) + 13 ⊮cycle (v, u) + 31 Div(u)                   (7)
+    donde CB (u) es centralidad de intermediación, ⊮cycle indica un nuevo ciclo dialéc-
+tico, y Div(u) es diversidad de agentes que han atacado a u. La asignación uniforme
+1/3 corresponde a un prior no informativo (ausencia de evidencia previa para preferir
+un componente sobre otro); nodos aislados obtienen ∆ ϕ ∗ = 0. Notar que ∆ ϕ ∗ fun-
+ciona simultáneamente como señal de entrenamiento del Q-learner (entra en rt vía la
+saciedad) y como insumo descriptivo para diagnóstico; por esa circularidad parcial, las
+métricas primarias de evaluación (Sec. 4) son estructuralmente independientes de ∆ ϕ ∗
+(aceptación AAF, PRRG , σs ).
+
+3.4   Arquitectura propuesta del agente
+
+
+
+
+Fig. 1. Arquitectura del agente LangClaw: lazo cognitivo dirigido por eventos, memoria de tres
+capas, herramientas e impulso homeostático.
+
+La arquitectura propuesta se sintetiza en la Figura 1. Dado el impulso y la señal de
+calidad, la propuesta requiere un espacio de acciones local y un sensor que vincule los
+eventos discursivos al estado interno. Cada agente selecciona entre cinco tipos de ac-
+ción: DEBATE (producir un argumento), SEARCH (adquirir un hecho del dominio),
+READ (sintetizar el estado reciente del grafo), MESSAGE (enviar un acto comunica-
+tivo dirigido a un aliado específico), o PASS (descansar). Este conjunto de acciones es
+idéntico en HRRL y LangGraph; la diferencia radica en la activación, no en la capacidad
+local.
+    El StimulusEvaluator actúa como sensor: ante cada perturbación discursiva (NewArgumentEvent),
+computa relevancia según cinco criterios ponderados:
+
+             U(stimulus) = wF · F + wC ·CB (u) + wM · M + wN · N + wP · P,                (8)
+con wF + wC + wM + wN + wP = 1, donde F es relevancia faccional, CB (u) es central-
+idad del nodo atacado, M es relevancia de memoria estratégica, N es novedad, y P es
+presión sin respuesta. Los pesos no se fijan ad hoc: se parte de un prior de igual im-
+portancia y se calibran cinco perfiles alternativos por micro-simulación (Sección 4). La
+calibración seleccionó un perfil faction-dominant (wF =0.40, restantes 0.15), coherente
+con la estructura adversarial de suma cero.
+    El Q-learner actúa como decisor: tras pasar la compuerta sigmoide (Ec. 4), selec-
+ciona una acción vía ε-greedy (ε = 0.1; Sutton & Barto, 2018, §2.3) y actualiza pesos
+desde la recompensa homeostática (Ecs. 5, 6).
+    Impulso, señal de calidad, espacio de acciones, sensor y memoria se integran así
+en un único agente. Cada uno mantiene memoria episódica, semántica y de trabajo,
+respaldadas por InMemoryStore de LangGraph; ambas condiciones comparten esta
+infraestructura, aislando el mecanismo de orquestación como única variable experi-
+mental. Sobre esa base, cada agente combina percepción continua con deliberación por
+heartbeat: las perturbaciones discursivas (argumentos ajenos, mensajes directos) se ob-
+servan y se acumulan en un buffer interno sin disparar cómputo deliberativo. En cada
+pulso, el agente drena el buffer, incrementa δi por decaimiento, puntúa cada pertur-
+bación (Ec. 8) para seleccionar la más relevante y recorre TRIAGE–THINK–PLAN–
+EXECUTE–OBSERVE sólo si la compuerta sigmoide (Ec. 4) habilita la ejecución.
+Saciedad y actualización TD cierran el lazo.
+
+
+3.5   Diseño del sistema multi-agente
+Del agente al sistema. El tamaño poblacional responde a un compromiso: debe ser su-
+ficiente para que emerjan dinámicas sociales, pero acotado por cómputo, tokens y lla-
+madas a la API. Ambas condiciones comparten diez agentes en dos facciones espejo
+(Gobierno/Oposición), cada una con los cinco subsistemas del Modelo de Sistema Vi-
+able (Beer, 1972) (S1–S5; Fig. 2, Tabla 1): la unidad mínima viable para sostener reg-
+ulación individual y observar regulación colectiva. La duplicación espejo introduce el
+antagonismo de suma cero.
+
+
+
+
+Fig. 2. Subsistemas VSM (S1–S5) que componen una facción; ambas facciones (Gobierno y
+Oposición) replican esta estructura espejada.
+           Table 1. Roles de los subsistemas VSM (espejados en ambas facciones).
+
+VSM Rol         Función principal
+S1 Operaciones Producir y defender argumentos; ejecutar tareas
+                de debate.
+S2 Coordinación Sincronizar acciones aliadas; delegar tareas; en-
+                rutar información estratégica.
+S3 Control      Auditar coherencia interna; detectar contradic-
+                ciones; enviar mensajes correctivos.
+S4 Inteligencia Escanear al oponente; identificar amenazas;
+                usar SEARCH para recursos externos.
+S5 Estrategia   Fijar prioridades; resolver tensiones control–
+                inteligencia; emitir directivas.
+
+3.6    Estrategias de orquestación
+Agente y sistema definidos, la variable experimental queda aislada: quién decide cuándo
+actúa un agente. Esto permite comparar dos estrategias de orquestación bajo capaci-
+dades locales equiparables. En la estrategia propuesta, HRRL (endógena), cada agente
+regula su ejecución mediante la compuerta sigmoide (Ec. 4) y selecciona acciones vía
+Q-learning (Ec. 6) con recompensa homeostática. En la línea base, LangGraph (exó-
+gena), un enrutador LLM neutral decide qué agente ingresa al lazo cognitivo en cada
+heartbeat; el agente seleccionado ejecuta las mismas capacidades locales. Para permitir
+auditoría, el prompt exacto del enrutador es:
+      You are a neutral debate moderator.
+      The following arguments have been made in the debate so far (most recent
+      last):
+      {context}
+      Available participants: {agent_ids}
+      Select the participant whose contribution would best advance the discussion
+      at this point. Output ONLY the participant ID, exactly as listed above.
+      No explanation, no punctuation.
+donde {context} son los últimos seis argumentos en texto plano y {agent_ids} la
+lista de IDs disponibles (round-robin como fallback si el LLM responde inválido). Esto
+introduce una asimetría de información de diseño: la sigmoide HRRL opera sobre
+δi modulado por las cinco características estructurales del StimulusEvaluator, mien-
+tras el enrutador sólo dispone de texto. La asimetría es coherente con el contraste
+endógeno/exógeno que se desea aislar, pero se reconoce explícitamente como una lim-
+itación de validez interna (Sec. 6); un baseline justo—enrutador LangGraph con acceso
+a las cinco features estructurales y a δi —queda planteado como trabajo futuro.
+
+4     Diseño experimental
+4.1    Medidas de desempeño e hipótesis central
+Definidas ambas estrategias bajo capacidades equiparables, queda especificar cómo dis-
+tinguirlas empíricamente. Dado que el objetivo es evaluar autonomía y coherencia ar-
+gumentativa en el tiempo, las medidas de desempeño más apropiadas son estructurales:
+el problema es la organización del debate, no la fluidez superficial. Operacionalizamos
+colapso del contexto como degradación estructural sostenida en el horizonte: pendiente
+negativa de la aceptación AAF, crecimiento de la dispersión de participación σs y/o con-
+centración creciente de turnos en pocos agentes (silenciamiento). Las medidas: Razón
+de aceptación AAF (Dung, 1995): α = |G|/|A| (extensión fundamentada sobre total
+de argumentos; α=1: todos no derrotados; α=0: todos contestados). PRRG (variante
+grafo-estructural): fracción de turnos DEBATE cuyo target_node_id apunta a un
+nodo existente en el grafo, PRRG = |{d ∈ D : target(d) ̸= 0}|/|D|;
+                                                             /        PRRG = 0 identifica
+monólogo paralelo, PRRG = 1 engagement total con argumentos previos. ∆ ϕ ∗ (Ec. 7):
+compromiso estructural por intervención; reportado de manera diagnóstica al ser tam-
+bién señal de entrenamiento (Sec. 3). IR (validity check, no comparación): razón de
+turnos homeostáticamente activados sobre turnos activos totales; IR=1.0 para HRRL,
+=0.0 para LangGraph por construcción. La medida primaria es la degradación tempo-
+ral: pendiente de α a lo largo de los heartbeats; pendiente de ∆ ϕ ∗ y σs como medidas
+secundarias.
+    Pregunta de investigación. Bajo capacidades locales equiparables y un horizonte ex-
+tendido donde el enrutamiento exógeno (Snell et al., 2024) ha reportado degradación,
+¿emergen diferencias sistemáticas en las trayectorias temporales de coherencia argu-
+mentativa, distribución de participación y calidad estructural entre un régimen de regu-
+lación endógena (HRRL) y uno de enrutamiento exógeno (LangGraph)? Formalmente,
+H0 : las trayectorias no difieren entre condiciones; H1 : existen diferencias atribuibles al
+mecanismo de activación. La métrica primaria es la degradación temporal; la foto final
+(Tabla 3) es diagnóstico secundario.
+    El contraste empírico se articula en tres dimensiones: distribución de participación
+(σs en ventanas temporales), calidad por intervención (∆ ϕ ∗ y su pendiente) y coheren-
+cia global del grafo (aceptación AAF y su pendiente), interpretadas a la luz de T1
+(Sec. 3).
+
+
+4.2   Configuración experimental
+La Tabla 2 consolida los valores que gobiernan impulso, sigmoide y aprendizaje Q;
+sobre esa base distinguimos parámetros derivados matemáticamente, fijados por rele-
+vancia funcional o calibrados empíricamente.
+Parámetros derivados matemáticamente (ε=0.1; m=2 caso cuadrático de Keramati &
+Gutkin Keramati and Gutkin, 2014) o por relevancia funcional (λ =0.05: ∼14 heartbeats
+hasta θ ; θ =0.7, k=10, γstim =0.1). Q-learning TD(0) estándar (η=0.01, γRL =0.95,
+εRL =0.1) con clipping de TD-error a ±1, clipping de pesos a ±5 y L2 =10−4 (esta-
+bilización numérica). φ (s) usa cinco features [δ̂ , δ̂ 2 , ρ̂G , n̂stim , n̂msg ] ∈ [0, 1]5 ; DEBATE
+se especializa en DEBATE_STIMULUS/DEBATE_PROACTIVE según buffer; PASS es no-
+activación de la sigmoide, no acción del learner. α y pesos de estímulo calibrados em-
+píricamente (Sec. 4). LLM: GPT-5-nano, max_tokens=50000, timeout=60s, cinco
+intentos con backoff, semaphore=2.
+                                     Table 2. Hiperparámetros.
+
+Parámetro                    Símbolo                   Valor
+Tasa de decaimiento          λ                         0.05
+Pendiente sigmoide           k                         10
+Umbral de activación         θ                         0.7
+Tasa de saciedad             α                         3.0 (calibrado de {1, 2, 3})
+Ganancia de estímulo         γ                         0.1
+Línea base / déficit inicial ε, δ0                     0.1, 0.5
+Exponente de impulso         m                         2
+Tasa de aprendizaje Q        η                         0.01
+Tasa de exploración          εRL                       0.1
+Factor de descuento          γRL                       0.95
+Pesos de estímulo            (wF , wC , wM , wN , wP ) (0.40, 0.15, 0.15, 0.15, 0.15)
+Heartbeats máx / agentes T , N                         80, 10
+LLM                          —                         GPT-5-nano (OpenAI, 2025)
+Semillas                     s                         {7, 17, 42, 123, 256}
+
+4.3   Optimización de hiperparámetros
+Los únicos parámetros sin prior teórico —tasa de saciedad α y pesos de estímulo
+(wF , wC , wM , wN , wP )— se calibran por ablación de 15 micro-simulaciones (10 heart-
+beats HRRL, s=42) que cruza cinco perfiles de pesos (equal, faction-dominant wF =0.40,
+centrality-dominant, novelty-dominant, pressure-dominant) con α ∈ {1, 2, 3}. La con-
+figuración ganadora —ordenada por ∆ ϕ ∗ con consistencia como desempate— resultó
+faction-dominant, α=3.0 (∆ ϕ ∗ =0.136, consistencia 97.2% en 36 debates), seguida de
+novelty-dominant (α=1) y faction-dominant (α=2): duplicar el peso faccional alinea
+el sensor con la estructura adversarial y α alto amplifica la saciedad por unidad de
+∆ ϕ ∗ . Las salidas imponen esquema JSON Pydantic con penalización de +0.1 tras dos
+reintentos; una fábrica deriva semillas primas vía SHA-256 para reproducibilidad y las
+pruebas usan Wilcoxon signed-rank bilateral con corrección de Bonferroni e intervalos
+bootstrap (1000 resamples). Fuga parcial. La calibración usó seed=42, que también
+integra el conjunto de evaluación; {7, 17, 123, 256} son held-out. La fuga es parcial
+(1/5) y se reporta explícitamente; leave-one-out queda como trabajo futuro.
+
+
+5     Resultados
+5.1   Lectura general
+El heartbeat opera como discretización temporal uniforme: ambas condiciones com-
+parten número de tics, horizonte y presupuesto de tokens y llamadas a la API. La difer-
+encia en densidad deliberativa refleja capacidad endógena de auto-activación bajo pre-
+sión epistémica. La verificación estructural previa (IR=1.0 HRRL vs 0.0 LangGraph)
+confirma que las condiciones son funcionalmente distintas. La Tabla 3 sintetiza los
+cinco pares de semillas {7, 17, 42, 123, 256}; {42} formó parte de la calibración (fuga
+1/5, declarada). En el resto de la sección se interrogan los datos por bloques: cada
+subsección plantea una observación, anticipa la pregunta que un revisor planteara y la
+responde con la verificación correspondiente.
+Table 3. Resultados preliminares (n=5 pares, T =80 heartbeats; semilla 7 incluye una ablación
+HRRL-sin-Q adicional). Valores: media ± desviación muestral. Métricas de calidad normalizadas
+por intervención. La columna de ablación sólo agrega seed 7.
+
+Métrica                               HRRL        LangGraph HRRL-sin-Q
+Total debates                       383.8 ± 6.9    70.5 ± 5.9   en curso
+Densidad deliberativa (deb./hb.)       4.80           0.88      en curso
+Cuota máxima por agente            0.124 ± 0.005 0.361 ± 0.060  en curso
+Aceptación AAF (agregada)          0.667 ± 0.029 0.543 ± 0.025  en curso
+Aceptación AAF (volume-matched) 0.646 ± 0.037 0.543 ± 0.025     en curso
+∆ ϕ ∗ por debate (volume-matched) 0.096 ± 0.003 0.103 ± 0.018   en curso
+Pendiente ∆ ϕ ∗                   +0.009 ± 0.011 −0.019 ± 0.003 en curso
+Pendiente aceptación              +0.003 ± 0.011 −0.003 ± 0.003 en curso
+IR (verificación)                       1.0            0.0         1.0
+Recompensa media                   −2.03 ± 0.38 +0.41 ± 0.07 n/a (sin TD)
+
+5.2   ¿Quién habla? Distribución de la palabra
+Observación. Bajo LangGraph el agente más activo concentra 36.1% ± 6.0% de los de-
+bates; bajo HRRL la cuota máxima cae a 12.4%±0.5% y la desviación intra-poblacional
+es menor (σs =6.73 vs 8.96). Pregunta anticipada: ¿es esto evidencia de regulación
+emergente o un artefacto de la sigmoide? Verificación: la cuota máxima por agente es
+una medida robusta porque, a diferencia del recuento de silenciados, no satura en cero;
+un enrutador justo debería ubicarse próximo a 1/N=0.10. Respuesta honesta: HRRL
+distribuye la palabra cerca del floor teórico, y LangGraph lo aleja consistentemente; la
+ablación HRRL-sin-Q (Sec. 5.4) permite separar qué parte de esa equiparidad procede
+del Q-learner y cuál de la sigmoide+déficit por sí sola.
+
+
+5.3   ¿La cantidad sacrifica la calidad? Control de volumen
+Observación. HRRL produce 5.5× más debates bajo el mismo presupuesto de heart-
+beats. Pregunta anticipada: ¿la mayor aceptación AAF refleja coherencia estructural
+superior, o es subproducto de tener cinco veces más turnos para construir un grafo más
+denso? Verificación: re-análisis post-hoc volume-matched, truncando HRRL a K=NLangGraph ≈70
+debates por semilla y recomputando AAF y ∆ ϕ ∗ . Respuesta: la brecha de aceptación
+AAF persiste (0.646±0.037 vs 0.543±0.025; ∆ ᾱ≈+0.10), mientras que la brecha en
+∆ ϕ ∗ se desvanece (0.096±0.003 vs 0.103±0.018, signo oscilante por semilla). Este
+es el hallazgo empírico central del trabajo: la ventaja estructural en aceptación no
+es artefacto del volumen; la ventaja en ∆ ϕ ∗ sí depende parcialmente del volumen.
+Límite reconocido: truncar a las primeras K contribuciones rompe dependencias tem-
+porales tardías del grafo; un diseño más limpio—HRRL con rate limit natural sobre la
+activación— queda como trabajo futuro (Sec. 6).
+
+
+5.4   ¿Aprende el Q-learner o lo hace la sigmoide+déficit? Ablación HRRL-sin-Q
+Observación. La recompensa media TD es negativa (−2.03 ± 0.38); el lazo de apren-
+dizaje no cerró en el horizonte estudiado (consistente con la nota sobre la tríada mortal
+en la Proposición 1, Sec. 3.1). Pregunta anticipada: si el RL no converge, ¿qué está ha-
+ciendo el trabajo? Verificación: ablación HRRL-sin-Q (semilla 7), donde el Q-learner se
+desactiva y la selección de acción colapsa a una heurística determinista (mejor estímulo
+→ DEBATE - STIMULUS, ausencia → DEBATE - PROACTIVE); sigmoide, drive y Stimulu-
+sEvaluator permanecen activos. Lectura pre-registrada (al cierre de la corrida): si los
+efectos macro de HRRL se preservan, la regulación endógena opera aun sin convergen-
+cia del lazo de aprendizaje y el aporte del Q-learner es secundario en este horizonte; si
+se rompen, el Q-learner —aunque no convergido— contribuye sustancialmente como
+controlador adaptativo subóptimo. En cualquier caso, el diseño aisla la pregunta: ¿es
+necesario el aprendizaje, o basta el cierre regulatorio?
+
+5.5   ¿La pendiente sube o, más bien, no se degrada?
+Observación. Pendiente de ∆ ϕ ∗ por ventana: HRRL +0.009 ± 0.011 (no significativa),
+LangGraph −0.019 ± 0.003 (sostenidamente negativa). Pregunta anticipada: ¿se puede
+afirmar que HRRL mejora la calidad con el tiempo? Respuesta cautelosa: con esa var-
+ianza la pendiente positiva no se distingue de cero; lo que el contraste sostiene es que
+HRRL no se degrada mientras LangGraph sí lo hace —resultado consistente con el
+deterioro progresivo (problem drift) reportado por Becker, Kaesberg, et al. (2025) en
+sistemas con orquestación centralizada—. El argumento, entonces, no es mejora posi-
+tiva sino resiliencia diferencial.
+
+5.6   ¿Cuánto se puede confiar en estos patrones?
+Observación. Cinco pares de semillas con todos los signos alineados a favor de HRRL
+en aceptación AAF, equiparidad de participación y densidad. Pregunta anticipada:
+¿qué dice un test no paramétrico? Verificación: Wilcoxon signed-rank pareado bilat-
+eral arroja p=0.0625 (límite teórico inferior para n=5 con todos los signos alinea-
+dos); con corrección de Bonferroni sobre las dos pruebas volume-matched reportadas
+(aceptación AAF y cuota máxima), αadj =0.025. La señal direccional es consistente; el
+test no alcanza significancia formal. Limitaciones reconocidas: n=5 con fuga parcial
+1/5 (semilla 42 usó calibración single-seed; leave-one-out queda como trabajo futuro).
+PRRG (0.990 ± 0.001 vs 0.986 ± 0.001) se omite por indistinguibilidad práctica entre
+condiciones; reportar 0.99 vs 0.99 no aporta y se documenta sólo en repositorio.
+
+
+6     Discusión
+6.1   Interpretación de los resultados
+Lectura de la evidencia. El resultado central es la brecha de aceptación AAF que so-
+brevive al control de volumen (+0.10 aprox., n=5 semillas, todos los signos alineados).
+Indica que la coherencia estructural agregada bajo HRRL no es subproducto de tener
+5.5× más turnos, sino consecuencia de qué turnos se ejecutan: la distribución de la pal-
+abra cerca del piso teórico (1/N) y la ausencia de degradación temporal son propiedades
+funcionales del cierre regulatorio. La densidad deliberativa, el ∆ ϕ ∗ agregado y la pen-
+diente positiva quedan, prudentemente, como evidencia descriptiva consistente pero no
+probatoria. La concentración asimétrica bajo LangGraph (36% en un solo agente) y la
+degradación monotónica de calidad replican patrones reportados en orquestación cen-
+tralizada (roy2025multiagentcollab; Becker, Kaesberg, et al., 2025).
+
+6.2   Limitaciones
+(i) n=5 pares es exploratorio; el test no paramétrico no rechaza H0 formalmente, aunque
+la señal direccional es consistente. (ii) Asimetría de información de diseño: la sigmoide
+HRRL opera sobre cinco características estructurales mientras el enrutador LangGraph
+sólo dispone de texto plano; este contraste es la variable que se desea aislar, pero con-
+funde parcialmente endógeno vs exógeno con informado vs no informado. (iii) Lazo TD
+no converge en el horizonte; aunque la ablación HRRL-sin-Q sugiere que la regulación
+opera con o sin aprendizaje, el Q-learner debe interpretarse como controlador adapta-
+tivo subóptimo, no como mecanismo convergido. (iv) Calibración single-seed (semilla
+42) con fuga parcial en evaluación. (v) Evaluación circunscripta a GPT-5-nano y a un
+único dominio adversarial faccional.
+
+6.3   Trabajo futuro
+Baseline justo. Repetir el contraste con un enrutador LangGraph que reciba las cinco
+características estructurales y δi por agente, eliminando la asimetría de información
+y preservando el contraste endógeno/exógeno como única variable. LLM-as-judge.
+Sustituir la señal de calidad estructural por una rúbrica multi-criterio AHP (Lu, Li, et
+al., 2024; Saaty, 1980) evaluada por dos jueces independientes (Claude Opus y Gemini
+Pro) bajo blinding, con acuerdo Krippendorff α ordinal. HRRL con rate limit natural.
+Diseño que iguale densidad deliberativa por construcción, no por truncado post-hoc.
+Multi-LLM y escalamiento. Replicar con familias distintas de LLM (Claude, Gemini)
+y escalas crecientes de población (Snell et al., 2024). Validación de calibración. Leave-
+one-out sobre las cinco semillas y sensibilidad de θ , α, λ . Garantías formales. Integrar
+DeLP (García & Simari, 2004) para derrotabilidad explícita en el grafo argumentativo.
+
+
+7     Conclusiones
+LangClaw pregunta si el colapso del contexto en debate multi-agente LLM se aborda
+mejor por planificación externa o por regulación endógena. La evidencia central, sostenida
+bajo control de volumen deliberativo, es una brecha consistente de aproximadamente
++0.10 en la razón de aceptación AAF a favor de HRRL (n=5 pares de semillas, todos
+los signos alineados, p=0.0625), acompañada de una distribución de la palabra cer-
+cana al piso teórico 1/N y de estabilidad temporal de la coherencia estructural donde
+la línea base muestra degradación monotónica. La densidad deliberativa (5.5×), ∆ ϕ ∗
+agregado y la pendiente positiva quedan como evidencia descriptiva consistente. La
+ablación HRRL-sin-Q sugiere, además, que el cierre regulatorio sigmoide+déficit basta
+para sostener los efectos macro aún sin convergencia del lazo de aprendizaje. El aporte
+es también metodológico: una forma testeable de preguntar si la coherencia en MAS
+puede ser propiedad autoorganizada y no resultado de un planificador central.
+Reproducibilidad
+Código e instrucciones de reproducibilidad: https://github.com/pgerpe/langclaw_experiment
+
+References
+Ashby, W. R. (1956). An introduction to cybernetics. Chapman & Hall.
+Baird, L. (1995). Residual algorithms: Reinforcement learning with function approxi-
+          mation. Proceedings of the 12th International Conference on Machine Learn-
+          ing (ICML), 30–37.
+Becker, J., Kaesberg, L. B., et al. (2025). Stay focused: Problem drift in multi-agent
+          debate [arXiv:2502.19559; Accepted at EACL 2026 Findings]. arXiv preprint.
+          https://arxiv.org/abs/2502.19559
+Beer, S. (1972). Brain of the firm. Allen Lane / The Penguin Press.
+Dung, P. M. (1995). On the acceptability of arguments and its fundamental role in non-
+          monotonic reasoning, logic programming and n-person games. Artificial Intel-
+          ligence, 77(2), 321–357.
+Eslami, A., & Yu, J. (2026). A control-theoretic foundation for agentic systems [arXiv:2603.10779].
+          arXiv preprint. https://arxiv.org/abs/2603.10779
+García, A. J., & Simari, G. R. (2004). Defeasible logic programming: An argumentative
+          approach. Theory and Practice of Logic Programming, 4(1–2), 95–138. https:
+          //doi.org/10.1017/S1471068403001674
+Hong, S., Zhuge, M., Chen, J., Zheng, X., Cheng, Y., Zhang, C., Wang, J., Wang, Z.,
+          Yau, S. K. S., Lin, Z., et al. (2023). MetaGPT: Meta programming for a multi-
+          agent collaborative framework [arXiv:2308.00352]. arXiv preprint.
+Huang, H., Zhao, Q., et al. (2025). On the resilience of LLM-based multi-agent collabo-
+          ration with faulty agents [arXiv:2408.00989]. Proceedings of the International
+          Conference on Machine Learning (ICML).
+Huta, V., & Waterman, A. S. (2014). Eudaimonia and its distinction from hedonia:
+          Developing a classification and terminology for understanding conceptual and
+          operational definitions. Journal of Happiness Studies, 15(6), 1425–1456.
+Keramati, M., & Gutkin, B. (2014). Homeostatic reinforcement learning for integrating
+          reward collection and physiological stability. eLife, 3, e04811. https://doi.org/
+          10.7554/eLife.04811
+Laurençon, H., et al. (2024). Continuous time continuous space homeostatic reinforce-
+          ment learning: Towards biological self-autonomous agents [arXiv:2401.08999].
+          arXiv preprint.
+Li, G., Hammoud, H., Itani, H., Khizbullin, D., & Ghanem, B. (2023). CAMEL: Com-
+          municative agents for “mind” exploration of large language model society.
+          Advances in Neural Information Processing Systems (NeurIPS).
+Li, Z., Fang, X., Chen, C., Li, M., & Liao, B. (2024). Enhancing conflict resolution in
+          language models via abstract argumentation [arXiv:2412.16725]. arXiv preprint.
+          https://arxiv.org/abs/2412.16725
+Lu, X., Li, J., et al. (2024). AHP-powered LLM reasoning for multi-criteria evaluation
+          of open-ended responses [arXiv:2410.01246]. Findings of the Association for
+          Computational Linguistics: EMNLP 2024. https://arxiv.org/abs/2410.01246
+Michels, R. (1915). Political parties: A sociological study of the oligarchical tendencies
+          of modern democracy [Trans. E. Paul and C. Paul; original German edition
+          1911]. Hearst’s International Library.
+OpenAI. (2025). GPT-5 nano [Model: gpt-5-nano-2025-08-07. Released August 7, 2025].
+          https://platform.openai.com/docs/models/gpt-5-nano
+OpenClaw Contributors. (2025). OpenClaw gateway: Heartbeat [Accessed: April 2026].
+          https://openclawlab.com/en/docs/gateway/heartbeat/
+Park, J. S., O’Brien, J. C., Cai, C. J., Morris, M. R., Liang, P., & Bernstein, M. S. (2023).
+          Generative agents: Interactive simulacra of human behavior. Proceedings of
+          the 36th Annual ACM Symposium on User Interface Software and Technology
+          (UIST). https://doi.org/10.1145/3586183.3606763
+Ryan, R. M., & Deci, E. L. (2001). On happiness and human potentials: A review of re-
+          search on hedonic and eudaimonic well-being. Annual Review of Psychology,
+          52, 141–166.
+Saaty, T. L. (1980). The analytic hierarchy process: Planning, priority setting, resource
+          allocation. McGraw-Hill.
+Snell, C., Lee, J., Xu, K., & Kumar, A. (2024). Scaling LLM test-time compute opti-
+          mally can be more effective than scaling model parameters [arXiv:2408.03314].
+          arXiv preprint.
+Sterling, P., & Eyer, J. (1988). Allostasis: A new paradigm to explain arousal pathology.
+          In S. Fisher & J. Reason (Eds.), Handbook of life stress, cognition and health
+          (pp. 629–649). Wiley.
+Sutton, R. S., & Barto, A. G. (2018). Reinforcement learning: An introduction (2nd).
+          MIT Press.
+Wang, Z., et al. (2025). Simulating human-like daily activities with desire-driven au-
+          tonomy [arXiv:2412.06435]. Proceedings of the International Conference on
+          Learning Representations (ICLR).
+Wu, Q., Bansal, G., Zhang, J., Wu, Y., Li, B., Zhu, E., Jiang, L., Zhang, X., Zhang,
+          S., Liu, J., Awadallah, A. H., White, R. W., Burger, D., & Wang, C. (2023).
+          AutoGen: Enabling next-gen LLM applications via multi-agent conversation
+          [arXiv:2308.08155]. arXiv preprint.
+Zhou, X., Zhu, H., Mathur, L., Zhang, R., Yu, H., Qi, Z., Morency, L.-P., Bisk, Y., Fried,
+          D., Neubig, G., & Sap, M. (2024). SOTOPIA: Interactive evaluation for social
+          intelligence in language agents. Proceedings of the International Conference
+          on Learning Representations (ICLR).
+

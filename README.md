@@ -1,4 +1,4 @@
-# LangClaw — Homeostatic Multi-Agent Debate Framework
+# Driveplexity — Homeostatic Multi-Agent Debate Framework
 
 > Experimental framework that contrasts **endogenous homeostatic regulation
 > (HRRL)** against **exogenous orchestration (LangGraph router)** in
@@ -32,7 +32,7 @@ is `paper_jaiio_short.pdf`.
 
 ## 1. What this is
 
-LangClaw is a Multi-Agent System (MAS) of **10 LLM agents** organised in two
+Driveplexity is a Multi-Agent System (MAS) of **10 LLM agents** organised in two
 opposing factions of 5 (one agent per Viable System Model subsystem,
 S1–S5). Each agent runs a `THINK → PLAN → EXECUTE → OBSERVE` event-driven
 cognitive loop and can perform `DEBATE`, `SEARCH`, `READ` or `PASS`
@@ -282,7 +282,7 @@ multi-seed sweep.
 
 ## 8. Recovery, checkpoints and watchdog
 
-LangClaw was built to survive interrupted long runs (overnight,
+Driveplexity was built to survive interrupted long runs (overnight,
 power outages, API rate limits). Three layers cooperate:
 
 1. **Per-tick checkpointing** in both `calibrate_hyperparams.py` and
@@ -382,6 +382,7 @@ content.
 | **Cursor + Claude Opus 4.7** / **Claude Code Opus 4.7** | Code authoring, refactoring and debugging assistance       |
 | **Perplexity Pro**                                  | Bibliographic research assistance                              |
 | **Figurelabs.ai**                                   | Diagram and illustration drafting                              |
+| **AI Reviewer 3**                                   | Adversarial peer-review of the manuscript (reviewer-style critique)  |
 | **GPT-5-nano** (OpenAI, `gpt-5-nano-2025-08-07`)    | LLM backbone of the experimental agents (part of the artefact) |
 
 The footnote in the paper title summarises this disclosure as required
@@ -396,7 +397,7 @@ If you use or reference this artefact, please cite:
 ```bibtex
 @misc{gerpe2026langclaw,
   author       = {Gerpe, Patricio},
-  title        = {LangClaw: Homeostatic Regulation Prevents Context Collapse
+  title        = {Driveplexity: Homeostatic Regulation Prevents Context Collapse
                   in Multi-Agent LLM Debate Systems},
   year         = {2026},
   howpublished = {JAIIO 2026 (Jornadas Argentinas de Inform\'atica),

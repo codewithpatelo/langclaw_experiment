@@ -15,3 +15,11 @@ Recomendamos leer la siguiente guía:
 Ruiz, A. y García, D. (2024). La lista final de referencias. Composición según las Normas APA
 séptima edición [Material técnico]. Universidad Nacional de La Plata.
 http://sedici.unlp.edu.ar/handle/10915/164813
+
+Ejemplos:
+Libros
+Prince, S. (2023). Understanding deep learning. The MIT Press.
+Eckel, G., Caballero Vences, D. y Guerrero, G. (1996). Construya un servidor de Internet con Unix. Prentice-Hall.
+
+Artículo en revista
+Vignolo, L., Hermann, T. y Gerard, M. (2025). Estrategia evolutiva para la optimización de modelos neuronales de estimación de similaridad entre compuestos. SADIO Electronic Journal of Informatics and Operations Research, 24(1), e066. https://doi.org/10.24215/15146774e066

@@ -1110,8 +1110,11 @@ def main() -> None:
     )
     parser.add_argument(
         "--modes", nargs="+", default=DEFAULT_MODES,
-        choices=["hrrl", "langgraph", "round-robin", "random"],
-        help="Orchestration modes to benchmark.",
+        choices=["hrrl", "langgraph", "round-robin", "random", "hrrl_no_q", "langgraph_informed"],
+        help="Orchestration modes to benchmark. 'hrrl_no_q' is the ablation that "
+             "disables the Q-learner while keeping sigmoid+drive+StimulusEvaluator. "
+             "'langgraph_informed' is the fair baseline: LangGraph router with "
+             "access to the same structural features used by HRRL.",
     )
     parser.add_argument("--api-hard-limit", type=int, default=500)
     parser.add_argument("--initial-deficit", type=float, default=0.5)

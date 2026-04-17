@@ -74,6 +74,7 @@ class HomeostaticQLearner:
         td_clip: float = 1.0,
         weight_clip: float = 5.0,
         l2_reg: float = 1e-4,
+        no_learning: bool = False,
     ) -> None:
         self.eta = eta
         self.gamma = gamma
@@ -81,6 +82,11 @@ class HomeostaticQLearner:
         self.td_clip = td_clip
         self.weight_clip = weight_clip
         self.l2_reg = l2_reg
+        # Ablation flag: when True, semi-gradient TD updates are no-ops and the
+        # caller is expected to bypass select_action() in favour of a deterministic
+        # heuristic.  Used by the HRRL_NO_Q condition to isolate the contribution
+        # of the Q-learner from the rest of the homeostatic activation machinery.
+        self.no_learning = bool(no_learning)
         self._rng = np.random.default_rng(rng_seed)
 
         self._weights: dict[str, np.ndarray] = {
@@ -117,6 +123,8 @@ class HomeostaticQLearner:
 
         wₐ ← wₐ + η · [r + γ · max_a' Q(s', a') − Q(s, a)] · φ(s)
         """
+        if self.no_learning:
+            return
         if action not in self._weights:
             return
         q_current = self.q_value(features, action)
@@ -141,6 +149,7 @@ class HomeostaticQLearner:
             "td_clip": self.td_clip,
             "weight_clip": self.weight_clip,
             "l2_reg": self.l2_reg,
+            "no_learning": self.no_learning,
             "weights": self.get_weights(),
             "rng_state": self._rng.bit_generator.state,
         }
@@ -153,6 +162,8 @@ class HomeostaticQLearner:
         self.td_clip = float(payload.get("td_clip", self.td_clip))
         self.weight_clip = float(payload.get("weight_clip", self.weight_clip))
         self.l2_reg = float(payload.get("l2_reg", self.l2_reg))
+        # Backward-compatible: older checkpoints lack this field; default False.
+        self.no_learning = bool(payload.get("no_learning", self.no_learning))
 
         for action, weights in payload.get("weights", {}).items():
             if action in self._weights:

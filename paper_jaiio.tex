@@ -1,4 +1,4 @@
-% LangClaw — JAIIO 2025/2026 submission (full paper, max 14 pages)
+% Driveplexity — JAIIO 2025/2026 submission (full paper, max 14 pages)
 % Uses LNCS class (llncs.cls) as required by JAIIO guidelines.
 % Anonymous submission: author/institute information omitted.
 %
@@ -32,23 +32,28 @@
   xrightmargin=1em,
 }
 
-\usepackage[style=apa]{biblatex}
+\usepackage[style=apa,maxcitenames=2,mincitenames=1,maxbibnames=3,minbibnames=2]{biblatex}
 \addbibresource{references.bib}
+\setlength{\bibitemsep}{0pt}
+\setlength{\bibhang}{0.6em}
+\renewcommand*{\bibfont}{\footnotesize}
 
 \begin{document}
 
 % ============================================================
 % ENGLISH TITLE + ABSTRACT + KEYWORDS
 % ============================================================
-\title{LangClaw: Endogenous Homeostatic Regulation for Mitigating Context
-Collapse in Multi-Agent LLM Debate Systems\thanks{Durante la
-preparaci\'on de este trabajo, los autores utilizaron GPT-5.4 con el fin
-de mejorar el lenguaje y la legibilidad del manuscrito. Tras utilizar
-esta herramienta, los autores revisaron y editaron el contenido seg\'un
-fue necesario y asumen plena responsabilidad por el contenido de la
-publicaci\'on. El detalle completo de tooling de IA empleado en
-investigaci\'on, desarrollo e ilustraciones se documenta en el
-repositorio del proyecto.}}
+\title{Driveplexity: Endogenous Homeostatic Regulation for Mitigating Context
+Collapse in Multi-Agent LLM Debate Systems\thanks{Dos modelos distintos
+intervienen en este trabajo y conviene separarlos. \textbf{GPT-5.4} se
+emple\'o exclusivamente como herramienta de \emph{redacci\'on} para
+mejorar el lenguaje y la legibilidad del manuscrito; los autores
+revisaron y editaron el contenido y asumen plena responsabilidad. Los
+\emph{experimentos} se ejecutan en \textbf{GPT-5-nano}: todos los
+agentes deliberativos, el enrutador LangGraph y los m\'odulos
+auxiliares comparten ese mismo modelo. El detalle completo de tooling de
+IA empleado en investigaci\'on, desarrollo e ilustraciones se documenta
+en el repositorio del proyecto.}}
 
 % Anonymous submission — authors omitted for review
 \author{}
@@ -57,31 +62,38 @@ repositorio del proyecto.}}
 \maketitle
 
 \begin{abstract}
-Multi-agent LLM systems tend to lose coherence as interaction extends---a
-problem known as \emph{context collapse}. Existing frameworks address this
-through static orchestration or periodic heartbeats, but both treat
-participation frequency as a design constant. We ask whether it can instead
-be an emergent property of each agent's internal regulatory state.
-We present LangClaw, a framework grounded in a formal theory of homeostatic
-agency in which each agent maintains an epistemic deficit
-$\delta_i \in [\varepsilon,\infty)$ governed by a drive function
-$D(\delta) = (\delta - \varepsilon)^2$; reward is defined as drive reduction,
-implementing the equivalence theorem of Keramati and Gutkin (2014). A
-multi-criteria stimulus evaluator acts as sensor; an online Q-learner
-with $\varepsilon$-greedy exploration selects actions via TD(0). This
-represents a structural departure from the prevailing heartbeat paradigm:
-rather than firing on a fixed schedule, agents activate when internal
-pressure warrants it and learn which actions most effectively reduce drive.
-We evaluate LangClaw against a LangGraph-style LLM router under equal
-heartbeat budgets in a zero-sum political debate with ten GPT-5-nano agents
-organized as two VSM-inspired factions, measuring discourse structure through
-AAF metrics, graph-structural peer reference, and the quality proxy
-$\Delta\varphi^*$. Preliminary results show HRRL produces $5\times$ more
-debates with higher AAF acceptance, no silenced agents, and improving
-structural quality, while LangGraph degrades.
+Multi-agent LLM frameworks treat participation frequency as an exogenous
+design parameter: routers, control graphs and periodic heartbeats decide
+\emph{when} each agent speaks. We propose \textbf{Driveplexity}, an
+architecture that instead derives activation from each agent's internal
+regulatory state: an epistemic deficit $\delta_i$ governed by a drive
+$D(\delta)=(\delta-\varepsilon)^2$, drive-reduction reward, a
+multi-criteria structural sensor and an online linear Q-learner trained
+via TD(0). To make the design assumptions explicit we present a
+\emph{Homeostatic Agency} ontology (P1--P4) that formalises what counts
+as autonomy, what makes an agent act, and what makes an action valuable.
+A preliminary case study contrasts Driveplexity against a LangGraph-style
+LLM router on a zero-sum political debate with ten GPT-5-nano agents
+arranged as two VSM-inspired factions ($n{=}5$ seed pairs), under equal
+heartbeat budgets. We add two ablations: an \emph{HRRL-without-Q}
+condition that keeps the sigmoid, drive and stimulus sensor but removes
+the Q-learner, and a \emph{LangGraph-informed} fair baseline that gives
+the exogenous router the same structural features HRRL uses internally,
+isolating "endogenous vs exogenous" from "informed vs uninformed". The
+case study is exploratory: with $n{=}5$ no comparison reaches
+significance after Bonferroni correction. We report effect sizes and
+direction, including a volume-matched difference in AAF acceptance
+($\approx{+}0.10$ in favour of HRRL) and a 5.5$\times$ density gap, both
+as descriptive. The TD loop did not converge within the horizon
+(linear function approximation, deadly-triad regime), so the activation
+mechanism is reported separately from the learning diagnostic and the
+Q-learner is positioned as a suboptimal adaptive controller. The
+contribution is therefore architectural and ontological; the empirical
+material is a regime probe, not a confirmation.
 
-\keywords{multi-agent systems \and large language models \and homeostasis \and
-reinforcement learning \and context collapse \and event-driven architecture}
+\keywords{multi-agent systems \and large language models \and
+homeostatic reinforcement learning \and endogenous activation \and
+multi-agent debate \and event-driven architecture}
 \end{abstract}
 \clearpage
 
@@ -89,36 +101,49 @@ reinforcement learning \and context collapse \and event-driven architecture}
 % SPANISH TITLE + RESUMEN + KEYWORDS
 % ============================================================
 \begin{center}
-{\Large \bfseries\boldmath LangClaw: Regulaci\'on Homeost\'atica End\'ogena
+{\Large \bfseries\boldmath Driveplexity: Regulaci\'on Homeost\'atica End\'ogena
 para Mitigar el Colapso del Contexto en Sistemas de Debate Multi-Agente
 basados en LLM}
 \end{center}
 
 \begin{abstract}
-Los sistemas multi-agente de LLM tienden a perder coherencia a medida que
-la interacci\'on se extiende---un problema conocido como \emph{colapso del
-contexto}. Los enfoques actuales---enrutadores, grafos, heartbeats
-peri\'odicos---ampliaron capacidades sin alterar un supuesto estructural: la
-frecuencia de participaci\'on es un par\'ametro ex\'ogeno, no una propiedad
-del agente. Este trabajo propone invertir ese supuesto. Inspirado en el
-aprendizaje por refuerzo homeost\'atico (Keramati y Gutkin, 2014), cada
-agente mantiene un d\'eficit epist\'emico
-$\delta_i \in [\varepsilon,\infty)$ gobernado por $D(\delta)=(\delta-\varepsilon)^2$;
-la recompensa es reducci\'on de impulso $r_t = D(\delta_t)-D(\delta_{t+1})$.
-Un evaluador multicriterio act\'ua como sensor; un Q-learner con pol\'itica
-$\varepsilon$-greedy selecciona acciones v\'ia TD(0). La frecuencia de
-participaci\'on no se fija ni se enruta: \emph{emerge}. Evaluamos LangClaw
-contra un enrutador al estilo LangGraph en un debate pol\'itico con diez
-agentes GPT-5-nano organizados como dos facciones inspiradas en el VSM,
-midiendo coherencia argumentativa mediante m\'etricas AAF, PRR$_G$ y
-$\Delta\varphi^*$. Resultados preliminares muestran que HRRL produce
-$5\times$ m\'as debates con mayor aceptaci\'on AAF, sin agentes
-silenciados y con calidad estructural creciente, mientras LangGraph
-se degrada.
+Los frameworks multiagente de LLM tratan la frecuencia de
+participaci\'on como par\'ametro ex\'ogeno: enrutadores, grafos de
+control y \emph{heartbeats} peri\'odicos deciden \emph{cu\'ando} habla
+cada agente. Proponemos \textbf{Driveplexity}, una arquitectura que en
+cambio deriva la activaci\'on del estado regulatorio interno de cada
+agente: un d\'eficit epist\'emico $\delta_i$ gobernado por un impulso
+$D(\delta)=(\delta-\varepsilon)^2$, recompensa por reducci\'on de
+impulso, un sensor estructural multicriterio y un Q-learner lineal en
+l\'inea entrenado por TD(0). Para hacer expl\'icitos los supuestos de
+dise\~no presentamos una ontolog\'ia de \emph{Agencia Homeost\'atica}
+(P1--P4) que formaliza qu\'e cuenta como autonom\'ia, qu\'e hace
+actuar a un agente y qu\'e hace valiosa una acci\'on. Un estudio de
+caso preliminar contrasta Driveplexity con un enrutador al estilo
+LangGraph en un debate pol\'itico de suma cero con diez agentes
+GPT-5-nano organizados como dos facciones inspiradas en el VSM
+($n{=}5$ pares de semillas), bajo presupuesto temporal equiparable.
+A\~nadimos dos ablaciones: una condici\'on \emph{HRRL-sin-Q} que
+conserva la sigmoide, el impulso y el sensor pero remueve el Q-learner,
+y una l\'inea base \emph{LangGraph-informada} que provee al enrutador
+ex\'ogeno las mismas caracter\'isticas estructurales que HRRL usa
+internamente, aislando ``end\'ogeno vs ex\'ogeno'' de ``informado vs
+no informado''. El estudio es exploratorio: con $n{=}5$ ninguna
+comparaci\'on alcanza significancia tras correcci\'on de Bonferroni.
+Reportamos tama\~nos de efecto y direcci\'on, incluyendo una
+diferencia en aceptaci\'on AAF emparejada por volumen
+($\approx{+}0.10$ a favor de HRRL) y una brecha de densidad de
+$5.5\times$, ambas como descriptivas. El lazo TD no converge en el
+horizonte (aproximaci\'on lineal, r\'egimen de la \emph{tr\'iada
+mortal}), de modo que el mecanismo de activaci\'on se reporta separado
+del diagn\'ostico de aprendizaje y el Q-learner se posiciona como un
+controlador adaptativo sub\'optimo. La contribuci\'on es por tanto
+arquitect\'onica y ontol\'ogica; el material emp\'irico es una sonda
+de r\'egimen, no una confirmaci\'on.
 
-\keywords{sistemas multi-agente \and modelos de lenguaje \and homeostasis \and
-aprendizaje por refuerzo \and colapso del contexto \and arquitectura dirigida
-por eventos}
+\keywords{sistemas multi-agente \and modelos de lenguaje \and
+aprendizaje por refuerzo homeost\'atico \and activaci\'on end\'ogena \and
+debate multi-agente \and arquitectura dirigida por eventos}
 \end{abstract}
 
 \setcounter{page}{1}
@@ -127,65 +152,61 @@ por eventos}
 \section{Introducci\'on}
 \label{sec:intro}
 
-Los sistemas multiagente basados en LLM comienzan a emplearse en procesos
-deliberativos de larga duraci\'on---an\'alisis de pol\'iticas, revisi\'on
-cient\'ifica, toma de decisiones institucionales---donde la p\'erdida
-de coherencia no queda contenida en el software: una recomendaci\'on
-de pol\'itica sostenida sobre un debate internamente viciado puede
-afectar a millones o una revisi\'on cient\'ifica basada en premisas
+Los sistemas multiagente basados en LLM comienzan a emplearse en
+procesos deliberativos de larga duraci\'on ---an\'alisis de pol\'iticas,
+revisi\'on cient\'ifica, decisiones institucionales--- donde la
+p\'erdida de coherencia no queda contenida en el software: una
+recomendaci\'on de pol\'itica sostenida sobre un debate viciado puede
+afectar a millones, y una revisi\'on cient\'ifica con premisas
 alucinadas contamina la literatura sobre la que se construye m\'as
-ciencia ---un problema creciente--- El escalamiento
-del c\'omputo en tiempo de inferencia~\parencite{snell2024scaling} reabre
-una pregunta de asignaci\'on: dado un presupuesto fijo, ¿c\'omo conviene
-distribuirlo entre agentes?
+ciencia. El escalamiento del c\'omputo en
+inferencia~\parencite{snell2024scaling} reabre una pregunta de
+asignaci\'on: dado un presupuesto fijo, ¿c\'omo conviene distribuirlo
+entre agentes? A medida que la interacci\'on se extiende, los agentes
+pierden registro de argumentos previos, repiten puntos o producen
+mon\'ologos desconectados~\parencite{park2023generative}---el
+\emph{colapso del contexto}. En deliberaci\'on adversarial cada
+argumento presupone los anteriores: esta p\'erdida no degrada el
+debate, lo \emph{invalida}. Michels~\parencite{michels1911political}
+observ\'o din\'amica an\'aloga en organizaciones humanas: la
+coordinaci\'on centralizada concentra influencia hasta erosionar el
+proceso deliberativo.
 
-A medida que la interacci\'on se extiende, los agentes tienden
-a perder registro de argumentos previos, repetir puntos o producir
-mon\'ologos desconectados~\parencite{park2023generative}---una clase de
-fallas conocida como \emph{colapso del contexto}. En deliberaci\'on
-adversarial, donde cada argumento presupone l\'ogicamente los anteriores,
-esta p\'erdida no degrada la calidad del debate: lo invalida, porque un
-agente que olvida qu\'e concedi\'o puede contradecir su propia
-l\'inea argumentativa. Michels~\parencite{michels1911political} observ\'o
-una din\'amica an\'aloga en organizaciones humanas: la coordinaci\'on
-centralizada tiende a concentrar influencia hasta erosionar el proceso
-deliberativo mismo.
-
-La respuesta hasta ahora ha seguido una progresi\'on incremental. Una
-generaci\'on reciente de frameworks---AutoGen, CAMEL,
-MetaGPT~\parencite{wu2023autogen,li2023camel,hong2023metagpt}---introdujo
-grafos de control y enrutadores centralizados que asignan turnos seg\'un el
-estado del flujo. LangGraph a\~nadi\'o estado durable y transiciones
-condicionales, dando al orquestador mayor expresividad. M\'as recientemente,
-el paradigma de \emph{heartbeat}~\parencite{openclaw2025heartbeat} incorpor\'o
-persistencia temporal: los agentes se activan peri\'odicamente, mantienen
-memoria entre latidos y pueden sostener conversaciones largas. Esta
-contribuci\'on supuso un avance concreto, pero no alter\'o el supuesto
-estructural subyacente: la decisi\'on de \emph{cu\'ando} y \emph{con qu\'e
-frecuencia} participa cada agente sigue siendo ex\'ogena---un par\'ametro
-fijado por el dise\~nador, no una propiedad emergente del agente mismo.
-Si bien estos enfoques producen buenos resultados en tareas cortas, ninguno
-altera el supuesto subyacente: la decisi\'on de activaci\'on permanece
-fuera del agente, lo que puede tratar el s\'intoma sin abordar la causa.
+El campo ha consolidado un paradigma generalista de orquestaci\'on. Una
+generaci\'on reciente de frameworks ---AutoGen, CAMEL,
+MetaGPT~\parencite{wu2023autogen,li2023camel,hong2023metagpt}--- estructura
+las interacciones entre agentes mediante grafos de control y enrutadores
+centralizados que asignan turnos seg\'un el estado del flujo;
+LangGraph a\~nadi\'o estado durable y transiciones condicionales, dando al
+orquestador mayor expresividad, y el paradigma de
+\emph{heartbeat}~\parencite{openclaw2025heartbeat} incorpor\'o
+persistencia temporal mediante activaci\'on peri\'odica con memoria entre
+latidos. Ninguno de estos frameworks fue dise\~nado espec\'ificamente para
+deliberaci\'on adversarial extendida, pero proveen el sustrato sobre el
+que se construyen los MAS-LLM contempor\'aneos y heredan un supuesto
+estructural com\'un: la decisi\'on de \emph{cu\'ando} y \emph{con qu\'e
+frecuencia} participa cada agente queda fijada por el dise\~nador, no
+emerge del agente mismo. En tareas cortas suele ser suficiente; en
+deliberaci\'on extendida, una frecuencia conducida por reglas externas
+no captura la presi\'on epist\'emica que cada agente acumula a lo largo
+del debate, lo que puede tratar el s\'intoma del colapso sin abordar
+su causa.
 
 Un mecanismo bien establecido en biolog\'ia describe c\'omo los sistemas
-regulan desequilibrios internos sin depender de control externo: la
-homeostasis~\parencite{sterling1988allostasis}. En ese dominio, variables
-internas acumulan tensi\'on, desencadenan respuesta y retornan al
-equilibrio; HRRL~\parencite{keramati2014homeostatic} formaliz\'o este
-principio, demostrando que la recompensa puede entenderse como reducci\'on
-de impulso. A primera vista, un mecanismo de regulaci\'on visceral parece
-ajeno al problema de coordinar agentes de software. Sin embargo, la
-analog\'ia estructural es precisa: donde un organismo acumula hambre y
-act\'ua para reducirla, un agente deliberativo podr\'ia acumular
-\emph{d\'eficit epist\'emico} y actuar para reducirlo. Esto motiva una
-pregunta m\'as amplia: ¿qu\'e ocurrir\'ia si la coherencia en un sistema
-de debate multi-agente pudiera sostenerse end\'ogenamente---no impuesta
-por un planificador, sino emergente del estado regulatorio de cada agente?
-Si la respuesta es afirmativa, muchas estrategias actuales podr\'ian estar
-abordando el s\'intoma en lugar de la causa.
+regulan desequilibrios internos sin control externo: la
+homeostasis~\parencite{sterling1988allostasis}. Variables internas
+acumulan tensi\'on, desencadenan respuesta y retornan al equilibrio;
+HRRL~\parencite{keramati2014homeostatic} formaliz\'o este principio
+derivando la recompensa como reducci\'on de impulso. La analog\'ia es
+estructural: donde un organismo acumula hambre y act\'ua para reducirla,
+un agente deliberativo podr\'ia acumular \emph{d\'eficit epist\'emico} y
+actuar para reducirlo. ¿Qu\'e ocurrir\'ia si la coherencia en un debate
+multi-agente pudiera sostenerse end\'ogenamente ---no impuesta por un
+planificador, sino emergente del estado regulatorio de cada agente?
+Si la respuesta es afirmativa, muchas estrategias actuales podr\'ian
+estar abordando el s\'intoma en lugar de la causa.
 
-Exploramos esa pregunta mediante LangClaw, una estrategia de
+Exploramos esa pregunta mediante Driveplexity, una estrategia de
 regulaci\'on end\'ogena donde cada agente mantiene un d\'eficit epist\'emico
 que crece al permanecer inactivo y decrece tras una contribuci\'on
 estructuralmente \'util. Una compuerta sigmoide traduce el d\'eficit en
@@ -196,14 +217,20 @@ incorporan algunos de sus ingredientes ---persistencia temporal, memoria,
 aprendizaje in-context---, su articulaci\'on como principio de
 orquestaci\'on para agentes LLM de razonamiento permanece subexplorada.
 
-De ah\'i, tres contribuciones: (1)~una teor\'ia formal de agencia
-homeost\'atica que hace falsificables autonom\'ia, impulso y descarga
-condicionada por calidad; (2)~una estrategia de activaci\'on end\'ogena
-donde la frecuencia de participaci\'on emerge del estado regulatorio,
-en contraste estructural con el control ex\'ogeno prevalente; (3)~una
-evaluaci\'on comparativa que explora si esa regulaci\'on produce mayor
-autonom\'ia, coherencia y persistencia temporal que la orquestaci\'on
-ex\'ogena bajo condiciones equiparables.
+De ah\'i, cuatro contribuciones: (i)~una \emph{axiomatizaci\'on
+ontol\'ogica de agencia homeost\'atica} (P1--P4) que explicita los
+supuestos sobre el agente requeridos para que el experimento
+subsiguiente sea interpretable ---qu\'e es autonom\'ia, qu\'e dispara
+acci\'on, qu\'e hace valiosa una contribuci\'on--- sin reclamar
+status de teorema nuevo; (ii)~una arquitectura concreta de agente HRRL
+para sistemas multi-agente de LLM que articula impulso, sensor
+estructural multicriterio y aprendizaje por refuerzo en un solo lazo
+event-driven; (iii)~una operacionalizaci\'on emp\'irica de coherencia
+estructural mediante grafos de argumentaci\'on abstracta (AAF) y un
+sensor de cinco criterios; (iv)~un estudio de caso preliminar que
+contrasta esta estrategia con un enrutador ex\'ogeno y dos ablaciones
+(sin Q-learner, l\'inea base informada) bajo presupuesto temporal
+equiparable, reportado como sonda exploratoria, no como confirmaci\'on.
 
 
 % ============================================================
@@ -230,7 +257,12 @@ que este deterioro suele tomar la forma de \emph{problem drift}
 paradigma~\parencite{openclaw2025heartbeat} extendi\'o la persistencia
 con memoria entre latidos, sosteniendo interacciones largas; sin embargo
 la frecuencia de activaci\'on sigue siendo una constante del scheduler.
-El avance es temporal, no regulatorio.
+El avance es temporal, no regulatorio. Driveplexity se construye sobre el
+\emph{heartbeat} de OpenClaw---adoptando su pulso peri\'odico como
+sustrato temporal--- pero introduce un cierre regulatorio end\'ogeno
+(d\'eficit, sigmoide, sensor) que decide \emph{si} actuar en cada
+latido; la contribuci\'on te\'orica y emp\'irica reportada aqu\'i es
+original.
 
 \textbf{Variables internas sin cierre regulatorio.}
 Los agentes LLM dirigidos por deseo~\parencite{wang2025d2a} reconocen
@@ -245,7 +277,7 @@ dominio. El aprendizaje por refuerzo homeost\'atico
 computacional la idea de que la recompensa es reducci\'on de impulso, y
 variantes continuas extendieron esta din\'amica al control de agentes
 artificiales~\parencite{laurencon2024ctcs}. En el dominio LLM, trabajos
-recientes~\parencite{controltheoretic2026agentic} formalizan el
+recientes~\parencite{eslami2026controltheoretic} formalizan el
 comportamiento ag\'entico como sistema de control en lazo cerrado a
 nivel de agente individual; sin embargo, la traslaci\'on al
 \emph{orquestador} multi-agente ---con un sensor de calidad estructural
@@ -263,8 +295,8 @@ Framework} (AAF) seg\'un Dung~\parencite{dung1995acceptability}: nodos
 como argumentos, aristas como ataques, sem\'antica fundamentada para
 aceptabilidad. El escenario adversarial se inspira en
 Sotopia~\parencite{zhou2024sotopia}. Trabajos recientes combinaron AAF
-con LLMs para \emph{resolver} conflictos~\parencite{aafconflict2024llm};
-en LangClaw el AAF act\'ua como \emph{sensor regulatorio} que
+con LLMs para \emph{resolver} conflictos~\parencite{li2024aafconflict};
+en Driveplexity el AAF act\'ua como \emph{sensor regulatorio} que
 retroalimenta la activaci\'on de agentes en orquestaci\'on adaptativa
 ---rol no abordado previamente. La integraci\'on formal de DeLP
 ~\parencite{garcia2004defeasible} queda como trabajo futuro.
@@ -273,63 +305,92 @@ retroalimenta la activaci\'on de agentes en orquestaci\'on adaptativa
 \section{Fundamentos te\'oricos y dise\~no del sistema}
 \label{sec:method}
 
-\subsection{Teor\'ia de agencia homeost\'atica}
+\subsection{Agencia homeost\'atica: axiomatizaci\'on ontol\'ogica}
 \label{sec:theory}
+
+Antes de presentar la arquitectura conviene explicitar los supuestos
+sobre el agente que el experimento subsiguiente requiere para ser
+interpretable. Muchos trabajos en MAS LLM dejan estos supuestos
+impl\'icitos; aqu\'i los enunciamos. La presente subsecci\'on cumple,
+por tanto, una funci\'on \emph{ontol\'ogica/metodol\'ogica} (precisar
+qu\'e cuenta como agente para nosotros) y no reclama estatus de marco
+te\'orico nuevo: lo que sigue es una axiomatizaci\'on.
 
 Del mecanismo homeost\'atico introducido previamente, se derivan tres
 postulados que fijan qu\'e requiere la autonom\'ia, qu\'e desencadena la
 acci\'on y qu\'e hace valiosa una contribuci\'on; toda decisi\'on de
-dise\~no posterior descansa sobre ellos. Denotamos esta teor\'ia
-$T_{HA}$, con $P1$--$P3$ como base axiom\'atica y $T1$ como teorema
-derivable.
+dise\~no posterior descansa sobre ellos. Denotamos esta axiomatizaci\'on
+$T_{HA}$, con $P1$--$P3$ como base y la \emph{Proposici\'on~1} como
+instanciaci\'on derivable bajo supuestos expl\'icitos del resultado
+tabular de~\textcite{keramati2014homeostatic}; la Proposici\'on no se
+reclama como contribuci\'on te\'orica original sino como consecuencia
+formal de la base ontol\'ogica adoptada.
 
 \subsubsection{Postulados.}
 
 \noindent\textsc{P1} (Autonom\'ia~\parencite{ashby1956introduction,beer1972brain}).
-\emph{¿Qu\'e es autonom\'ia?} Que la pol\'itica del agente dependa de
-su estado interno:
+\emph{¿Qu\'e es autonom\'ia?} Que la pol\'itica del agente responda a
+su estado interno: dado entorno externo constante, dos valores
+distintos del estado interno inducen distribuciones de acci\'on
+distinguibles.
 \begin{equation}
     \mathrm{Aut}(a_i) \;\iff\; \exists\,\delta_i \in S_L(a_i):\;
-    \pi_i = \pi_i\!\bigl(\delta_i(t)\bigr)
+    \pi_i = \pi_i\!\bigl(\delta_i(t) \,\big|\, e=\bar e\bigr)
     \label{eq:a1}
 \end{equation}
 
 \noindent\textsc{P2} (Impulso~\parencite{sterling1988allostasis}).
-\emph{¿Qu\'e hace a un agente actuar?} Un impulso interno que crece con
-el desv\'io del equilibrio y cuya magnitud determina mon\'otonamente la
-probabilidad de activaci\'on:
-\begin{equation}
-    D(\varepsilon)=0,\quad D'(\delta_i)>0 \;\forall\,\delta_i>\varepsilon,
-    \quad p_i(t)=\sigma\!\bigl(D(\delta_i(t))\bigr)
-    \label{eq:a2}
-\end{equation}
+\emph{¿Qu\'e hace a un agente actuar?} Un impulso interno
+$D(\delta)$ que crece con el desv\'io del equilibrio
+($D(\varepsilon)=0$, $D'(\delta_i)>0\;\forall\,\delta_i>\varepsilon$),
+y una probabilidad de activaci\'on $p_i(t)=h(\delta_i(t))$ con $h$
+mon\'otona creciente en $\delta_i$. La instancia adoptada
+(Sec.~\ref{sec:method}) usa $h=\sigma\!\circ\!\ell$ con $\ell$ af\'in
+en $\delta_i$ (Ec.~\ref{eq:sigmoid}), preservando la monotonicidad
+exigida por P2.
 
-\noindent\textsc{P3} (Compuerta de calidad~\parencite{ryan2001happiness,huta2014eudaimonia}).
+\noindent\textsc{P3} (Compuerta de calidad~\parencite{ryan2001happiness}).
 \emph{¿Qu\'e hace valiosa a una acci\'on?} Un cambio efectivo en el
 estado del entorno regulado. Sea $g(e(t),e(t{+}1))\geq 0$ la medida de
-ese cambio; el impulso decrece proporcionalmente:
+ese cambio; el impulso decrece y la recompensa se define como
+\emph{reducci\'on de impulso}:
 \begin{equation}
-    \Delta\delta_i = -\alpha \cdot g\!\bigl(e(t), e(t{+}1)\bigr),
+    \delta_i^{(t+1)} \le \delta_i^{(t)} - \alpha\, g\!\bigl(e(t), e(t{+}1)\bigr),
+    \quad r_t \;=\; D(\delta_i^{(t)}) - D(\delta_i^{(t+1)}) \;\ge 0,
     \quad \alpha > 0
     \label{eq:a3}
 \end{equation}
 
-\noindent\textsc{T1} (Implicaci\'on derivada de P1--P3).
+\noindent\textbf{Proposici\'on~1} (Instanciaci\'on de HRRL bajo
+supuestos cl\'asicos). De P1--P3 se sigue:
 \begin{align*}
-\delta_i(t) > \varepsilon &\;\Rightarrow\; p_i(t) = \sigma(D(\delta_i(t))) > \tfrac{1}{2},\;\;
+\delta_i(t) > \varepsilon &\;\Rightarrow\; p_i(t) = h(\delta_i(t)),\;\;
   \tfrac{\partial p_i}{\partial \delta_i} > 0 &&\text{(P2)} \\
 \pi_i(t) &= \pi_i\!\bigl(\delta_i(t)\bigr) &&\text{(P1)} \\
-r_t = -\Delta\delta_i &= \alpha \cdot g\!\bigl(e(t), e(t{+}1)\bigr) \geq 0 &&\text{(P3)}
+r_t &= D(\delta_i^{(t)}) - D(\delta_i^{(t+1)}) \;\ge\; 0 &&\text{(P3)}
 \end{align*}
-Sea $r$ acotado y la tasa $\eta_t$ con $\sum \eta_t = \infty$,
-$\sum \eta_t^2 < \infty$ (Robbins--Monro): la actualizaci\'on TD(0) sobre
-$Q(\cdot)$ converge a un punto fijo del operador de Bellman, y la
-pol\'itica greedy resultante maximiza, en expectativa, la reducci\'on
-de impulso~\parencite{keramati2014homeostatic}. As\'i, dado un agente
-expuesto a perturbaciones, cuyo impulso crece con el desv\'io del
-equilibrio y s\'olo decrece ante cambio efectivo, emerger\'a acci\'on
-sostenida de calidad, con probabilidad de activaci\'on creciente en el
-d\'eficit.
+En el r\'egimen tabular cl\'asico de~\textcite{keramati2014homeostatic},
+con $r$ acotado y tasa $\eta_t$ que satisface las condiciones de
+Robbins--Monro ($\sum \eta_t = \infty$, $\sum \eta_t^2 < \infty$), la
+actualizaci\'on TD(0) converge al punto fijo del operador de Bellman y
+la pol\'itica greedy resultante maximiza, en expectativa, la
+reducci\'on de impulso. \emph{Nota sobre el alcance}: nuestra
+implementaci\'on emplea aproximaci\'on lineal de funciones
+(Sec.~\ref{sec:method}, Ec.~\ref{eq:td0}); la combinaci\'on de
+off-policy + bootstrapping + aproximaci\'on lineal corresponde a la
+\emph{tr\'iada mortal}~\parencite{baird1995residual,sutton2018reinforcement},
+en la que la convergencia ya no est\'a garantizada. Por ello reportamos
+la trayectoria del lazo TD como diagn\'ostico (Sec.~\ref{sec:results})
+y no como predicci\'on te\'orica. Lo que s\'i predice
+$T_{HA}$ es, condicional a P1--P3 y a una se\~nal de calidad efectiva,
+la \emph{predicci\'on}~\textsc{Pr1}: bajo perturbaciones discursivas y
+con impulso creciente en el d\'eficit, emerge acci\'on sostenida con
+probabilidad mon\'otona en $\delta_i$. La validez de \textsc{Pr1} no
+depende de la convergencia del Q-learner; depende de que $h$ siga
+mon\'otona y de que el sensor de calidad responda. Si la premisa
+$r_t \ge 0$ en expectativa no se satisface, lo que se observa es
+\emph{activaci\'on end\'ogena sin cierre del lazo regulatorio}
+(Sec.~\ref{sec:results}).
 
 \subsection{Algoritmos empleados para el aprendizaje local}
 
@@ -342,8 +403,8 @@ valiosa toda acci\'on que reduzca esa presi\'on.
 \textbf{Din\'amica del d\'eficit.} En cada heartbeat $t$ act\'uan tres
 fuerzas: decaimiento basal $\delta^{(t+1)}=\delta^{(t)}+\lambda$
 (Ec.~\ref{eq:decay}, $\lambda{=}0.05$); estimulaci\'on por perturbaciones
-discursivas con relevancia $r$ (Ec.~\ref{eq:stimulus}),
-$\delta^{(t+)} = \delta^{(t)} + \gamma_{\text{stim}}\cdot r$
+discursivas con utilidad $u\!=\!U(\text{stim})$ (Ec.~\ref{eq:stimulus}),
+$\delta^{(t+)} = \delta^{(t)} + \gamma_{\text{stim}}\cdot u$
 ($\gamma_{\text{stim}}{=}0.1$); y saciedad tras producir un argumento de
 calidad $\Delta\varphi^*$,
 $\delta^{\text{new}} = \max(\varepsilon, \delta - \alpha\cdot\Delta\varphi^*)$
@@ -378,7 +439,7 @@ pol\'itica que maximiza recompensa descontada minimiza impulso futuro
 esperado.
 
 \textbf{Q-Learning.} Q-learning lineal con estado
-$\phi(s)=[\delta,\delta^2,\rho_G,n_{\text{stim}}]$,
+$\phi(s)=[\hat\delta,\hat\delta^2,\hat\rho_G,\hat n_{\text{stim}},\hat n_{\text{msg}}]\!\in\![0,1]^5$,
 $Q(s,a)=\mathbf{w}_a^\top \phi(s)$ y TD(0):
 \begin{equation}
     \mathbf{w}_a \leftarrow \mathbf{w}_a + \eta \bigl[r + \gamma \max_{a'}
@@ -410,15 +471,32 @@ el nodo $v$ atacando a $u$:
 
 donde $C_B(u)$ es centralidad de intermediaci\'on, $\mathbb{1}_{\text{cycle}}$
 indica un nuevo ciclo dial\'ectico, y $\mathrm{Div}(u)$ es diversidad de
-agentes que han atacado a $u$. Pesos iguales reflejan un prior de m\'axima entrop\'ia. Nodos
-aislados obtienen $\Delta\varphi^* = 0$.
+agentes que han atacado a $u$. La asignaci\'on uniforme $1/3$ corresponde
+a un prior no informativo (ausencia de evidencia previa para preferir un
+componente sobre otro); nodos aislados obtienen $\Delta\varphi^* = 0$.
+Notar que $\Delta\varphi^*$ funciona simult\'aneamente como
+\emph{se\~nal de entrenamiento} del Q-learner (entra en $r_t$ v\'ia la
+saciedad) y como \emph{insumo descriptivo} para diagn\'ostico; por esa
+circularidad parcial, las m\'etricas primarias de evaluaci\'on
+(Sec.~\ref{sec:setup}) son estructuralmente independientes de
+$\Delta\varphi^*$ (aceptaci\'on AAF, PRR$_G$, $\sigma_s$).
 
 \subsection{Arquitectura propuesta del agente}
 
-Dado el impulso y la se\~nal de calidad, la propuesta requiere un espacio
-de acciones local y un sensor que vincule los eventos discursivos al estado
-interno. Cada agente selecciona entre
-cinco tipos de acci\'on: \textbf{DEBATE} (producir un argumento),
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{langclaw/figs/illustration_1.png}
+    \caption{Arquitectura propuesta del agente: ciclo cognitivo dirigido por
+    eventos, memoria de tres capas, herramientas y lazo homeost\'atico.}
+    \label{fig:agent_architecture}
+\end{figure}
+
+La arquitectura propuesta se sintetiza en la
+Figura~\ref{fig:agent_architecture}. Dado el impulso y la se\~nal de
+calidad, la propuesta requiere un espacio de acciones local y un sensor
+que vincule los eventos discursivos al estado interno. Cada agente
+selecciona entre cinco tipos de acci\'on: \textbf{DEBATE} (producir un
+argumento),
 \textbf{SEARCH} (adquirir un hecho del dominio), \textbf{READ} (sintetizar
 el estado reciente del grafo), \textbf{MESSAGE} (enviar un acto comunicativo
 dirigido a un aliado espec\'ifico), o \textbf{PASS} (descansar). Este
@@ -462,53 +540,33 @@ cada pulso, el agente drena el buffer, incrementa $\delta_i$ por
 decaimiento, punt\'ua cada perturbaci\'on (Ec.~\ref{eq:stimulus}) para
 seleccionar la m\'as relevante y recorre TRIAGE--THINK--PLAN--EXECUTE--OBSERVE
 s\'olo si la compuerta sigmoide (Ec.~\ref{eq:sigmoid}) habilita la
-ejecuci\'on. Saciedad y actualizaci\'on TD cierran el lazo. La
-Figura~\ref{fig:agent_architecture} resume la arquitectura.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.86\linewidth]{langclaw/figs/illustration_1.png}
-    \caption{Arquitectura del agente LangClaw: lazo cognitivo, memoria,
-    herramientas e impulso homeost\'atico.}
-    \label{fig:agent_architecture}
-\end{figure}
+ejecuci\'on. Saciedad y actualizaci\'on TD cierran el lazo.
 
 \subsection{Dise\~no del sistema multi-agente}
 
-Del agente al sistema. El tama\~no poblacional responde a un compromiso:
-debe ser suficiente para que emerjan din\'amicas sociales, pero acotado
-por c\'omputo, tokens y llamadas a la API. Ambas condiciones comparten
-diez agentes en dos facciones espejo (Gobierno/Oposici\'on), cada una
-con los cinco subsistemas del Modelo de Sistema
-Viable~\parencite{beer1972brain} (S1--S5): la \emph{unidad m\'inima
-viable} para sostener regulaci\'on individual y observar regulaci\'on
-colectiva. La duplicaci\'on espejo introduce el antagonismo de suma cero
-(Fig.~\ref{fig:mas_vsm_architecture}).
+Del agente al sistema. El tama\~no poblacional responde a un
+compromiso: debe ser suficiente para que emerjan din\'amicas sociales,
+pero acotado por c\'omputo, tokens y llamadas a la API. Ambas
+condiciones comparten diez agentes en dos facciones espejo
+(Gobierno/Oposici\'on), cada una con los cinco subsistemas del Modelo
+de Sistema Viable~\parencite{beer1972brain}
+(Fig.~\ref{fig:vsm_faction}): \textbf{S1 Operaciones} produce y
+defiende argumentos; \textbf{S2 Coordinaci\'on} sincroniza aliados y
+enruta informaci\'on; \textbf{S3 Control} audita coherencia interna y
+detecta contradicciones; \textbf{S4 Inteligencia} escanea al oponente
+y usa \textsc{search} para recursos externos; \textbf{S5 Estrategia}
+fija prioridades y resuelve tensiones control--inteligencia. Esta
+estructura constituye la \emph{unidad m\'inima viable} para sostener
+regulaci\'on individual y observar regulaci\'on colectiva; la
+duplicaci\'on espejo introduce el antagonismo de suma cero.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.90\linewidth]{langclaw/figs/illustration_2.png}
-    \caption{Arquitectura multi-agente inspirada en el VSM: organizaci\'on
-    faccional espejo y entorno discursivo compartido.}
-    \label{fig:mas_vsm_architecture}
+    \includegraphics[width=0.6\linewidth]{langclaw/figs/illustration_2.png}
+    \caption{Subsistemas VSM (S1--S5) que componen una facci\'on; ambas
+    facciones (Gobierno y Oposici\'on) replican esta estructura espejada.}
+    \label{fig:vsm_faction}
 \end{figure}
-
-\begin{table}[!t]
-\caption{Roles de los subsistemas VSM (espejados en ambas facciones).}
-\label{tab:roles}
-\small
-\begin{tabular}{|l|l|p{6cm}|}
-\hline
-\textbf{VSM} & \textbf{Rol} & \textbf{Funci\'on principal} \\
-\hline
-S1 & Operaciones & Producir y defender argumentos; ejecutar tareas de debate. \\
-S2 & Coordinaci\'on & Sincronizar acciones aliadas; delegar tareas; enrutar informaci\'on estrat\'egica. \\
-S3 & Control & Auditar coherencia interna; detectar contradicciones; enviar mensajes correctivos. \\
-S4 & Inteligencia & Escanear al oponente; identificar amenazas; usar SEARCH para recursos externos. \\
-S5 & Estrategia & Fijar prioridades; resolver tensiones control--inteligencia; emitir directivas. \\
-\hline
-\end{tabular}
-\end{table}
 
 
 \subsection{Estrategias de orquestaci\'on}
@@ -519,33 +577,72 @@ orquestaci\'on bajo capacidades locales equiparables. En la estrategia
 propuesta, \textbf{HRRL} (end\'ogena), cada agente regula su ejecuci\'on
 mediante la compuerta sigmoide (Ec.~\ref{eq:sigmoid}) y selecciona
 acciones v\'ia Q-learning (Ec.~\ref{eq:td0}) con recompensa homeost\'atica.
-En la l\'inea base, \textbf{LangGraph} (ex\'ogena), un enrutador LLM decide
-qu\'e agente ingresa al lazo cognitivo; el agente seleccionado ejecuta las
-mismas capacidades locales. La diferencia no radica en qu\'e pueden hacer
-los agentes, sino en d\'onde se resuelve la activaci\'on.
+En la l\'inea base, \textbf{LangGraph} (ex\'ogena), un enrutador LLM
+neutral decide qu\'e agente ingresa al lazo cognitivo en cada heartbeat;
+el agente seleccionado ejecuta las mismas capacidades locales. Para
+permitir auditor\'ia, el prompt exacto del enrutador es:
+
+\begin{quote}\small\ttfamily
+You are a neutral debate moderator.\\
+The following arguments have been made in the debate so far (most recent last):\\
+\{context\}\\
+Available participants: \{agent\_ids\}\\
+Select the participant whose contribution would best advance the discussion
+at this point. Output ONLY the participant ID, exactly as listed above. No
+explanation, no punctuation.
+\end{quote}
+
+\noindent donde \texttt{\{context\}} son los \'ultimos seis argumentos en
+texto plano y \texttt{\{agent\_ids\}} la lista de IDs disponibles
+(\emph{round-robin} como \emph{fallback} si el LLM responde inv\'alido).
+Esto introduce una \textbf{asimetr\'ia de informaci\'on de dise\~no}: la
+sigmoide HRRL opera sobre $\delta_i$ modulado por las cinco
+caracter\'isticas estructurales del StimulusEvaluator, mientras el
+enrutador s\'olo dispone de texto. La asimetr\'ia es coherente con el
+contraste end\'ogeno/ex\'ogeno que se desea aislar, pero se reconoce
+expl\'icitamente como una \emph{limitaci\'on de validez interna}
+(Sec.~\ref{sec:discussion}). Para neutralizarla parcialmente
+introducimos una tercera condici\'on, \textbf{LangGraph-informado}:
+el enrutador recibe el mismo texto m\'as un JSON con las cinco
+caracter\'isticas estructurales y $\delta_i$ por agente, computadas
+con el mismo \texttt{StimulusEvaluator} usado por HRRL. Esta variante
+se ejecuta con dos semillas como contraste preliminar
+(Sec.~\ref{sec:results}); replicarlo con n suficiente queda como
+trabajo futuro.
 
 % ============================================================
 \section{Dise\~no experimental}
 \label{sec:setup}
 
-\subsection{Medidas de desempe\~no e hip\'otesis central}
+\subsection{Medidas de desempe\~no y pregunta de investigaci\'on}
 
 Definidas ambas estrategias bajo capacidades equiparables, queda
 especificar c\'omo distinguirlas emp\'iricamente. Dado que el objetivo
 es evaluar autonom\'ia y coherencia argumentativa en el tiempo, las
 medidas de desempe\~no m\'as apropiadas son estructurales:
 el problema es la organizaci\'on del debate, no la fluidez superficial.
+Operacionalizamos \emph{colapso del contexto} como degradaci\'on
+estructural sostenida en el horizonte: pendiente negativa de la
+aceptaci\'on AAF, crecimiento de la dispersi\'on de participaci\'on
+$\sigma_s$ y/o concentraci\'on creciente de turnos en pocos agentes
+(silenciamiento). Las medidas:
 \textbf{Raz\'on de aceptaci\'on AAF}~\parencite{dung1995acceptability}:
 $\alpha = \lvert G \rvert / \lvert A \rvert$ (extensi\'on fundamentada sobre
 total de argumentos; $\alpha{=}1$: todos no derrotados; $\alpha{=}0$: todos
-contestados). \textbf{PRR$_G$}: fracci\'on de debates dirigidos a un nodo
-existente~\parencite{anonymous2026madprotocols}. \textbf{$\Delta\varphi^*$}
-(Ec.~\ref{eq:phi}): compromiso estructural por intervenci\'on.
-\textbf{IR} (verificaci\'on de manipulaci\'on): raz\'on de turnos
-homeost\'aticamente activados sobre turnos activos totales; IR${=}1.0$ para
-HRRL, ${=}0.0$ para LangGraph. La medida primaria es la
-\emph{degradaci\'on temporal}: pendientes de $\Delta\varphi^*$ y $\alpha$
-a lo largo de los heartbeats.
+contestados). \textbf{PRR$_G$} (variante grafo-estructural): fracci\'on de
+turnos DEBATE cuyo $\texttt{target\_node\_id}$ apunta a un nodo existente
+en el grafo, $\mathrm{PRR}_G = |\{d \in D : \text{target}(d)\neq\emptyset\}|/|D|$;
+$\mathrm{PRR}_G = 0$ identifica mon\'ologo paralelo,
+$\mathrm{PRR}_G = 1$ engagement total con argumentos previos.
+\textbf{$\Delta\varphi^*$} (Ec.~\ref{eq:phi}): compromiso estructural
+por intervenci\'on; reportado de manera diagn\'ostica al ser tambi\'en
+se\~nal de entrenamiento (Sec.~\ref{sec:method}). \textbf{IR}
+(\emph{validity check}, no comparaci\'on): raz\'on de turnos
+homeost\'aticamente activados sobre turnos activos totales; IR${=}1.0$
+para HRRL, ${=}0.0$ para LangGraph por construcci\'on. La medida
+primaria es la \emph{degradaci\'on temporal}: pendiente de $\alpha$ a
+lo largo de los heartbeats; pendiente de $\Delta\varphi^*$ y $\sigma_s$
+como medidas secundarias.
 
 \emph{Pregunta de investigaci\'on.} Bajo capacidades locales equiparables
 y un horizonte extendido donde el enrutamiento
@@ -563,234 +660,271 @@ El contraste emp\'irico se articula en tres dimensiones: distribuci\'on
 de participaci\'on ($\sigma_s$ en ventanas temporales), calidad por
 intervenci\'on ($\Delta\varphi^*$ y su pendiente) y coherencia global
 del grafo (aceptaci\'on AAF y su pendiente), interpretadas a la luz de
-T1 (Sec.~\ref{sec:method}).
+la Proposici\'on~1 y la predicci\'on Pr1 (Sec.~\ref{sec:method}).
 
 \subsection{Configuraci\'on experimental}
 
+La Tabla~\ref{tab:hyperparams} consolida los valores que gobiernan
+impulso, sigmoide y aprendizaje Q; sobre esa base distinguimos par\'ametros
+derivados matem\'aticamente, fijados por relevancia funcional o
+calibrados emp\'iricamente.
+
 \begin{table}
-\caption{Hiperpar\'ametros.}\label{tab:hyperparams}
-\small
-\begin{tabular}{|l|l|l|}
+\caption{Hiperpar\'ametros (calibrados, derivados o por defecto).}\label{tab:hyperparams}
+\centering\small
+\begin{tabular}{|l|l|l|l|}
 \hline
-\textbf{Par\'ametro} & \textbf{S\'imbolo} & \textbf{Valor} \\
+\textbf{Par\'ametro} & \textbf{Valor} & \textbf{Par\'ametro} & \textbf{Valor} \\
 \hline
-Tasa de decaimiento & $\lambda$ & 0.05 \\
-Pendiente sigmoide & $k$ & 10 \\
-Umbral de activaci\'on & $\theta$ & 0.7 \\
-Tasa de saciedad & $\alpha$ & 3.0 (calibrado de $\{1,2,3\}$) \\
-Ganancia de est\'imulo & $\gamma$ & 0.1 \\
-L\'inea base / d\'eficit inicial & $\varepsilon$, $\delta_0$ & 0.1, 0.5 \\
-Exponente de impulso & $m$ & 2 \\
-Tasa de aprendizaje Q & $\eta$ & 0.01 \\
-Tasa de exploraci\'on & $\varepsilon_{\text{RL}}$ & 0.1 \\
-Factor de descuento & $\gamma_{\text{RL}}$ & 0.95 \\
-Pesos de est\'imulo & $(w_F,w_C,w_M,w_N,w_P)$ & $(0.40, 0.15, 0.15, 0.15, 0.15)$ \\
-Heartbeats m\'ax / agentes & $T$, $N$ & 80, 10 \\
-LLM & --- & GPT-5-nano~\parencite{openai2025gpt5nano} \\
-Semillas & $s$ & $\{7,17,42,123,256\}$ \\
+Decaimiento $\lambda$ & 0.05 & Sigmoide $k$ & 10 \\
+Umbral activaci\'on $\theta$ & 0.7 & Saciedad $\alpha$ (calibrada) & 3.0 \\
+Ganancia est\'imulo $\gamma$ & 0.1 & Base / inicial $\varepsilon,\delta_0$ & 0.1 / 0.5 \\
+Exponente impulso $m$ & 2 & Tasa Q $\eta$ & 0.01 \\
+Exploraci\'on $\varepsilon_{\text{RL}}$ & 0.1 & Descuento $\gamma_{\text{RL}}$ & 0.95 \\
+Pesos est\'imulo $(w_F,w_C,w_M,w_N,w_P)$ & \multicolumn{3}{l|}{$(0.40, 0.15, 0.15, 0.15, 0.15)$ ---\emph{faction-dominant}} \\
+Heartbeats $T$ / agentes $N$ & 80 / 10 & Semillas & $\{7,17,42,123,256\}$ \\
+LLM & \multicolumn{3}{l|}{GPT-5-nano~\parencite{openai2025gpt5nano}, \texttt{max\_tokens=50000}, \texttt{timeout=60s}} \\
 \hline
 \end{tabular}
 \end{table}
 
-\noindent Los par\'ametros del impulso se derivan matem\'aticamente
-($\varepsilon{=}0.1$, $m{=}2$:~\textcite{keramati2014homeostatic}) o por
-relevancia funcional ($\lambda{=}0.05$: $\sim$14 heartbeats hasta
-$\theta$ desde reposo; $\theta{=}0.7$, $k{=}10$, $\gamma_{\text{stim}}{=}0.1$).
-Los Q siguen pr\'actica est\'andar TD(0) ($\eta{=}0.01$, $\gamma_{\text{RL}}{=}0.95$,
-$\varepsilon_{\text{RL}}{=}0.1$); $\alpha$ y los pesos de est\'imulo se
-calibraron emp\'iricamente (Sec.~\ref{sec:setup}).
+\noindent Par\'ametros derivados matem\'aticamente
+($\varepsilon{=}0.1$; $m{=}2$ caso cuadr\'atico de Keramati \&
+Gutkin~\cite{keramati2014homeostatic}) o por relevancia funcional
+($\lambda{=}0.05$: 4 heartbeats desde $\delta_0{=}0.5$, 12 desde la base
+$\varepsilon{=}0.1$ hasta $\theta$; $\theta{=}0.7$,
+$k{=}10$, $\gamma_{\text{stim}}{=}0.1$). Q-learning TD(0) est\'andar
+($\eta{=}0.01$, $\gamma_{\text{RL}}{=}0.95$, $\varepsilon_{\text{RL}}{=}0.1$)
+con clipping de TD-error a $\pm 1$, clipping de pesos a $\pm 5$ y
+$L_2{=}10^{-4}$ (estabilizaci\'on num\'erica). $\phi(s)$ usa cinco
+features $[\hat\delta,\hat\delta^2,\hat\rho_G,\hat n_{\text{stim}},\hat n_{\text{msg}}]\in[0,1]^5$;
+DEBATE se especializa en \texttt{DEBATE\_STIMULUS}/\texttt{DEBATE\_PROACTIVE}
+seg\'un buffer; PASS es no-activaci\'on de la sigmoide, no acci\'on del
+learner. $\alpha$ y pesos de est\'imulo calibrados emp\'iricamente
+(Sec.~\ref{sec:setup}). \textbf{LLM}: GPT-5-nano, \texttt{max\_tokens=50000},
+\texttt{timeout=60s}, cinco intentos con backoff, \texttt{semaphore=2}.
 
 \subsection{Optimizaci\'on de hiperpar\'ametros}
 
-Los \'unicos par\'ametros sin prior te\'orico ---tasa de saciedad
-$\alpha$ y pesos de est\'imulo $(w_F, w_C, w_M, w_N, w_P)$--- se
-calibran por ablaci\'on de 15 micro-simulaciones (10 heartbeats HRRL,
-$s{=}42$) que cruza cinco perfiles de pesos (\emph{equal},
-\emph{faction-dominant} $w_F{=}0.40$, \emph{centrality-dominant},
-\emph{novelty-dominant}, \emph{pressure-dominant}) con
-$\alpha\in\{1,2,3\}$. La configuraci\'on ganadora ---ordenada por
-$\overline{\Delta\varphi^*}$ con consistencia como desempate---
-result\'o \emph{faction-dominant}, $\alpha{=}3.0$
-($\overline{\Delta\varphi^*}{=}0.136$, consistencia $97.2\%$ en 36
-debates), seguida de \emph{novelty-dominant} ($\alpha{=}1$) y
-\emph{faction-dominant} ($\alpha{=}2$): duplicar el peso faccional
-alinea el sensor con la estructura adversarial y $\alpha$ alto amplifica
-la saciedad por unidad de $\Delta\varphi^*$. Las salidas imponen
-esquema JSON Pydantic con penalizaci\'on de $+0.1$ tras dos reintentos;
-una f\'abrica deriva semillas primas v\'ia SHA-256 para reproducibilidad
-y las pruebas usan $t$-test de Welch unilateral con correcci\'on de
-Bonferroni.
+Los par\'ametros sin prior te\'orico ---tasa de saciedad $\alpha$ y
+pesos de est\'imulo $(w_F,\dots,w_P)$--- se calibran por ablaci\'on
+de 15 micro-simulaciones (10 heartbeats HRRL, $s{=}42$) cruzando cinco
+perfiles de pesos (\emph{equal}, \emph{faction-/centrality-/novelty-/pressure-dominant})
+con $\alpha\in\{1,2,3\}$, ordenados por $\overline{\Delta\varphi^*}$
+con consistencia como desempate. Gana \emph{faction-dominant},
+$\alpha{=}3.0$ ($\overline{\Delta\varphi^*}{=}0.136$, consistencia
+$97.2\%$ en 36 debates): duplicar el peso faccional alinea el sensor
+con la estructura adversarial y $\alpha$ alto amplifica la saciedad
+por unidad de $\Delta\varphi^*$. Las pruebas usan Wilcoxon
+\emph{signed-rank} bilateral con Bonferroni y \emph{bootstrap} (1000).
+\textbf{Fuga parcial 1/5}: $s{=}42$ integr\'o calibraci\'on y
+evaluaci\'on; $\{7,17,123,256\}$ son \emph{held-out};
+\emph{leave-one-out} queda como trabajo futuro.
 
 % ============================================================
 \section{Resultados}
 \label{sec:results}
 
-\subsection{M\'etricas de resultado}
-
 El heartbeat opera como discretizaci\'on temporal uniforme: ambas
-condiciones disponen del mismo n\'umero de tics, mismo horizonte y mismo
-presupuesto de tokens y llamadas a la API. La diferencia en
-\emph{densidad deliberativa} (debates por heartbeat) refleja, por
-construcci\'on, capacidad end\'ogena de auto-activaci\'on bajo presi\'on
-epist\'emica, no un ajuste de presupuesto. La comparaci\'on de calidad
-se realiza, en consecuencia, sobre m\'etricas estructurales normalizadas
-por intervenci\'on ($\overline{\Delta\varphi^*}$, aceptaci\'on AAF,
-PRR$_G$), de modo que diferencias en densidad no contaminen la
-comparaci\'on de coherencia agregada.
+condiciones comparten n\'umero de tics, horizonte y presupuesto de
+tokens y llamadas a la API. La diferencia en \emph{densidad
+deliberativa} refleja capacidad end\'ogena de auto-activaci\'on bajo
+presi\'on epist\'emica. La verificaci\'on estructural previa
+($\mathrm{IR}{=}1.0$ HRRL vs $0.0$ LangGraph) confirma que las
+condiciones son funcionalmente distintas. La Tabla~\ref{tab:results}
+sintetiza los cinco pares de semillas $\{7,17,42,123,256\}$;
+$\{42\}$ form\'o parte de la calibraci\'on (fuga 1/5, declarada). A
+partir de all\'i, cada bloque presenta una observaci\'on, anticipa la
+pregunta que un revisor planteara y la responde con la verificaci\'on
+correspondiente.
 
 \begin{table}
-\caption{Resultados preliminares (n${=}3$ pares de semillas $\{7,17,42\}$,
-$T=80$ heartbeats). Filas con ${}^\dagger$: media $\pm$ desviaci\'on
-(muestral); restantes corresponden a la semilla 7 representativa, a la
-espera del cierre de las semillas 123 y 256. Las m\'etricas de calidad
-est\'an normalizadas por intervenci\'on.}\label{tab:results}
-\small
-\begin{tabular}{|l|c|c|}
+\caption{Resultados preliminares ($n{=}5$ pares, $T{=}80$ heartbeats;
+semilla 7 incluye una ablaci\'on \emph{HRRL-sin-Q} adicional). Valores:
+media $\pm$ desviaci\'on muestral. M\'etricas de calidad normalizadas
+por intervenci\'on. La columna de ablaci\'on s\'olo agrega seed 7.}
+\label{tab:results}
+\centering\small
+\begin{tabular}{|l|c|c|c|}
 \hline
-\textbf{M\'etrica} & \textbf{HRRL} & \textbf{LangGraph} \\
+\textbf{M\'etrica} & \textbf{HRRL} & \textbf{LangGraph} & \textbf{HRRL-sin-Q} \\
 \hline
-Total debates${}^\dagger$  & $387.0 \pm 3.0$ & $69.3 \pm 6.7$ \\
-Densidad deliberativa (deb./hb.) & 4.84 & 0.87 \\
-Nodos / aristas (s.\ 7)    & 390 / 384 & 71 / 70 \\
+Total debates                       & $383.8 \pm 6.9$ & $70.5 \pm 5.9$ & \emph{en curso} \\
+Densidad deliberativa (deb./hb.)    & 4.80            & 0.88           & \emph{en curso} \\
 \hline
-$\sigma_s$ por agente (\textbf{H}; s.\ 7) & 4.65 & 8.30 \\
-Agentes con 0 debates (s.\ 7) & 0 / 10 & 3 / 10 \\
+Cuota m\'axima por agente           & $0.124 \pm 0.005$ & $0.361 \pm 0.060$ & \emph{en curso} \\
 \hline
-Raz\'on de aceptaci\'on AAF${}^\dagger$ & $0.681 \pm 0.010$ & $0.540 \pm 0.029$ \\
-PRR$_G$ (s.\ 7)            & 0.990 & 0.986 \\
-$\overline{\Delta\varphi^*}$ por debate (s.\ 7) & 0.142 & 0.092 \\
+Aceptaci\'on AAF (agregada)         & $0.667 \pm 0.029$ & $0.543 \pm 0.025$ & \emph{en curso} \\
+Aceptaci\'on AAF (\emph{volume-matched}) & $0.646 \pm 0.037$ & $0.543 \pm 0.025$ & \emph{en curso} \\
+$\overline{\Delta\varphi^*}$ por debate (\emph{volume-matched}) & $0.096 \pm 0.003$ & $0.103 \pm 0.018$ & \emph{en curso} \\
 \hline
-Pendiente $\Delta\varphi^*$ (s.\ 7) & $+$0.018 & $-$0.016 \\
-Pendiente aceptaci\'on (s.\ 7) & $+$0.018 & $-$0.002 \\
+Pendiente $\Delta\varphi^*$         & $+0.009 \pm 0.011$ & $-0.019 \pm 0.003$ & \emph{en curso} \\
+Pendiente aceptaci\'on              & $+0.003 \pm 0.011$ & $-0.003 \pm 0.003$ & \emph{en curso} \\
 \hline
-IR (verificaci\'on)        & 1.0 & 0.0 \\
-Recompensa media${}^\dagger$ & $-1.85 \pm 0.15$ & $+0.42 \pm 0.08$ \\
+IR (verificaci\'on)                 & 1.0             & 0.0            & 1.0 \\
+Recompensa media                    & $-2.03 \pm 0.38$ & $+0.41 \pm 0.07$ & n/a (sin TD) \\
 \hline
 \end{tabular}
 \end{table}
 
-La primera verificaci\'on es estructural: IR${}=1.0$ para HRRL y
-$0.0$ para LangGraph confirma que las condiciones son funcionalmente
-distintas. La Tabla~\ref{tab:results} presenta resultados preliminares
-de los tres primeros pares de semillas $\{7, 17, 42\}$; las restantes
-($\{123, 256\}$) est\'an en ejecuci\'on y los promedios y pruebas se
-actualizar\'an al cierre. A continuaci\'on se interrogan los datos.
+\paragraph{¿Qui\'en habla? Distribuci\'on de la palabra.}
+Bajo LangGraph el agente m\'as activo concentra $36.1\% \pm 6.0\%$ de
+los debates; bajo HRRL la cuota m\'axima cae a $12.4\% \pm 0.5\%$
+($\sigma_s{=}6.73$ vs $8.96$). \emph{¿Es regulaci\'on emergente o
+artefacto de la sigmoide?} La cuota m\'axima es una medida robusta
+porque, a diferencia del recuento de silenciados, no satura en cero;
+un enrutador justo deber\'ia ubicarse pr\'oximo a $1/N{=}0.10$. HRRL
+distribuye la palabra cerca del \emph{floor} te\'orico, y LangGraph lo
+aleja consistentemente; la ablaci\'on (m\'as abajo) permite separar
+qu\'e parte de esa equiparidad procede del Q-learner y cu\'al de
+sigmoide+d\'eficit por s\'i sola.
 
-\textbf{¿Qui\'en habla?}
-T1 predice activaci\'on sostenida en todo agente con $\delta_i > \varepsilon$;
-aplicada a una poblaci\'on con impulsos sim\'etricos, implica distribuci\'on
-emergente de la participaci\'on: el impulso acumulado empuja a actuar a
-quien se silencia. Los datos bajo HRRL son
-consistentes: los 10 agentes debaten (rango 31--47, $\sigma_s = 4.65$).
-Bajo LangGraph, donde ese mecanismo no opera, 3 agentes no intervienen
-y uno concentra el 38\% de los debates ($\sigma_s = 8.30$); los
-silenciados acumulan d\'eficits de 7.5--7.8 ($\sim$10$\times\theta$) que
-el enrutador no corrige.
+\paragraph{¿La cantidad sacrifica la calidad? Control de volumen.}
+HRRL produce $5.5\times$ m\'as debates bajo el mismo presupuesto.
+\emph{¿Mayor aceptaci\'on AAF refleja coherencia superior, o es
+subproducto de tener m\'as turnos para construir un grafo m\'as
+denso?} Re-an\'alisis post-hoc \emph{volume-matched} truncando HRRL a
+$K{=}N_{\text{LangGraph}}{\approx}70$ debates por semilla. La brecha
+en aceptaci\'on AAF \textbf{persiste} ($0.646{\pm}0.037$ vs
+$0.543{\pm}0.025$; $\Delta\bar{\alpha}{\approx}{+}0.10$), mientras la
+brecha en $\overline{\Delta\varphi^*}$ \emph{se desvanece}
+($0.096{\pm}0.003$ vs $0.103{\pm}0.018$, signo oscilante por semilla).
+La direcci\'on es estable a trav\'es de las cinco semillas pero el
+test no alcanza significancia (ver \emph{Cu\'anto se puede confiar}
+abajo). \emph{Limitaci\'on}: truncar a
+las primeras $K$ contribuciones rompe dependencias temporales
+tard\'ias; un dise\~no m\'as limpio ---HRRL con \emph{rate limit}
+natural sobre la activaci\'on--- queda como trabajo futuro
+(Sec.~\ref{sec:discussion}).
 
-\textbf{¿La cantidad sacrifica calidad?}
-Bajo el mismo presupuesto temporal, HRRL exhibe $5.5\times$ mayor
-densidad deliberativa (4.88 vs 0.89 debates por heartbeat). La pregunta
-relevante no es si genera m\'as, sino si esa densidad degrada la
-calidad agregada por intervenci\'on. La respuesta es negativa:
-$\overline{\Delta\varphi^*}$ por debate es superior (0.142 vs 0.092),
-y la trayectoria temporal mejora en HRRL ($+0.018$ por ventana) mientras
-LangGraph se degrada ($-0.016$). El enrutador se agota; la regulaci\'on
-end\'ogena sostiene calidad mientras escala densidad.
+\paragraph{¿Aprende el Q-learner o la sigmoide+d\'eficit? Ablaci\'on
+HRRL-sin-Q.}\label{par:ablation}
+La recompensa media TD es negativa ($-2.03 \pm 0.38$); el lazo de
+aprendizaje no cerr\'o en el horizonte estudiado (consistente con la
+nota sobre la tr\'iada mortal en la Proposici\'on~1,
+Sec.~\ref{sec:theory}). \emph{Si el RL no converge, ¿qu\'e est\'a
+haciendo el trabajo?} Ablaci\'on \emph{HRRL-sin-Q} (semilla 7) donde
+el Q-learner se desactiva y la selecci\'on de acci\'on colapsa a una
+heur\'istica determinista (mejor est\'imulo $\to$
+\textsc{debate-stimulus}, ausencia $\to$ \textsc{debate-proactive});
+sigmoide, drive y StimulusEvaluator permanecen activos. Lectura
+pre-registrada: si los efectos macro de HRRL se preservan, la
+regulaci\'on end\'ogena opera \emph{aun sin convergencia del lazo de
+aprendizaje} y el aporte del Q-learner es secundario en este
+horizonte; si se rompen, el Q-learner ---aunque no convergido---
+contribuye sustancialmente como controlador adaptativo sub\'optimo.
 
-\textbf{¿M\'as argumentos implican m\'as refutaci\'on?}
-Intuitivamente, quintuplicar los debates deber\'ia reducir la aceptaci\'on.
-Ocurre lo contrario (0.687 vs 0.563): bajo HRRL crece monot\'onicamente
-($0.62 \to 0.69$); LangGraph se estanca en $0.57$. La participaci\'on
-distribuida no degrada la estructura del grafo: la fortalece.
+\paragraph{¿La pendiente sube o no se degrada?}
+Pendiente de $\Delta\varphi^*$ por ventana: HRRL $+0.009 \pm 0.011$
+(no significativa), LangGraph $-0.019 \pm 0.003$ (sostenidamente
+negativa). Con esa varianza la pendiente positiva no se distingue de
+cero; lo que el contraste sostiene es que \textbf{HRRL no se degrada}
+mientras \textbf{LangGraph s\'i lo hace}, consistente con el
+deterioro progresivo (\emph{problem
+drift})~\parencite{becker2025problemdrift}: el argumento es
+\emph{resiliencia diferencial}, no mejora positiva.
 
-\textbf{¿Opera el mecanismo en su r\'egimen te\'orizado?}
-No plenamente: la recompensa media bajo HRRL es negativa y consistente
-entre semillas ($-1.85 \pm 0.15$, n${=}3$); en LangGraph se mantiene
-positiva ($+0.42 \pm 0.08$). En HRRL los d\'eficits finales muestran
-adem\'as asimetr\'ia faccional (GOV: 13--20; OPP: 0.1--6.1, semilla 7).
-La calibraci\'on de $\alpha$ se hizo antes de activar la difusi\'on
-completa de eventos y qued\'o sub-dimensionada para el flujo real
-(Sec.~\ref{sec:setup}). Las m\'etricas macro mejoran aun bajo este
-r\'egimen sub\'optimo, sugiriendo robustez del efecto emergente.
-
-\textbf{¿Se puede confiar en estos patrones?}
-Con $n{=}3$ la potencia inferencial es limitada, pero la consistencia
-direccional es estricta: los tres pares favorecen a HRRL en debates,
-aceptaci\'on AAF y distribuci\'on de participaci\'on. Wilcoxon
-signed-rank pareado arroja $p{=}0.25$ ---l\'imite te\'orico para $n{=}3$
-con todos los signos alineados--- por lo que el test no rechaza $H_0$
-pero tampoco compite con la se\~nal. La prueba formal de Welch
-unilateral con Bonferroni se completar\'a con las cinco semillas; la
-coherencia entre m\'etricas estructuralmente independientes y su
-alineaci\'on con \textsc{T1} reducen la probabilidad de artefacto.
+\paragraph{¿Cu\'anto se puede confiar en estos patrones?}
+Cinco pares con todos los signos alineados a favor de HRRL en
+aceptaci\'on AAF, equiparidad de participaci\'on y densidad. Wilcoxon
+\emph{signed-rank} pareado bilateral arroja $p{=}0.0625$ (l\'imite
+te\'orico inferior para $n{=}5$); con Bonferroni sobre las dos pruebas
+\emph{volume-matched} (aceptaci\'on AAF y cuota m\'axima),
+$\alpha_{\text{adj}}{=}0.025$. La se\~nal direccional es consistente;
+el test no alcanza significancia formal. Fuga parcial 1/5 (semilla 42,
+\emph{single-seed}); \emph{leave-one-out} queda como trabajo futuro.
+PRR$_G$ ($0.990 \pm 0.001$ vs $0.986 \pm 0.001$) se omite por
+indistinguibilidad pr\'actica.
 
 % ============================================================
 \section{Discusi\'on}
 \label{sec:discussion}
 
-\subsection{Interpretaci\'on de los resultados}
+\paragraph{Lectura de la evidencia.}
+La brecha de aceptaci\'on AAF emparejada por volumen ($\approx{+}0.10$,
+$n{=}5$, signos alineados, $p{=}0.0625$ sin alcanzar $\alpha_{\text{adj}}{=}0.025$)
+es la se\~nal direccional m\'as estable del estudio, pero no sostiene
+una afirmaci\'on confirmatoria a este tama\~no muestral. La densidad
+$5.5\times$, $\overline{\Delta\varphi^*}$ y la pendiente positiva
+acompa\~nan en direcci\'on; la concentraci\'on asim\'etrica de la
+palabra bajo LangGraph y la degradaci\'on monot\'onica replican el
+patr\'on reportado en orquestaci\'on
+centralizada~\parencite{becker2025problemdrift}. Se reportan como
+descriptivo, no como prueba.
 
-\textbf{Mec\'anica.} El impulso (Ec.~\ref{eq:reward}) crece en todo
-agente inactivo y la compuerta sigmoide (Ec.~\ref{eq:sigmoid}) dispara
-cuando $\delta_i > \theta$: el balance ($\sigma_s$: 4.65 vs 8.30)
-emerge de la simetr\'ia del impulso, no fue dise\~nado. La
-concentraci\'on bajo LangGraph evoca la oligarqu\'ia de
-Michels~\parencite{michels1911political}.
+\paragraph{La premisa contradicha: $\bar r$ negativo.}
+El lazo TD no converge dentro del horizonte y la recompensa media
+agregada de HRRL es negativa: el d\'eficit crece en promedio. Esto
+contradice la premisa "reducci\'on de impulso" como predicci\'on
+emp\'irica para este horizonte. El sistema opera de hecho como
+compuerta sigmoide con contador mon\'otono, no como verdadero
+homeostato cerrado. El Q-learner se posiciona en consecuencia como
+\emph{controlador adaptativo sub\'optimo}: aporta sesgo direccional al
+selector de acciones, pero su ventaja marginal sobre la heur\'istica
+HRRL-sin-Q s\'olo ser\'a medible con horizonte mayor o variantes
+on-policy.
 
-\textbf{Emergencia.} Quintuplicar la actividad \emph{fortalece} el grafo
-($\alpha$: 0.687 vs 0.563): la diversidad de atacantes estabiliza la
-extensi\'on fundamentada, an\'alogo a la variedad
-requerida~\parencite{ashby1956introduction}. Foto y pendiente favorecen
-a HRRL en $\Delta\varphi^*$ ($0.142$ vs $0.092$; $+0.018$ vs $-0.016$);
-medir \emph{procesos}~\parencite{snell2024scaling} captura din\'amicas
-que la foto final oculta.
+\paragraph{¿End\'ogeno o solo informado?}
+La asimetr\'ia entre HRRL (cinco caracter\'isticas estructurales) y
+LangGraph (texto plano) confunde "end\'ogeno vs ex\'ogeno" con
+"informado vs no informado". El estudio incluye una l\'inea base
+informada (LangGraph con acceso a las mismas caracter\'isticas, 1--2
+semillas, Sec.~\ref{sec:results}). Si esa variante cierra la brecha,
+el efecto observado se explica por acceso a informaci\'on estructural;
+si la mantiene, queda evidencia consistente con se\~nal end\'ogena.
+La n preliminar no permite cierre de la pregunta.
 
-El \emph{mecanismo} fue dise\~nado ex\'ogenamente; lo end\'ogeno es la
-\emph{din\'amica} que emerge una vez instanciada, aunque el r\'egimen
-oscilatorio predicho requiere recalibraci\'on bajo el flujo real.
+\paragraph{Contraargumentos y amenazas a la validez.}
+Con $n{=}5$ y un \'unico LLM no podemos descartar competidores
+plausibles: el gap AAF puede deberse a que HRRL produce turnos cortos
+y nodos sin historial profundo; la pendiente positiva de
+$\Delta\varphi^*$ puede reflejar acumulaci\'on de aristas en grafos
+m\'as densos; la menor concentraci\'on m\'axima puede ser corolario
+aritm\'etico de un mayor n\'umero de turnos repartidos. Amenazas
+adicionales: (i)~Wilcoxon no rechaza $H_0$ tras Bonferroni;
+(ii)~fuga parcial 1/5 (calibraci\'on \emph{single-seed}, sin
+$k$-fold); (iii)~asimetr\'ia parcialmente neutralizada s\'olo en
+preliminar; (iv)~sin ablaci\'on sobre estructura VSM ni sobre
+$\theta,k$; (v)~generalizaci\'on limitada a GPT-5-nano y a un dominio
+adversarial; (vi)~lazo TD no convergido; (vii)~circularidad parcial
+de $\Delta\varphi^*$ (se\~nal de saciedad y diagn\'ostico);
+(viii)~el enrutador LangGraph consume tokens propios por decisi\'on
+(\texttt{router\_call\_count} se reporta para transparencia,
+Sec.~\ref{sec:setup}); el contraste de presupuesto se contabiliza
+por heartbeat.
 
-\textbf{Limitaciones.} $n{=}5$ semillas es exploratorio aunque los
-efectos son grandes; la calibraci\'on us\'o una sola semilla y un flujo
-de est\'imulos menor al r\'egimen final, dejando $\alpha$ sub-dimensionado
-(recompensa negativa bajo HRRL); los pesos Q son adaptativos, no una
-pol\'itica convergida; los pesos de $\Delta\varphi^*$ son prior
-principiado sin validaci\'on; resultados espec\'ificos a GPT-5-nano; el
-mecanismo podr\'ia ser explotado por argumentos estructuralmente bien
-ubicados pero sem\'anticamente vac\'ios.
-
-\textbf{Trabajo futuro.} (i)~formalizar la paradoja de la aceptaci\'on
-buscando un umbral de diversidad de atacantes que estabilice la
-extensi\'on fundamentada; (ii)~integrar DeLP~\parencite{garcia2004defeasible}
-para garant\'ias y derrotabilidad expl\'icita; (iii)~validaci\'on
-cruzada de la calibraci\'on, sensibilidad de $\theta,\alpha,\lambda$,
-escalamiento poblacional y presupuestos restringidos~\parencite{snell2024scaling};
-y (iv)~validaci\'on externa LLM-as-judge con r\'ubrica multi-criterio
-de pesos derivados por AHP~\parencite{saaty1980ahp,lu2024ahp}, dos
-jueces independientes (Claude Opus, Gemini Pro) bajo evaluaci\'on
-ciega con Krippendorff $\alpha$ ordinal como fiabilidad inter-juez.
+\paragraph{Trabajo futuro.}
+N $\geq 20$ semillas con $k$-fold; replicaci\'on de la l\'inea base
+informada con n suficiente; \emph{LLM-as-judge} AHP~\parencite{lu2024ahp}
+con dos jueces ciegos (Claude Opus, Gemini Pro); HRRL con \emph{rate
+limit} natural que iguale densidad por construcci\'on; multi-LLM y
+escalamiento~\parencite{snell2024scaling}; validaci\'on en dominios
+cooperativos donde el d\'eficit puede acoplar distinto a la se\~nal
+de calidad; integraci\'on formal de
+DeLP~\parencite{garcia2004defeasible}.
 
 % ============================================================
 \section{Conclusiones}
 \label{sec:conclusion}
 
-LangClaw pregunta si el colapso del contexto en debate multi-agente LLM
-se aborda mejor por planificaci\'on externa o regulaci\'on end\'ogena.
-Bajo presupuesto temporal equiparable, los resultados preliminares
-muestran que HRRL exhibe mayor densidad deliberativa y sostiene mejor
-coherencia estructural agregada que LangGraph; la calidad por
-intervenci\'on mejora en el tiempo y la participaci\'on se distribuye
-sin enrutador externo. El hallazgo m\'as inesperado ---el aumento
-monot\'onico de aceptaci\'on pese a mayor densidad--- sugiere que la
-diversidad de participaci\'on puede estabilizar la estructura
-argumentativa a\'un bajo calibraci\'on sub\'optima. El aporte es
-tambi\'en metodol\'ogico: una forma testeable de preguntar si la
-coherencia en MAS puede ser propiedad autoorganizada.
-
-% ============================================================
-\section*{Reproducibilidad}
-
-C\'odigo e instrucciones de reproducibilidad:
-\url{https://github.com/pgerpe/langclaw_experiment}
+El trabajo propone Driveplexity: una arquitectura donde la activaci\'on
+de cada agente deriva de su estado regulatorio interno en lugar de un
+planificador externo, sostenida sobre una axiomatizaci\'on
+ontol\'ogica que precisa qu\'e cuenta como agente para la
+interpretaci\'on emp\'irica. El aporte central es arquitect\'onico y
+ontol\'ogico; el material emp\'irico es exploratorio: un estudio de
+caso preliminar ($n{=}5$ pares de semillas, una ablaci\'on sin
+Q-learner y una l\'inea base informada) cuyas direcciones son
+consistentes con una ventaja de la regulaci\'on end\'ogena en
+distribuci\'on de la palabra y estabilidad estructural, pero cuyas
+pruebas no alcanzan significancia tras correcci\'on. La premisa de
+reducci\'on de impulso no se sostiene en el horizonte estudiado y el
+Q-learner se posiciona como controlador adaptativo sub\'optimo. El
+estudio abre una pregunta investigable con n mayor, dominios
+cooperativos y l\'ineas base informadas: si la coherencia en MAS
+LLM puede ser propiedad autoorganizada y no resultado de un
+planificador central. C\'odigo e instrucciones de reproducibilidad:
+\url{https://github.com/pgerpe/langclaw_experiment}.
 
 \printbibliography
 
