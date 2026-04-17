@@ -232,9 +232,10 @@ supuesto.
 
 DPLXY operacionaliza los AAH en un MAS-LLM. A2 instancia un
 d\'eficit epist\'emico
-$\delta_i{\in}[\varepsilon,\infty)$ que deriva al permanecer
-inactivo y decae por saciedad
-$\delta{\leftarrow}\max(\varepsilon,\delta{-}\alpha\Delta\varphi^*)$;
+$\delta_i{\in}[\varepsilon,\infty)$ que crece por decaimiento basal
+en cada heartbeat ($\delta{\leftarrow}\delta{+}\lambda$) y se sacia
+s\'olo ante contribuci\'on \'util
+($\delta{\leftarrow}\max(\varepsilon,\delta{-}\alpha\Delta\varphi^*)$);
 una sigmoide lo traduce en probabilidad de acci\'on y la
 recompensa realiza A3 con $D(\delta){=}(\delta{-}\varepsilon)^2$.
 Un \emph{StimulusEvaluator} determinista fusiona cinco rasgos
@@ -397,13 +398,13 @@ primeros/\'ultimos-$K$ acota contexto y las ablaciones mecanismo e
 informaci\'on; vm-$\ell$ no neutraliza el \emph{burn-in} de
 $\sim$300 debates previos, que un presupuesto de \emph{heartbeats}
 extendido para LangGraph cerrar\'ia. Evaluamos sobre un \'unico LLM
-y dominio adversarial. Como \emph{acciones futuras}: $n{\geq}20$
-con $k$-fold y $n{\geq}3$ por ablaci\'on; un control con
-$\delta_i$ constante sobre la misma sigmoide que discrimine cierre
-homeost\'atico vs artefacto del gate; sensibilidad a $(\theta,k)$
-y ablaci\'on VSM; \emph{rate limit} en lugar de \emph{heartbeats
-id\'enticos} para igualar densidad; patrones sociales por rol VSM;
-y replicar en dominios cooperativos y multi-LLM.
+y dominio adversarial. Como \emph{acciones futuras}: (a) $n{\geq}20$ con $k$-fold y
+$n{\geq}3$ por ablaci\'on; (b) un control con $\delta_i$ constante
+sobre la misma sigmoide que discrimine cierre homeost\'atico vs
+artefacto del gate; (c) sensibilidad a $(\theta,k)$ y ablaci\'on
+VSM; (d) \emph{rate limit} en lugar de \emph{heartbeats id\'enticos}
+para igualar densidad; (e) patrones sociales por rol VSM;
+y (f) replicar en dominios cooperativos y multi-LLM.
 \emph{Indicaciones de reproducibilidad}:
 \url{https://anonymous.4open.science/r/langclaw_experiment-45BF}.
 
