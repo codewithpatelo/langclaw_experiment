@@ -51,6 +51,15 @@ adversariales de texto con **20 semillas pareadas**, **cuatro
 condiciones** (EPR, EPR_Q, EPR_SHAM, LangGraph) y **jueces LLM duales
 ciegos al modo de orquestación** (DeepSeek V4-Pro y GLM-5.2).
 
+**Resultados:** EPR produce turn-taking más equitativo que LangGraph
+(max-share 0.119 vs 0.276, p<0.001) sin sacrificar calidad. La ablación
+SHAM confirma que el bucle homeostático —no la forma del gate— controla
+el déficit (3.74 vs 1.02, p<0.001). El Q-learning no aporta beneficio
+detectable. El colapso de contexto (duplicación de fallas de fidelidad
+con fluidez preservada) no es atenuado por ninguna estrategia de
+activación (p>0.3): el mecanismo regulatorio gobierna la participación,
+no la fidelidad.
+
 ### Condiciones experimentales
 
 - **EPR** (Γ(n=1)) — condición principal. Activación endógena vía
@@ -169,6 +178,40 @@ adversarial durante un número fijo de heartbeats. Cuatro condiciones:
 | `hrrl_q`         | endógena + Q-learning             | EPR_Q — ablación           |
 | `hrrl_sham`      | sigmoide con `δ` aleatorio        | EPR_SHAM — ablación        |
 | `langgraph`      | router LLM exógeno                | LangGraph — baseline       |
+
+### Señal de calidad *g*
+
+El bucle homeostático se cierra con una señal de calidad *g* ∈ [0, 1]
+que mide si un argumento **engagea el contenido que ataca** y **aporta
+novedad**, ponderado por la **diversidad de agentes que interactúan con
+el target**. Se calcula en `langclaw/delp_graph.py`
+(`calculate_quality_signal`):
+
+```
+g = (1/3) · engagement + (1/3) · novelty + (1/3) · diversity
+```
+
+- **Engagement**: overlap de tokens significativos (≥4 caracteres, sin
+  stopwords) entre el argumento nuevo y el target que ataca. Detecta si
+  el agente responde al contenido específico o produce monólogo
+  desconectado.
+- **Novelty**: 1 − máximo overlap con los argumentos previos del mismo
+  agente. Detecta repetición. El primer argumento de un agente siempre
+  es novel (novelty = 1.0).
+- **Diversity**: fracción de agentes del grafo que han interactuado con
+  el target (lo atacaron o fueron atacados por él). Detecta si el debate
+  sobre ese punto es plural o concentrado en pocos agentes.
+
+Un argumento sin target (nodo aislado) tiene *g* = 0: no hay saciación
+homeostática para monólogos desconectados.
+
+> **Nota sobre emergencia:** la equidad de turnos (max-share bajo) es
+> apropiado catalogarla como **parcialmente emergente**: se refuerza
+> desde el término de *diversidad* en *g*, que premia ataques sobre
+> targets que muchos agentes distintos están abordando, en tanto no
+> opera como regla de scheduling explícita sino como presión indirecta
+> mediada por la saciación del déficit. (Véase póster, sección A:
+> "La orquestación externa tiende a monopolizar el discurso".)
 
 ### Una semilla
 
