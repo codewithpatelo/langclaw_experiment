@@ -1,7 +1,40 @@
+# =============================================================================
+# Driveplexity — .gitignore
+# Only the benchmark code, results, poster, mock paper and docs are tracked.
+# Everything else (side projects, temp scripts, logs, personal files) is ignored.
+# =============================================================================
+
 # --- secrets & local env ---
 .env
 .env.*
 !.env.example
+
+# --- side projects (not part of Driveplexity) ---
+binsai/
+tp_integrador/
+ddl/
+ecuacion_proaccion/
+workshop_neurips/
+research/
+utility_prompts/
+static/
+lib/
+
+# --- personal / application files ---
+GERPE-CV_ESP.md
+plan_consofi.md
+prompt_consofi.txt
+CONTEXT.md
+.claude/
+.cascadeignore
+
+# --- old / superseded papers ---
+paper_jaiio*
+paper_iterations/
+docs/poster_langclaw.html
+
+# --- guide directory (authoring guides, course materials, review PDFs) ---
+guide/
 
 # --- python ---
 __pycache__/
@@ -13,7 +46,7 @@ __pycache__/
 .venv/
 venv/
 
-# --- LaTeX build artefacts (PDF tracked manually if needed) ---
+# --- LaTeX build artefacts ---
 *.aux
 *.bbl
 *.bcf
@@ -26,7 +59,7 @@ venv/
 *.fdb_latexmk
 *.fls
 
-# --- experiment runtime state ---
+# --- experiment runtime state & logs ---
 experiment_state.txt
 experiment_status.json
 experiment_events.jsonl
@@ -40,18 +73,133 @@ final_runner_pid.txt
 final_runner_bench.log
 watchdog.log
 watchdog_pid.txt
+ablation_runner*.log
+ablation_runner_state.json
+fairbaseline_runner_*.log
+seed99_runner.log
+server_err.txt
+server_out.txt
 benchmark_checkpoint.json
 calibration_checkpoint.json
 
-# --- experiment outputs ---
+# --- old / superseded experiment results ---
 benchmark_results/
-benchmark_results_*/
-results_*.json
-results.json
+benchmark_results_v2/
+benchmark_results_v3/
+benchmark_results_v4/
+benchmark_results_v5/
+benchmark_results_v6/
+benchmark_results_v7_backup/
+benchmark_results_v7_backup_*/
+benchmark_results_v7_ablation/
+benchmark_results_v7_fairbaseline/
+benchmark_results_v7_seed99/
+benchmark_test/
+benchmark_test_smoke/
+benchmark_test_smoke2/
+micro_test_broadcast/
+smoke_test_results/
+smoke_test_serial/
+experiment_results/
+experiment_results_legacy/
+results_hrrl.json
+results_s42.json
+calibration_smoketest.json
+
+# --- intermediate analysis outputs ---
+collapse_analysis.json
+collapse_report.txt
+g_validity_report.txt
+g_validity_results.json
+judge_agreement_results.json
+judge_collapse_report.txt
+judge_collapse_results.json
+judge_smoke_checkpoint.json
+judge_smoke_results.json
+steady_state_results.json
+tools/volume_matched_results.csv
+tools/volume_matched_summary.json
+tools/code_paper_audit.md
+
+# --- temporary analysis scripts (underscore-prefixed) ---
+_*.py
+_*.txt
+$null
+
+# --- one-off / utility scripts ---
+fix_seed7.py
+fix_and_upscale.py
+upscale_figure.py
+upscale_figure_correct.py
+serve_pdf.py
+quick_agg.py
+quick_anomaly.py
+quick_stats.py
+recalibrate.py
+run_remaining.py
+run_judge_smoke.py
+hrrl_benchmark.py
+
+# --- misc ---
 _graph.html
+_build_*.bat
 _build_*.log
-_check_status.py
-_clean_ckpt.py
+auto_monitor_pid.txt
+
+# --- Docker (not tracked) ---
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# --- old / superseded scripts ---
+auto_monitor.py
+calibrate_hyperparams.py
+dashboard.py
+final_runner.py
+main.py
+run_ablation.py
+run_full_experiment.py
+test_router_informed.py
+
+# --- old data files ---
+calibration_results.json
+EXPERIMENT_SUMMARY.md
+
+# --- LNCS class files (available from CTAN, not tracked) ---
+llncs.cls
+splncs04.bst
+
+# --- tests directory ---
+tests/
+
+# --- old tools directory ---
+tools/
+
+# --- old docs (not the poster) ---
+docs/ARCHITECTURE.md
+docs/FUTURE_WORK.md
+docs/README.md
+docs/RELATED_WORK.md
+docs/THEORY.md
+docs/mock_paper.md
+docs/mock_paper.pdf
+docs/mock_paper.tex
+docs/teoremas/
+docs/*.png
+docs/*.webp
+docs/poster_driveplexity_preliminary.html
+docs/poster_langclaw.html
+
+# --- invalid / contaminated benchmark results ---
+benchmark_results_v7/health_reports/
+benchmark_results_v7/preflight/
+benchmark_results_v7/*_INVALID_*
+benchmark_results_v7/*_CONTAMINATED_*
+benchmark_results_v7/logs_hrrl_seed42.json
+benchmark_results_v7/logs_langgraph_seed42.json
+
+# --- figures (generated, not tracked) ---
+langclaw/figs/
 
 # --- IDE ---
 .vscode/

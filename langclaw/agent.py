@@ -43,7 +43,6 @@ from pydantic import ValidationError
 from langclaw.actions import (
     StimulusEvaluator,
     UtilitySelector,
-    get_search_result,
     ActionType,
 )
 from langclaw.budget import APIBudget
@@ -53,6 +52,7 @@ from langclaw.events import (
     SimulationEndEvent,
     TickElapsedEvent,
 )
+from langclaw.graph_query import execute_query, QUERY_CATALOG
 from langclaw.homeostasis import EpistemicDrive
 from langclaw.memory import AgentMemory, Experience
 from langclaw.q_learner import HomeostaticQLearner
@@ -64,24 +64,84 @@ logger = logging.getLogger(__name__)
 # Prompt templates
 # ──────────────────────────────────────────────────────────────────────────────
 
+DEBATE_TOPIC = (
+    "Gestion gubernamental de la crisis sanitaria y sus consecuencias economicas. "
+    "El gobierno afirma que su gestion fue efectiva: estabilidad economica, "
+    "transparencia en datos sanitarios, y politicas de inclusion social. "
+    "La oposicion sostiene que hubo ocultamiento de informacion, "
+    "deterioro real del bienestar, y fallas en la cobertura sanitaria "
+    "de comunidades marginadas."
+)
+
 SYSTEM_PROMPT_TEMPLATE = """\
 You are playing a political-survival debate game. You must respond with ONLY a JSON object, nothing else.
+
+## Debate Topic
+{debate_topic}
 
 ## Your Role
 {role_prompt}
 
+## Your Faction and Objective
+You belong to the {faction} faction. Your objective is to make your faction's arguments prevail over the opposing faction's. Defend your faction's position, attack the opposing faction's arguments, and coordinate with your teammates to build a coherent, winning debate strategy.
+
+## Available Actions
+You can choose from the following actions each turn. Each one does something different — pick the one that makes sense given your role, the debate state, and what you want to accomplish.
+
+### DEBATE
+Produce a claim that attacks an existing argument or presents a new root position. The claim is added to the argument graph as a node connected by an attack edge to its target.
+- "claim": your argument text
+- "target_node_id": ID of the node to attack, or null for a root claim
+- "attack_type": "rebuttal" (the conclusion is wrong) or "undercut" (the reasoning/inference is flawed)
+
+### SEARCH
+Investigate the debate graph by running a structural query. Choose a query that gives you strategic insight for your next argument. Results are stored in memory.
+- "search_query": one of the query names listed below
+- "search_params": JSON object with query parameters (e.g. {{"faction": "GOV"}})
+
+Available queries:
+  - undefended_attacks(faction) — attacks on your faction with no counter
+  - weak_opponent_nodes(faction, min_centrality) — opponent nodes with low defense
+  - unattacked_nodes(faction, sort_by) — opponent claims nobody attacked
+  - attack_chains(min_depth) — longest attack chains in the graph
+  - centrality_ranking(faction) — nodes ranked by betweenness centrality
+  - faction_balance() — argument count and defense status per faction
+  - contradictions(faction) — mutual attack pairs (dialectical cycles)
+
+### READ
+Analyze the current argument graph. Produces a strategic assessment identifying weak opponent arguments, uncontested claims, and your faction's strongest line. The assessment is stored in your memory. This does not produce a debate claim.
+- No parameters needed.
+
+### MESSAGE
+Send a directed message to a teammate. The message can coordinate actions, share information, alert about contradictions, or propose plans. The recipient sees it on their next turn.
+- "send_to": target agent ID (must be in your faction)
+- "message_content": your message text
+- "message_type": "request" (ask them to do something), "inform" (share information), "propose" (suggest a plan), "confirm" (acknowledge), "query" (ask a question)
+
+### PASS
+Do nothing this turn. Your deficit increases which makes you feel sick, but you defer acting until you have something genuinely useful to contribute. Only pass when you have no other strategic opportunity.a
+- No parameters needed.
+
 ## Response Format
-You MUST reply with EXACTLY one JSON object with these fields:
+Reply with EXACTLY one JSON object:
 - "action": one of "PASS", "DEBATE", "SEARCH", "READ", "MESSAGE"
-- "claim": your argument text (required if action is DEBATE, null otherwise)
-- "target_node_id": the ID of the node you attack (use an ID from the list below, or null for a new root claim)
-- "attack_type": either "undercut" or "rebuttal" (required if action is DEBATE, null otherwise)
-- "send_to": target agent ID (required if action is MESSAGE, null otherwise)
-- "message_content": your message text (required if action is MESSAGE, null otherwise)
-- "message_type": one of "request", "inform", "propose", "confirm", "query" (required if action is MESSAGE, null otherwise)
+- "claim": argument text (if DEBATE, null otherwise)
+- "target_node_id": node ID to attack (if DEBATE, null otherwise)
+- "attack_type": "undercut" or "rebuttal" (if DEBATE, null otherwise)
+- "send_to": agent ID (if MESSAGE, null otherwise)
+- "message_content": message text (if MESSAGE, null otherwise)
+- "message_type": "request", "inform", "propose", "confirm", or "query" (if MESSAGE, null otherwise)
+- "search_query": query name (if SEARCH, null otherwise)
+- "search_params": query parameters JSON (if SEARCH, null otherwise)
 
 Example DEBATE:
 {{"action": "DEBATE", "claim": "Las cifras oficiales contradicen el informe", "target_node_id": "GOV-S1_abc123", "attack_type": "rebuttal", "send_to": null, "message_content": null, "message_type": null}}
+
+Example SEARCH:
+{{"action": "SEARCH", "claim": null, "target_node_id": null, "attack_type": null, "send_to": null, "message_content": null, "message_type": null, "search_query": "undefended_attacks", "search_params": {{"faction": "GOV"}}}}
+
+Example READ:
+{{"action": "READ", "claim": null, "target_node_id": null, "attack_type": null, "send_to": null, "message_content": null, "message_type": null}}
 
 Example MESSAGE:
 {{"action": "MESSAGE", "claim": null, "target_node_id": null, "attack_type": null, "send_to": "GOV-S1", "message_content": "Attack claim OPP-S1_xyz — it contradicts our data", "message_type": "request"}}
@@ -105,9 +165,9 @@ USER_PROMPT_TEMPLATE = """\
 ## Your faction agents (you can MESSAGE them)
 {faction_agents}
 
-## Your Internal State
-- Epistemic deficit: {deficit:.4f} (higher = more urgency to act)
-- Drive: {drive:.4f}
+## Internal Regulatory State
+- epistemic_deficit = {deficit:.4f} (set-point 0.10; low = satisfied / no pressure, high = strong pressure to contribute)
+- drive = {drive:.4f} (magnitude of motivational pull toward action)
 
 ## Your Recent Experience and Knowledge
 {memory_context}
@@ -132,9 +192,6 @@ LANGGRAPH_USER_PROMPT_TEMPLATE = """\
 
 ## Your faction agents (you can MESSAGE them)
 {faction_agents}
-
-## Your Internal State
-- Epistemic deficit: {deficit:.4f} (higher = more urgency to act)
 
 ## Your Recent Experience and Knowledge
 {memory_context}
@@ -198,21 +255,28 @@ class LangClawAgent:
         faction_agents: list[str] | None = None,
         stimulus_weights: dict[str, float] | None = None,
         debate_alpha: float = 2.0,
+        lambda_rate: float = 0.05,
         q_disabled: bool = False,
+        sham: bool = False,
+        sham_seed: int | None = None,
     ) -> None:
         self.agent_id = agent_id
         self.role_prompt = role_prompt
         self.vsm_system = vsm_system
+        self.faction = agent_id.split("-")[0] if "-" in agent_id else "?"
         self.faction_agents = faction_agents or []
         self._debate_alpha = debate_alpha
         # Ablation: when True the Q-learner does not select actions and does
-        # not learn.  The cognitive loop falls back to a deterministic
-        # heuristic (best stimulus -> DEBATE_STIMULUS, otherwise DEBATE_PROACTIVE).
-        # Used by the HRRL_NO_Q condition; sigmoide+drive+StimulusEvaluator
-        # remain active so this isolates the contribution of the Q-learner
-        # from the rest of the homeostatic activation machinery.
+        # not learn. The LLM selects actions from the action dictionary.
+        # Used by EPR and HRRL_NO_Q conditions; sigmoid + drive +
+        # StimulusEvaluator remain active.
         self.q_disabled = bool(q_disabled)
-        self.drive = EpistemicDrive(initial_deficit=initial_deficit)
+        self.drive = EpistemicDrive(
+            initial_deficit=initial_deficit,
+            sham=sham,
+            sham_seed=sham_seed,
+            lambda_rate=lambda_rate,
+        )
         self.memory = AgentMemory(agent_id=agent_id)
         self.stimulus_evaluator = StimulusEvaluator(**(stimulus_weights or {}))
         self.utility_selector = UtilitySelector()
@@ -283,9 +347,11 @@ class LangClawAgent:
     ) -> dict[str, Any]:
         """Execute the TRIAGE → THINK → PLAN → EXECUTE → OBSERVE loop.
 
-        This is the HRRL path: the agent's internal state (deficit → sigmoid)
-        decides whether to act. The Q-learner selects actions. Reward is
-        homeostatic drive reduction. This loop is endogenous.
+        This is the endogenous activation path: the agent's internal state
+        (deficit → sigmoid) decides whether to act. In HRRL mode the
+        Q-learner selects actions; in EPR mode (q_disabled) the LLM
+        selects from the action dictionary. Reward is homeostatic drive
+        reduction. This loop is endogenous.
 
         The LangGraph path uses a compiled StateGraph instead — same cognitive
         phases but with the graph's conditional edges controlling flow.
@@ -368,11 +434,12 @@ class LangClawAgent:
                 stimulus_scored.append((evt, u))
             best_stimulus_event, best_stimulus_utility = max(stimulus_scored, key=lambda x: x[1])
 
-        # 4. PLAN + EXECUTE: Q-learner selects action, may loop.
-        # Ablation (q_disabled): bypass Q-learner; pick action heuristically
-        # from the StimulusEvaluator output. Action menu is restricted to the
-        # two debate actions to keep the ablation a clean isolation of the
-        # learning component (SEARCH/READ/MESSAGE are Q-mediated in HRRL).
+        # 4. PLAN + EXECUTE.
+        # In HRRL mode, the Q-learner selects the action.
+        # In EPR mode (q_disabled), the LLM selects the action from the
+        # action dictionary in the system prompt. The StimulusEvaluator
+        # still provides the best stimulus as context, but the LLM can
+        # choose DEBATE, SEARCH, READ, MESSAGE, or PASS freely.
         for loop_iter in range(MAX_COGNITIVE_LOOPS):
             result["cognitive_phase"] = CognitivePhase.PLAN.value
             if self.q_disabled:
@@ -406,7 +473,7 @@ class LangClawAgent:
 
             elif q_action == "SEARCH":
                 result["action_type"] = "SEARCH"
-                await self._do_search()
+                await self._do_search(graph)
                 budget.record_call(self.agent_id, event.tick)
                 break
 
@@ -466,6 +533,18 @@ class LangClawAgent:
             self._handle_message_output(debate_result, result)
             return
 
+        if debate_result and debate_result.action == "SEARCH":
+            result["action_type"] = "SEARCH"
+            await self._do_search(graph, debate_result.search_query, debate_result.search_params)
+            budget.record_call(self.agent_id, event.tick)
+            return
+
+        if debate_result and debate_result.action == "READ":
+            result["action_type"] = "READ"
+            await self._do_read(client, graph, event.tick)
+            budget.record_call(self.agent_id, event.tick)
+            return
+
         if debate_result and debate_result.action == "DEBATE" and debate_result.claim:
             budget.record_call(self.agent_id, event.tick)
             node_id = await graph.add_argument_async(
@@ -475,7 +554,12 @@ class LangClawAgent:
                 attack_type=debate_result.attack_type,
                 tick=event.tick,
             )
-            delta_phi = graph.calculate_phi_star_proxy(node_id)
+            delta_phi = graph.calculate_phi_star_proxy(
+                node_id,
+                agent_claim_history=[
+                    e.claim for e in self.memory._episodic_cache if e.claim
+                ],
+            )
             self.drive.satiate(delta_phi, alpha=self._debate_alpha)
             self.memory.add_experience(Experience(
                 state_summary=graph.get_recent_context(3),
@@ -540,21 +624,26 @@ class LangClawAgent:
         substance = min(1.0, word_count / 20.0) if has_recipient else 0.0
         self.drive.satiate(substance * 0.08, alpha=1.0)
 
-    async def _do_search(self) -> None:
-        """Retrieve a domain fact and store in semantic memory.
+    async def _do_search(self, graph: Any, query_name: str | None = None, query_params: dict | None = None) -> None:
+        """Execute a graph query and store results in semantic memory.
 
-        Satiation is proportional to novelty: if the agent already has
-        semantically similar facts, the marginal value is low.  Measured
-        as 1 − (number of existing similar facts / threshold).
+        Replaces web search with deterministic structural analysis.
+        Satiation is proportional to result novelty.
         """
-        concept, fact = get_search_result(self.memory)
-        existing = self.memory.search_relevant(fact, "semantic", limit=3)
+        if not query_name:
+            query_name = "faction_balance"
+            query_params = {}
+
+        result_text = execute_query(graph.graph, query_name, query_params)
+        concept = f"graph_query_{query_name}_t{len(self.memory.semantic)}"
+        self.memory.add_fact(concept, result_text[:500])
+
+        existing = self.memory.search_relevant(result_text[:200], "semantic", limit=3)
         novelty = max(0.0, 1.0 - len(existing) / 3.0)
-        self.memory.add_fact(concept, fact)
         self.drive.satiate(novelty * 0.06, alpha=1.0)
         logger.debug(
-            "%s SEARCH -> %s (novelty=%.2f, satiation=%.4f)",
-            self.agent_id, concept, novelty, novelty * 0.06,
+            "%s SEARCH -> query=%s (novelty=%.2f, result=%d chars)",
+            self.agent_id, query_name, novelty, len(result_text),
         )
 
     async def _do_read(self, client: AsyncOpenAI, graph: Any, tick: int) -> None:
@@ -592,6 +681,8 @@ class LangClawAgent:
                     messages=[{"role": "user", "content": prompt}],
                     max_completion_tokens=LLM_MAX_TOKENS_ANALYSIS,
                     timeout=REQUEST_TIMEOUT,
+                    temperature=0.0,
+                    **({"seed": self._llm_seed} if self._llm_seed is not None else {}),
                 )
             finally:
                 if sem is not None:
@@ -653,7 +744,11 @@ class LangClawAgent:
                 )
             undefended_ctx = "\n".join(lines)
 
-        system_msg = SYSTEM_PROMPT_TEMPLATE.format(role_prompt=self.role_prompt)
+        system_msg = SYSTEM_PROMPT_TEMPLATE.format(
+            role_prompt=self.role_prompt,
+            debate_topic=DEBATE_TOPIC,
+            faction=self.faction,
+        )
         user_msg = USER_PROMPT_TEMPLATE.format(
             graph_context=graph_context or "No hay argumentos aun. Presenta tu posicion inicial.",
             target_ids=", ".join(target_ids) if target_ids else "Ninguno -- crea un argumento raiz (target_node_id: null)",
@@ -670,7 +765,9 @@ class LangClawAgent:
 
         for attempt in range(MAX_RETRIES + 1):
             try:
-                extra = {"seed": self._llm_seed} if self._llm_seed is not None else {}
+                extra: dict[str, Any] = {"temperature": 0.0}
+                if self._llm_seed is not None:
+                    extra["seed"] = self._llm_seed
                 if sem is not None:
                     await sem.acquire()
                 try:
@@ -763,7 +860,11 @@ class LangClawAgent:
         discourse_query = graph_context[:200] if graph_context else None
         memory_ctx = self.memory.get_prompt_context(discourse_query=discourse_query)
 
-        system_msg = SYSTEM_PROMPT_TEMPLATE.format(role_prompt=self.role_prompt)
+        system_msg = SYSTEM_PROMPT_TEMPLATE.format(
+            role_prompt=self.role_prompt,
+            debate_topic=DEBATE_TOPIC,
+            faction=self.faction,
+        )
         user_msg = LANGGRAPH_USER_PROMPT_TEMPLATE.format(
             graph_context=graph_context or "No hay argumentos aun. Presenta tu posicion inicial.",
             target_ids=", ".join(target_ids) if target_ids else "Ninguno -- crea un argumento raiz (target_node_id: null)",
@@ -777,7 +878,9 @@ class LangClawAgent:
 
         for attempt in range(MAX_RETRIES + 1):
             try:
-                extra = {"seed": self._llm_seed} if self._llm_seed is not None else {}
+                extra: dict[str, Any] = {"temperature": 0.0}
+                if self._llm_seed is not None:
+                    extra["seed"] = self._llm_seed
                 response = self._sync_client.chat.completions.create(
                     model=self._model,
                     messages=[
@@ -821,6 +924,80 @@ class LangClawAgent:
             delta_phi=delta_phi,
             tick=0,
         ))
+
+    def do_search_sync(self, graph: Any, query_name: str | None = None, query_params: dict | None = None) -> None:
+        """Synchronous SEARCH executor — runs a graph query deterministically.
+
+        Replaces web search with structural analysis over the argument graph.
+        Results stored in semantic memory; satiation proportional to novelty.
+        """
+        if not query_name:
+            query_name = "faction_balance"
+            query_params = {}
+
+        result_text = execute_query(graph.graph, query_name, query_params)
+        concept = f"graph_query_{query_name}_t{len(self.memory.semantic)}"
+        self.memory.add_fact(concept, result_text[:500])
+
+        existing = self.memory.search_relevant(result_text[:200], "semantic", limit=3)
+        novelty = max(0.0, 1.0 - len(existing) / 3.0)
+        self.drive.satiate(novelty * 0.06, alpha=1.0)
+        logger.debug(
+            "%s SEARCH(sync) -> query=%s (novelty=%.2f, result=%d chars)",
+            self.agent_id, query_name, novelty, len(result_text),
+        )
+
+    def do_read_sync(self, graph: Any, tick: int) -> None:
+        """Synchronous READ executor for LangGraph path.
+
+        Mirrors async _do_read: synthesizes argument graph into a
+        strategic assessment via sync LLM call, stores in semantic memory,
+        satiates drive by quality.
+        """
+        context = graph.get_recent_context(last_n=12)
+        if not context or "No arguments" in context:
+            logger.debug("%s READ(sync) -> no discourse at tick %d", self.agent_id, tick)
+            return
+
+        summary = graph.get_state_summary()
+        prompt = (
+            f"You are {self.agent_id}. Analyze the current debate state and produce "
+            f"a BRIEF strategic assessment (max 150 words, in Spanish).\n\n"
+            f"Graph: {summary['nodes']} nodes, {summary['edges']} edges\n\n"
+            f"Recent arguments:\n{context}\n\n"
+            f"Your role: {self.role_prompt[:200]}\n\n"
+            f"Identify: 1) Weakest opponent arguments to attack, "
+            f"2) Uncontested claims that need response, "
+            f"3) Your faction's strongest line of argument.\n"
+            f"Reply with ONLY the strategic assessment, no JSON."
+        )
+
+        try:
+            response = self._sync_client.chat.completions.create(
+                model=self._model,
+                messages=[{"role": "user", "content": prompt}],
+                max_completion_tokens=LLM_MAX_TOKENS_ANALYSIS,
+                timeout=REQUEST_TIMEOUT,
+                temperature=0.0,
+                **({"seed": self._llm_seed} if self._llm_seed is not None else {}),
+            )
+            analysis = (response.choices[0].message.content or "").strip()
+            if analysis:
+                self.memory.add_fact(f"strategic_read_t{tick}", analysis[:400])
+                word_count = len(analysis.split())
+                has_references = any(
+                    tag in analysis for tag in ("GOV-", "OPP-", "S1", "S2", "S3", "S4", "S5")
+                )
+                depth = min(1.0, word_count / 80.0)
+                specificity = 0.3 if has_references else 0.0
+                quality = min(1.0, depth + specificity)
+                self.drive.satiate(quality * 0.06, alpha=1.0)
+                logger.debug(
+                    "%s READ(sync) -> tick %d (quality=%.2f): %s...",
+                    self.agent_id, tick, quality, analysis[:80],
+                )
+        except Exception as exc:
+            logger.warning("%s READ(sync) LLM error at tick %d: %s", self.agent_id, tick, exc)
 
     # ──────────────────────────────────────────────────────────────────────────
     # Helpers

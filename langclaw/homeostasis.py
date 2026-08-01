@@ -77,6 +77,7 @@ should return the deficit to near-setpoint levels.
 from __future__ import annotations
 
 import math
+import random
 
 
 class EpistemicDrive:
@@ -90,22 +91,43 @@ class EpistemicDrive:
     m : int
         Drive function exponent.  m=2 (Keramati & Gutkin 2014, quadratic
         case): superlinear pressure from large deviations.
+    sham : bool
+        When True (EPR-sham condition), the sigmoid activation gate
+        receives a random δ ~ U[0.3, 0.9] instead of the real deficit.
+        This preserves the sigmoid shape and activation frequency but
+        disconnects activation from the homeostatic loop (decay, stimulus,
+        satiation). The real deficit still evolves normally for logging;
+        only the gating input is sham.
+    sham_seed : int | None
+        RNG seed for sham mode reproducibility.
     """
 
     BASELINE: float = 0.1
 
-    def __init__(self, initial_deficit: float = 0.5, m: int = 2) -> None:
+    def __init__(
+        self,
+        initial_deficit: float = 0.5,
+        m: int = 2,
+        sham: bool = False,
+        sham_seed: int | None = None,
+        lambda_rate: float = 0.05,
+    ) -> None:
         self.deficit: float = max(self.BASELINE, initial_deficit)
         self.m: int = m
+        self.sham: bool = sham
+        self._sham_rng: random.Random | None = (
+            random.Random(sham_seed) if sham else None
+        )
+        self.lambda_rate: float = lambda_rate
         self._history: list[float] = [self.deficit]
 
-    def decay(self, lambda_rate: float = 0.05) -> None:
+    def decay(self) -> None:
         """Increase deficit by λ per tick (basal drive accumulation).
 
         Justified: λ=0.05 gives (θ−δ₀)/λ = (0.7−0.5)/0.05 = 4 ticks
         to reach 50% activation from default initial deficit.
         """
-        self.deficit += lambda_rate
+        self.deficit += self.lambda_rate
         self._history.append(self.deficit)
 
     def get_activation_probability(self, k: float = 10.0, theta: float = 0.7) -> float:
@@ -113,8 +135,16 @@ class EpistemicDrive:
 
         k=10, θ=0.7: transition band [0.27, 0.73] spans δ ∈ [0.6, 0.8].
         See module docstring for full derivation.
+
+        In sham mode, δ is replaced by a random draw from U[0.3, 0.9],
+        preserving the sigmoid shape and activation frequency but
+        disconnecting gating from the homeostatic loop.
         """
-        exponent = -k * (self.deficit - theta)
+        if self.sham and self._sham_rng is not None:
+            effective_delta = self._sham_rng.uniform(0.3, 0.9)
+        else:
+            effective_delta = self.deficit
+        exponent = -k * (effective_delta - theta)
         exponent = max(-500.0, min(500.0, exponent))
         return 1.0 / (1.0 + math.exp(exponent))
 
@@ -176,12 +206,14 @@ class EpistemicDrive:
             "deficit": self.deficit,
             "m": self.m,
             "history": list(self._history),
+            "sham": self.sham,
         }
 
     def load_checkpoint(self, payload: dict[str, object]) -> None:
         """Restore internal homeostatic state."""
         self.deficit = float(payload.get("deficit", self.deficit))
         self.m = int(payload.get("m", self.m))
+        self.sham = bool(payload.get("sham", self.sham))
         history = payload.get("history")
         if isinstance(history, list) and history:
             self._history = [float(x) for x in history]

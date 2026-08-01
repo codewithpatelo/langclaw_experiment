@@ -13,16 +13,16 @@ Experimental design:
 Outcome metrics (primary):
   - AAF defeat cycles (Dung 1995): |SCC_{>1}| on attack graph
   - AAF acceptance ratio (Dung 1995): |grounded extension| / |total nodes|
-  - PRR text (Marandi 2026): peer mention + stance word in debate claims
+  - PRR text (content engagement): token overlap between claim and target claim
   - PRR graph (structural): fraction of debates with non-null target
-  - Avg Δφ* (this paper): network-theoretic argumentative integration
+  - Avg g (quality signal): engagement × novelty + diversity (A3 gate)
 
 Validity check (NOT a comparison metric):
   - IR (Initiative Ratio): HOMEOSTATIC turns / active turns
     IR≈1.0 for HRRL (self-initiated), IR≈0.0 for LangGraph (externally routed)
 
 Statistical test:
-  Hypotheses H1 (defeat cycles), H2 (PRR), H3 (Δφ*):
+  Hypotheses H1 (defeat cycles), H2 (PRR), H3 (quality signal g):
     H0: μ_HRRL ≤ μ_LG  vs  H1: μ_HRRL > μ_LG
   One-sided Welch's t-test, Bonferroni-corrected (alpha=0.05/3=0.0167).
 
@@ -62,13 +62,17 @@ from langclaw.metrics import (
     peer_reference_rate_graph,
 )
 from langclaw.schemas import SimulationLog
+from langclaw.seeds import SeedFactory
 from langclaw.simulation import OrchestrationMode, SotopiaEnvironment
 
 load_dotenv()
 console = Console()
+logger = logging.getLogger(__name__)
 
-DEFAULT_MODES = ["hrrl", "langgraph"]
-DEFAULT_SEEDS = [7, 17, 42, 123, 256]
+DEFAULT_MODES = ["epr", "epr_q", "epr_sham", "langgraph"]
+EXPERIMENT_MASTER_SEED = 20260308
+DEFAULT_SEEDS = SeedFactory.derive_experiment_seeds(EXPERIMENT_MASTER_SEED, n=20)
+JUDGE_SEED = SeedFactory(EXPERIMENT_MASTER_SEED).get("judge_llm")
 
 
 def _bm_checkpoint_key(mode: str, seed: int) -> str:
@@ -89,8 +93,10 @@ def _load_bm_checkpoint(path: Path) -> dict[str, dict]:
 
 def _save_bm_checkpoint(path: Path, completed: dict[str, dict]) -> None:
     """Persist all completed benchmark runs to checkpoint file."""
-    with open(path, "w", encoding="utf-8") as f:
+    tmp_path = path.with_suffix(".tmp")
+    with open(tmp_path, "w", encoding="utf-8") as f:
         json.dump(list(completed.values()), f, indent=2, ensure_ascii=False)
+    tmp_path.replace(path)
 
 
 def _run_checkpoint_path(output_dir: Path, mode: str, seed: int | None) -> Path:
@@ -125,8 +131,10 @@ def _save_run_checkpoint(
         "next_tick": next_tick,
         "env": env.to_checkpoint(),
     }
-    with open(path, "w", encoding="utf-8") as f:
+    tmp_path = path.with_suffix(".tmp")
+    with open(tmp_path, "w", encoding="utf-8") as f:
         json.dump(payload, f, indent=2, ensure_ascii=False)
+    tmp_path.replace(path)
 
 
 def _is_rate_limit_error(exc: Exception) -> bool:
@@ -179,6 +187,7 @@ def _load_calibration_config(path: str | None) -> dict:
     return {
         "stimulus_weights": best.get("stimulus_weights"),
         "debate_alpha": best.get("debate_alpha", 2.0),
+        "lambda_rate": best.get("lambda_rate", best.get("lambda", 0.05)),
     }
 
 
@@ -193,6 +202,7 @@ def _run_mode(
     initial_deficit: float,
     stimulus_weights: dict[str, float] | None = None,
     debate_alpha: float = 2.0,
+    lambda_rate: float = 0.05,
     run_checkpoint_path: Path | None = None,
 ) -> tuple[list[SimulationLog], float, SotopiaEnvironment]:
     """Run simulation for the given mode. Returns (logs, elapsed_seconds, env).
@@ -215,6 +225,7 @@ def _run_mode(
         initial_deficit=initial_deficit,
         stimulus_weights=stimulus_weights,
         debate_alpha=debate_alpha,
+        lambda_rate=lambda_rate,
     )
     start_tick = 1
     if run_checkpoint_path is not None:
@@ -474,7 +485,15 @@ def _replay_graph_from_debates(debates: list[SimulationLog]) -> ArgumentGraph:
 
 
 def _get_embeddings_for_utterances(utterances: list[str]) -> "np.ndarray | None":
-    """Get embeddings for utterances using OpenAI API (if available)."""
+    """Get embeddings for utterances for the CORE metric.
+
+    Uses OpenAI text-embedding-3-small: cheaper (~$0.02/1M tokens vs
+    ~$0.069/1M for GLM embedding-3) and stronger multilingual quality
+    for the Spanish debates. Requires OPEN_AI_API_KEY. Embeddings are
+    used only for the offline CORE diagnostic, not for the experiment
+    itself (which runs entirely on DeepSeek + GLM).
+    Returns an (N, D) array or None if unavailable.
+    """
     import os
     try:
         import numpy as np
@@ -638,6 +657,8 @@ def _explain_red_flags_with_llm(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             max_completion_tokens=1200,
+            temperature=0.0,
+            seed=JUDGE_SEED,
         )
         raw = (response.choices[0].message.content or "").strip()
         return {
@@ -650,16 +671,367 @@ def _explain_red_flags_with_llm(
         }
 
 
-def _run_statistical_tests(hrrl_runs: list[dict], lg_runs: list[dict]) -> dict:
-    """Run Welch's t-tests for temporal resilience hypotheses.
+# ──────────────────────────────────────────────────────────────────────────────
+# Fix 4: Wilcoxon signed-rank paired test (primary statistical test)
+# Fix 7: Dual LLM judges + Cohen κ
+# Fix 8: Demote g slope to diagnostic; H1 = judge quality
+# Fix 9: StimulusEvaluator weight sensitivity profiles
+# ──────────────────────────────────────────────────────────────────────────────
 
-    H1 (Linguistic resilience): CORE slope HRRL > LG (one-sided)
-    H2 (Quality resilience): delta-phi slope HRRL > LG (one-sided)
-    H3 (Contestation resilience): acceptance-ratio slope HRRL more stable
+_WEIGHT_PROFILES: dict[str, dict[str, float]] = {
+    "uniform": {
+        "w_faction": 0.20, "w_centrality": 0.20, "w_memory": 0.20,
+        "w_novelty": 0.20, "w_pressure": 0.20,
+    },
+    "faction-heavy": {
+        "w_faction": 0.50, "w_centrality": 0.125, "w_memory": 0.125,
+        "w_novelty": 0.125, "w_pressure": 0.125,
+    },
+    "centrality-heavy": {
+        "w_faction": 0.125, "w_centrality": 0.50, "w_memory": 0.125,
+        "w_novelty": 0.125, "w_pressure": 0.125,
+    },
+    "memory-heavy": {
+        "w_faction": 0.125, "w_centrality": 0.125, "w_memory": 0.50,
+        "w_novelty": 0.125, "w_pressure": 0.125,
+    },
+    "pressure-heavy": {
+        "w_faction": 0.125, "w_centrality": 0.125, "w_memory": 0.125,
+        "w_novelty": 0.125, "w_pressure": 0.50,
+    },
+}
+
+
+def get_weight_profile(name: str) -> dict[str, float]:
+    """Return the StimulusEvaluator weight dict for a named profile."""
+    return dict(_WEIGHT_PROFILES.get(name, _WEIGHT_PROFILES["uniform"]))
+
+
+def _wilcoxon_paired(
+    condition_runs: list[dict],
+    baseline_runs: list[dict],
+    metric_key: str,
+    one_sided: bool = True,
+) -> dict:
+    """Wilcoxon signed-rank test on paired (by seed) samples.
+
+    Non-parametric: does not assume normality. Preferred over Welch's t
+    for small N and unknown distributions.
+
+    Returns dict with W statistic, p-value, effect size r = W/√n, and
+    significance flag at Bonferroni-corrected alpha.
+    """
+    from scipy.stats import wilcoxon
+
+    cond_by_seed = {r["_seed"]: r.get(metric_key, 0.0) for r in condition_runs if "_seed" in r}
+    base_by_seed = {r["_seed"]: r.get(metric_key, 0.0) for r in baseline_runs if "_seed" in r}
+
+    common_seeds = sorted(set(cond_by_seed) & set(base_by_seed))
+    if len(common_seeds) < 5:
+        return {"W": None, "p": None, "r": None, "significant": None,
+                "n_pairs": len(common_seeds), "note": "Too few paired samples (need ≥5)"}
+
+    diffs = [cond_by_seed[s] - base_by_seed[s] for s in common_seeds]
+    non_zero = [d for d in diffs if d != 0]
+    if len(non_zero) < 5:
+        return {"W": None, "p": None, "r": None, "significant": None,
+                "n_pairs": len(common_seeds), "note": "Too few non-zero differences"}
+
+    try:
+        result = wilcoxon(
+            [cond_by_seed[s] for s in common_seeds],
+            [base_by_seed[s] for s in common_seeds],
+            alternative="greater" if one_sided else "two-sided",
+        )
+        w_stat = result.statistic
+        p_val = result.pvalue
+    except Exception as exc:
+        return {"W": None, "p": None, "r": None, "significant": None,
+                "n_pairs": len(common_seeds), "note": f"Wilcoxon failed: {exc}"}
+
+    n = len(non_zero)
+    r_effect = w_stat / (n ** 0.5) if n > 0 else 0.0
+
+    bonferroni_alpha = 0.05 / 3
+    return {
+        "W": round(w_stat, 4),
+        "p": round(p_val, 6),
+        "r": round(r_effect, 4),
+        "significant": p_val < bonferroni_alpha,
+        "bonferroni_alpha": bonferroni_alpha,
+        "n_pairs": len(common_seeds),
+    }
+
+
+def _cohen_kappa(scores1: list, scores2: list) -> dict:
+    """Compute Cohen's κ for inter-rater agreement.
+
+    Accepts continuous scores (bins into quartiles) or categorical labels.
+    Returns κ, observed agreement, and agreement category.
+    """
+    if len(scores1) != len(scores2) or len(scores1) < 2:
+        return {"kappa": None, "p0": None, "note": "Insufficient data"}
+
+    try:
+        import numpy as np
+        from sklearn.metrics import cohen_kappa_score
+
+        s1 = np.array(scores1, dtype=float)
+        s2 = np.array(scores2, dtype=float)
+
+        if len(set(scores1)) > 5 or len(set(scores2)) > 5:
+            combined = np.concatenate([s1, s2])
+            q33, q66 = np.percentile(combined, [33.3, 66.7])
+            def bin(v):
+                if v <= q33: return "low"
+                elif v <= q66: return "mid"
+                else: return "high"
+            b1 = [bin(v) for v in s1]
+            b2 = [bin(v) for v in s2]
+        else:
+            b1 = [str(round(v)) for v in s1]
+            b2 = [str(round(v)) for v in s2]
+
+        kappa = cohen_kappa_score(b1, b2)
+        p0 = sum(a == b for a, b in zip(b1, b2)) / len(b1)
+
+        if kappa < 0.20:
+            category = "slight"
+        elif kappa < 0.40:
+            category = "fair"
+        elif kappa < 0.60:
+            category = "moderate"
+        elif kappa < 0.80:
+            category = "substantial"
+        else:
+            category = "almost perfect"
+
+        return {
+            "kappa": round(kappa, 4),
+            "p0": round(p0, 4),
+            "category": category,
+            "n_items": len(b1),
+        }
+    except ImportError:
+        return {"kappa": None, "p0": None, "note": "scikit-learn not installed"}
+    except Exception as exc:
+        return {"kappa": None, "p0": None, "note": f"κ computation failed: {exc}"}
+
+
+_JUDGE_PROMPT = """\
+You are an expert judge evaluating the quality of a debate argument in context.
+
+## Debate Topic
+{debate_topic}
+
+## Argument Under Evaluation
+Claim: {claim}
+Author: {agent_id}
+Attack type: {attack_type}
+Tick: {tick}
+
+## Target Being Attacked
+{target_context}
+
+## Recent Debate Context (last 5 arguments)
+{recent_context}
+
+Evaluate this argument on a 1-10 scale considering:
+1. Logical rigor — is the reasoning sound and well-structured?
+2. Engagement — does it directly address the specific content of the target argument it attacks? (Not just the general topic.)
+3. Persuasive force — would this advance the debate meaningfully, or is it a repetition/generic statement?
+4. Originality — does it introduce a novel angle, evidence, or line of reasoning not already present in the debate?
+
+Output ONLY a JSON object: {{"score": <integer 1-10>, "rationale": "<one sentence>"}}
+"""
+
+
+def _run_llm_judge(
+    logs: list[SimulationLog],
+    *,
+    model: str,
+    base_url: str,
+    api_key: str,
+) -> list[dict]:
+    """Run an offline LLM judge over all debate claims.
+
+    Returns a list of {node_id, agent_id, claim, score, rationale} dicts.
+    """
+    from openai import OpenAI
+    from langclaw.agent import DEBATE_TOPIC
+
+    debates = [l for l in logs if l.action == "DEBATE" and l.claim]
+    if not debates:
+        return []
+
+    # Build node_id -> claim lookup for target context
+    node_claims: dict[str, str] = {}
+    node_agents: dict[str, str] = {}
+    for l in logs:
+        if l.node_id and l.claim:
+            node_claims[l.node_id] = l.claim
+            node_agents[l.node_id] = l.agent_id
+
+    # Build ordered list of debate turns for recent context
+    debate_sequence = list(debates)
+
+    client = OpenAI(base_url=base_url, api_key=api_key)
+    results: list[dict] = []
+
+    for idx, d in enumerate(debates):
+        # Build target context
+        if d.target_node_id and d.target_node_id in node_claims:
+            target_claim = node_claims[d.target_node_id]
+            target_agent = node_agents.get(d.target_node_id, "unknown")
+            target_context = (
+                f"Node ID: {d.target_node_id}\n"
+                f"Author: {target_agent}\n"
+                f"Claim: \"{target_claim}\""
+            )
+        else:
+            target_context = "None (root argument — no target being attacked)"
+
+        # Build recent context (up to 5 preceding debate turns)
+        recent_start = max(0, idx - 5)
+        recent_turns = debate_sequence[recent_start:idx]
+        if recent_turns:
+            recent_lines = []
+            for rt in recent_turns:
+                rt_target = rt.target_node_id or "root"
+                recent_lines.append(
+                    f"[{rt.agent_id}] (tick {rt.tick}) -> {rt_target}: \"{rt.claim[:200]}\""
+                )
+            recent_context = "\n".join(recent_lines)
+        else:
+            recent_context = "No prior arguments."
+
+        prompt = _JUDGE_PROMPT.format(
+            debate_topic=DEBATE_TOPIC,
+            claim=d.claim,
+            agent_id=d.agent_id,
+            attack_type=d.attack_type or "none",
+            tick=d.tick,
+            target_context=target_context,
+            recent_context=recent_context,
+        )
+        try:
+            judge_extra: dict = {"temperature": 0.0, "seed": JUDGE_SEED}
+            judge_body: dict = {}
+            if "glm" in model.lower():
+                judge_body["do_sample"] = False
+            kwargs: dict = {
+                "model": model,
+                "messages": [{"role": "user", "content": prompt}],
+                "max_completion_tokens": 300,
+                **judge_extra,
+            }
+            if judge_body:
+                kwargs["extra_body"] = judge_body
+            response = client.chat.completions.create(**kwargs)
+            raw = (response.choices[0].message.content or "").strip()
+            import re
+            json_match = re.search(r'\{[^}]+\}', raw)
+            if json_match:
+                parsed = json.loads(json_match.group())
+                score = int(parsed.get("score", 0))
+                score = max(1, min(10, score))
+            else:
+                score = 0
+            results.append({
+                "node_id": d.node_id,
+                "agent_id": d.agent_id,
+                "claim": d.claim,
+                "score": score,
+                "rationale": parsed.get("rationale", "") if json_match else raw[:200],
+            })
+        except Exception as exc:
+            logger.warning("Judge %s failed on node %s: %s", model, d.node_id, exc)
+            results.append({
+                "node_id": d.node_id,
+                "agent_id": d.agent_id,
+                "claim": d.claim,
+                "score": 0,
+                "rationale": f"judge_error: {exc}",
+            })
+
+    return results
+
+
+def _run_judges_for_all_modes(
+    all_logs: dict[str, list[SimulationLog]],
+    judge_configs: list[dict],
+) -> dict:
+    """Run multiple LLM judges over all modes' logs.
+
+    judge_configs: list of {model, base_url, api_key} dicts.
+
+    Returns:
+        {
+            mode: {
+                judge_name: [score_dicts],
+                ...
+                "kappa": {...},
+                "avg_judge_score": float,
+            }
+        }
+    """
+    results: dict[str, Any] = {}
+
+    for mode, logs in all_logs.items():
+        mode_results: dict[str, Any] = {}
+        all_scores: list[list[float]] = []
+
+        for jc in judge_configs:
+            judge_name = jc["model"]
+            console.print(f"  [dim]Judging {mode} with {judge_name}...[/dim]")
+            scores = _run_llm_judge(
+                logs,
+                model=jc["model"],
+                base_url=jc["base_url"],
+                api_key=jc["api_key"],
+            )
+            mode_results[judge_name] = scores
+            all_scores.append([s["score"] for s in scores])
+
+        if len(all_scores) >= 2:
+            min_len = min(len(s) for s in all_scores)
+            mode_results["kappa"] = _cohen_kappa(
+                all_scores[0][:min_len], all_scores[1][:min_len]
+            )
+            combined = [
+                (all_scores[0][i] + all_scores[1][i]) / 2
+                for i in range(min_len)
+                if all_scores[0][i] > 0 and all_scores[1][i] > 0
+            ]
+            mode_results["avg_judge_score"] = (
+                round(statistics.mean(combined), 4) if combined else 0.0
+            )
+        elif len(all_scores) == 1 and all_scores[0]:
+            mode_results["avg_judge_score"] = round(statistics.mean(all_scores[0]), 4)
+        else:
+            mode_results["avg_judge_score"] = 0.0
+
+        results[mode] = mode_results
+
+    return results
+
+
+def _run_statistical_tests(
+    condition_runs: list[dict],
+    baseline_runs: list[dict],
+) -> dict:
+    """Run Wilcoxon signed-rank paired tests (primary) and Welch's t (secondary).
+
+    H1 (Judge quality — PRIMARY): avg_judge_score EPR > LangGraph (one-sided)
+    H2 (Peer reference): PRR_text EPR > LangGraph (one-sided)
+    H3 (Dialectical structure): defeat_cycles EPR > LangGraph (one-sided)
+
+    Diagnostic (not primary):
+    - g slope: temporal quality trend (demoted from H3 to diagnostic)
+    - CORE slope: linguistic resilience
+    - Acceptance slope: contestation stability
 
     Bonferroni corrected alpha = 0.05 / 3 = 0.0167
-
-    Also includes legacy aggregate tests for backward compatibility.
     """
     import math
 
@@ -701,39 +1073,71 @@ def _run_statistical_tests(hrrl_runs: list[dict], lg_runs: list[dict]) -> dict:
             "bonferroni_alpha": bonferroni_alpha,
         }
 
-    # Primary hypotheses: temporal slopes
-    h1_core = welch_t(
-        [r.get("slope_core", 0.0) for r in hrrl_runs],
-        [r.get("slope_core", 0.0) for r in lg_runs],
+    # Primary hypotheses: Wilcoxon signed-rank paired tests
+    h1_judge = _wilcoxon_paired(
+        condition_runs, baseline_runs, "avg_judge_score", one_sided=True,
+    )
+    h2_prr = _wilcoxon_paired(
+        condition_runs, baseline_runs, "prr_text", one_sided=True,
+    )
+    h3_cycles = _wilcoxon_paired(
+        condition_runs, baseline_runs, "aaf_defeat_cycles", one_sided=True,
+    )
+
+    # Diagnostic: temporal slopes (demoted from primary)
+    diag_dphi_slope = _wilcoxon_paired(
+        condition_runs, baseline_runs, "slope_dphi", one_sided=True,
+    )
+    diag_core_slope = _wilcoxon_paired(
+        condition_runs, baseline_runs, "slope_core", one_sided=True,
+    )
+    diag_acceptance_slope = _wilcoxon_paired(
+        condition_runs, baseline_runs, "slope_acceptance", one_sided=False,
+    )
+
+    # Secondary: Welch's t on aggregates (for comparison with Wilcoxon)
+    h1_judge_welch = welch_t(
+        [r.get("avg_judge_score", 0.0) for r in condition_runs],
+        [r.get("avg_judge_score", 0.0) for r in baseline_runs],
         one_sided=True,
     )
-    h2_quality = welch_t(
-        [r.get("slope_dphi", 0.0) for r in hrrl_runs],
-        [r.get("slope_dphi", 0.0) for r in lg_runs],
+    h2_prr_welch = welch_t(
+        [r.get("prr_text", 0.0) for r in condition_runs],
+        [r.get("prr_text", 0.0) for r in baseline_runs],
         one_sided=True,
     )
-    h3_contestation = welch_t(
-        [r.get("slope_acceptance", 0.0) for r in hrrl_runs],
-        [r.get("slope_acceptance", 0.0) for r in lg_runs],
-        one_sided=False,
+    h3_cycles_welch = welch_t(
+        [r.get("aaf_defeat_cycles", 0.0) for r in condition_runs],
+        [r.get("aaf_defeat_cycles", 0.0) for r in baseline_runs],
+        one_sided=True,
     )
 
     # Descriptive tests (not primary hypotheses)
     participation_equity = welch_t(
-        [statistics.stdev(list(r["per_agent_debates"].values())) for r in hrrl_runs],
-        [statistics.stdev(list(r["per_agent_debates"].values())) for r in lg_runs],
+        [statistics.stdev(list(r["per_agent_debates"].values())) for r in condition_runs],
+        [statistics.stdev(list(r["per_agent_debates"].values())) for r in baseline_runs],
         one_sided=True,
     )
     acceptance_ratio = welch_t(
-        [r["aaf_acceptance_ratio"] for r in hrrl_runs],
-        [r["aaf_acceptance_ratio"] for r in lg_runs],
+        [r["aaf_acceptance_ratio"] for r in condition_runs],
+        [r["aaf_acceptance_ratio"] for r in baseline_runs],
         one_sided=False,
     )
 
     return {
-        "H1_core_slope": h1_core,
-        "H2_quality_slope": h2_quality,
-        "H3_contestation_slope": h3_contestation,
+        # Primary: Wilcoxon signed-rank paired
+        "H1_judge_quality": h1_judge,
+        "H2_prr_text": h2_prr,
+        "H3_defeat_cycles": h3_cycles,
+        # Diagnostic (demoted from primary)
+        "diag_dphi_slope": diag_dphi_slope,
+        "diag_core_slope": diag_core_slope,
+        "diag_acceptance_slope": diag_acceptance_slope,
+        # Secondary: Welch's t for comparison
+        "H1_judge_quality_welch": h1_judge_welch,
+        "H2_prr_text_welch": h2_prr_welch,
+        "H3_defeat_cycles_welch": h3_cycles_welch,
+        # Descriptive
         "descriptive_participation": participation_equity,
         "descriptive_acceptance": acceptance_ratio,
     }
@@ -878,7 +1282,7 @@ def _print_comparison_table(all_metrics: dict) -> None:
         ("AAF Dialectical Completeness", lambda m: f'{m["aaf_dialectical_completeness"]:.4f}'),
         ("PRR Text (H2)", lambda m: f'{m["prr_text"]:.4f}'),
         ("PRR Graph (structural)", lambda m: f'{m["prr_graph"]:.4f}'),
-        ("Avg delta-phi* (H3)", lambda m: f'{m["avg_delta_phi"]:.4f}'),
+        ("Avg g (quality signal)", lambda m: f'{m["avg_delta_phi"]:.4f}'),
         ("--- Q-Learning Metrics ---", None),
         ("Avg Reward (drive reduction)", lambda m: f'{m.get("avg_reward", 0):.4f}'),
         ("Total Reward", lambda m: f'{m.get("total_reward", 0):.4f}'),
@@ -901,45 +1305,47 @@ def _print_comparison_table(all_metrics: dict) -> None:
 
 
 def _print_statistical_tests(tests: dict) -> None:
-    """Print Welch's t-test results."""
+    """Print Wilcoxon and Welch's t-test results."""
     table = Table(
-        title="Statistical Tests (Welch's t, Bonferroni alpha=0.0167)",
+        title="Statistical Tests (Wilcoxon signed-rank primary, Bonferroni alpha=0.0167)",
         show_lines=True,
         title_style="bold yellow",
     )
-    table.add_column("Hypothesis", style="cyan", width=46)
-    table.add_column("t", justify="right", width=8)
-    table.add_column("df", justify="right", width=6)
+    table.add_column("Hypothesis", style="cyan", width=50)
+    table.add_column("Test", justify="right", width=8)
+    table.add_column("W/t", justify="right", width=8)
     table.add_column("p", justify="right", width=8)
-    table.add_column("Cohen d", justify="right", width=10)
-    table.add_column("Significant", justify="center", width=12)
+    table.add_column("r/d", justify="right", width=8)
+    table.add_column("Sig.", justify="center", width=6)
 
     labels = {
-        "H1_core_slope": "H1: CORE slope HRRL > LG (ling. resilience)",
-        "H2_quality_slope": "H2: dphi slope HRRL > LG (quality resil.)",
-        "H3_contestation_slope": "H3: accept. slope HRRL vs LG (contest.)",
-        "descriptive_participation": "Desc: participation equity (design)",
-        "descriptive_acceptance": "Desc: acceptance ratio (2-sided)",
+        "H1_judge_quality": ("H1: Judge quality EPR > LG (PRIMARY)", "Wilcoxon"),
+        "H2_prr_text": ("H2: PRR text EPR > LG", "Wilcoxon"),
+        "H3_defeat_cycles": ("H3: Defeat cycles EPR > LG", "Wilcoxon"),
+        "diag_dphi_slope": ("Diag: g slope (demoted from H3)", "Wilcoxon"),
+        "diag_core_slope": ("Diag: CORE slope", "Wilcoxon"),
+        "diag_acceptance_slope": ("Diag: acceptance slope", "Wilcoxon"),
+        "H1_judge_quality_welch": ("H1: Judge quality (Welch check)", "Welch"),
+        "H2_prr_text_welch": ("H2: PRR text (Welch check)", "Welch"),
+        "H3_defeat_cycles_welch": ("H3: Defeat cycles (Welch check)", "Welch"),
+        "descriptive_participation": ("Desc: participation equity", "Welch"),
+        "descriptive_acceptance": ("Desc: acceptance ratio (2-sided)", "Welch"),
     }
-    for key, label in labels.items():
+    for key, (label, test_type) in labels.items():
         r = tests.get(key, {})
-        if r.get("t") is None:
-            table.add_row(label, "n/a", "n/a", "n/a", "n/a", "n/a")
-        else:
+        if r.get("W") is not None:
             sig = "[green]YES[/green]" if r.get("significant") else "[red]no[/red]"
-            table.add_row(
-                label,
-                str(r["t"]),
-                str(r["df"]),
-                str(r["p"]),
-                str(r["cohen_d"]),
-                sig,
-            )
+            table.add_row(label, test_type, str(r["W"]), str(r["p"]), str(r.get("r", "-")), sig)
+        elif r.get("t") is not None:
+            sig = "[green]YES[/green]" if r.get("significant") else "[red]no[/red]"
+            table.add_row(label, test_type, str(r["t"]), str(r["p"]), str(r.get("cohen_d", "-")), sig)
+        else:
+            table.add_row(label, test_type, "n/a", "n/a", "n/a", "n/a")
 
     console.print(table)
     console.print(
-        "  [dim]Note: n=5 seeds; results are exploratory. "
-        "Primary hypotheses test temporal slopes (resilience), not aggregates.[/dim]"
+        "  [dim]Note: Wilcoxon signed-rank is the primary test (non-parametric, paired by seed). "
+        "Welch's t shown as secondary check. H1 = judge quality (Fix 8: Δφ* demoted to diagnostic).[/dim]"
     )
 
 
@@ -957,7 +1363,7 @@ def _save_comparison_charts(all_metrics: dict, all_logs: dict, output_dir: Path)
 
     # 1. Primary outcome metrics comparison
     outcome_keys = ["aaf_defeat_cycles", "prr_text", "avg_delta_phi"]
-    outcome_labels = ["AAF Defeat Cycles", "PRR (text)", "Avg delta-phi*"]
+    outcome_labels = ["AAF Defeat Cycles", "PRR (text)", "Avg quality signal g"]
     fig_outcomes = make_subplots(
         rows=1, cols=3,
         subplot_titles=outcome_labels,
@@ -1022,6 +1428,7 @@ def _run_preflight(args: argparse.Namespace, cal: dict[str, Any]) -> int:
     """Run a short safety check before the full benchmark."""
     cal_stimulus_weights = cal.get("stimulus_weights")
     cal_debate_alpha = cal.get("debate_alpha", 2.0)
+    cal_lambda_rate = cal.get("lambda_rate", 0.05)
     preflight_dir = Path(args.output_dir) / "preflight"
     preflight_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1040,6 +1447,7 @@ def _run_preflight(args: argparse.Namespace, cal: dict[str, Any]) -> int:
             initial_deficit=args.initial_deficit,
             stimulus_weights=cal_stimulus_weights,
             debate_alpha=cal_debate_alpha,
+            lambda_rate=cal_lambda_rate,
             run_checkpoint_path=None,
         )
         metrics = _compute_metrics(logs, env.graph)
@@ -1087,12 +1495,12 @@ def _run_preflight(args: argparse.Namespace, cal: dict[str, Any]) -> int:
 
 
 def main() -> None:
-    default_api_key = os.getenv("OPEN_AI_API_KEY", "ollama")
+    default_api_key = os.getenv("DEEPSEEK_API_KEY", os.getenv("OPEN_AI_API_KEY", "ollama"))
     default_base_url = (
-        "https://api.openai.com/v1" if default_api_key != "ollama"
+        "https://api.deepseek.com/v1" if default_api_key != "ollama"
         else "http://localhost:11434/v1"
     )
-    default_model = "gpt-5-nano" if default_api_key != "ollama" else "llama3"
+    default_model = "deepseek-v4-flash" if default_api_key != "ollama" else "llama3"
 
     parser = argparse.ArgumentParser(
         description="LangClaw Benchmark -- HRRL vs LangGraph"
@@ -1110,11 +1518,13 @@ def main() -> None:
     )
     parser.add_argument(
         "--modes", nargs="+", default=DEFAULT_MODES,
-        choices=["hrrl", "langgraph", "round-robin", "random", "hrrl_no_q", "langgraph_informed"],
-        help="Orchestration modes to benchmark. 'hrrl_no_q' is the ablation that "
-             "disables the Q-learner while keeping sigmoid+drive+StimulusEvaluator. "
-             "'langgraph_informed' is the fair baseline: LangGraph router with "
-             "access to the same structural features used by HRRL.",
+        choices=["epr", "epr_q", "epr_sham", "langgraph"],
+        help="Orchestration modes to benchmark. 'epr' (Ecuación Pro-Acción Reducida) "
+             "is the primary condition: endogenous homeostatic activation without Q-learning. "
+             "'epr_q' is EPR + Q-learning (ablation: does the Q-learner help?). "
+             "'epr_sham' controls for sigmoid shape with random δ. "
+             "'langgraph' is the exogenous baseline: LLM router with access to "
+             "the same structural features EPR uses internally.",
     )
     parser.add_argument("--api-hard-limit", type=int, default=500)
     parser.add_argument("--initial-deficit", type=float, default=0.5)
@@ -1152,6 +1562,29 @@ def main() -> None:
         default=None,
         help="Model used to explain red flags. Defaults to the benchmark model.",
     )
+    parser.add_argument(
+        "--judge-models", nargs="+",
+        default=["deepseek-v4-pro", "glm-5.2"],
+        help="LLM models for offline judge evaluation of debate claims. "
+             "Default: deepseek-v4-pro (V4-Pro) + glm-5.2.",
+    )
+    parser.add_argument(
+        "--judge-base-urls", nargs="+",
+        default=["https://api.deepseek.com/v1", "https://api.z.ai/api/paas/v4/"],
+        help="OpenAI-compatible base URLs for each judge model.",
+    )
+    parser.add_argument(
+        "--judge-api-keys", nargs="+",
+        default=None,
+        help="API keys for each judge model. Defaults to env vars "
+             "DEEPSEEK_API_KEY and ZAI_API_KEY.",
+    )
+    parser.add_argument(
+        "--weight-profiles", nargs="+",
+        default=["uniform", "faction-heavy", "centrality-heavy",
+                 "memory-heavy", "pressure-heavy"],
+        help="StimulusEvaluator weight profiles for sensitivity analysis.",
+    )
 
     args = parser.parse_args()
 
@@ -1186,6 +1619,7 @@ def main() -> None:
     cal = _load_calibration_config(args.config)
     cal_stimulus_weights = cal.get("stimulus_weights")
     cal_debate_alpha = cal.get("debate_alpha", 2.0)
+    cal_lambda_rate = cal.get("lambda_rate", 0.05)
 
     if args.preflight:
         raise SystemExit(_run_preflight(args, cal))
@@ -1230,6 +1664,7 @@ def main() -> None:
                     initial_deficit=args.initial_deficit,
                     stimulus_weights=cal_stimulus_weights,
                     debate_alpha=cal_debate_alpha,
+                    lambda_rate=cal_lambda_rate,
                     run_checkpoint_path=run_ck_path,
                 )
             except Exception as exc:
@@ -1263,8 +1698,10 @@ def main() -> None:
             # Save per-seed logs
             safe_mode = mode.replace("-", "_")
             log_path = output_dir / f"logs_{safe_mode}_seed{seed}.json"
-            with open(log_path, "w", encoding="utf-8") as f:
+            tmp_log = log_path.with_suffix(".tmp")
+            with open(tmp_log, "w", encoding="utf-8") as f:
                 json.dump([e.model_dump() for e in logs], f, indent=2, ensure_ascii=False)
+            tmp_log.replace(log_path)
 
             # Checkpoint after each (mode, seed) completes
             ck_entry = {"_ck": ck_key, "_mode": mode, "_seed": seed, **metrics}
@@ -1298,13 +1735,93 @@ def main() -> None:
     console.rule("[bold magenta]Benchmark Results[/bold magenta]")
     _print_comparison_table(agg_all)
 
-    # Statistical tests (HRRL vs LangGraph only)
-    if "hrrl" in mode_runs and "langgraph" in mode_runs:
+    # Fix 7: Run dual LLM judges on the last-seed logs for each mode
+    judge_results: dict[str, Any] = {}
+    judge_configs: list[dict] = []
+    judge_api_keys = args.judge_api_keys or [
+        os.getenv("DEEPSEEK_API_KEY", ""),
+        os.getenv("ZAI_API_KEY", ""),
+    ]
+    for i, jm in enumerate(args.judge_models):
+        judge_configs.append({
+            "model": jm,
+            "base_url": args.judge_base_urls[i] if i < len(args.judge_base_urls) else args.base_url,
+            "api_key": judge_api_keys[i] if i < len(judge_api_keys) else args.api_key,
+        })
+
+    if last_logs and judge_configs:
+        console.rule("[bold blue]LLM Judge Evaluation[/bold blue]")
+        judge_results = _run_judges_for_all_modes(last_logs, judge_configs)
+
+        for mode, jr in judge_results.items():
+            avg_score = jr.get("avg_judge_score", 0.0)
+            kappa = jr.get("kappa", {})
+            console.print(
+                f"  {mode.upper()}: avg_judge_score={avg_score:.2f}  "
+                f"κ={kappa.get('kappa', 'n/a')} ({kappa.get('category', 'n/a')})"
+            )
+
+        for mode in mode_runs:
+            for r in mode_runs[mode]:
+                r["avg_judge_score"] = judge_results.get(mode, {}).get("avg_judge_score", 0.0)
+
+    # Fix 4+8: Statistical tests — EPR vs LangGraph (primary comparison)
+    tests = {}
+    condition_mode = "epr" if "epr" in mode_runs else (
+        "hrrl" if "hrrl" in mode_runs else None
+    )
+    baseline_mode = "langgraph" if "langgraph" in mode_runs else None
+
+    if condition_mode and baseline_mode:
         console.rule("[bold yellow]Statistical Tests[/bold yellow]")
+        tests = _run_statistical_tests(
+            mode_runs[condition_mode], mode_runs[baseline_mode],
+        )
+        _print_statistical_tests(tests)
+    elif "hrrl" in mode_runs and "langgraph" in mode_runs:
+        console.rule("[bold yellow]Statistical Tests (legacy HRRL vs LG)[/bold yellow]")
         tests = _run_statistical_tests(mode_runs["hrrl"], mode_runs["langgraph"])
         _print_statistical_tests(tests)
-    else:
-        tests = {}
+
+    # Fix 9: Weight profile sensitivity (on first seed only, EPR mode)
+    weight_sensitivity: dict[str, Any] = {}
+    if condition_mode and last_logs.get(condition_mode):
+        console.rule("[bold green]Weight Profile Sensitivity[/bold green]")
+        first_seed = args.seeds[0]
+        for profile_name in args.weight_profiles:
+            weights = get_weight_profile(profile_name)
+            console.print(f"  [dim]Profile: {profile_name} — running 1 seed...[/dim]")
+            try:
+                logs_p, _, env_p = _run_mode(
+                    mode=condition_mode,
+                    base_url=args.base_url,
+                    model=args.model,
+                    api_key=args.api_key,
+                    iterations=args.iterations,
+                    seed=first_seed,
+                    api_hard_limit=args.api_hard_limit,
+                    initial_deficit=args.initial_deficit,
+                    stimulus_weights=weights,
+                    debate_alpha=cal_debate_alpha,
+                    lambda_rate=cal_lambda_rate,
+                    run_checkpoint_path=None,
+                )
+                metrics_p = _compute_metrics(logs_p, env_p.graph)
+                weight_sensitivity[profile_name] = {
+                    "prr_text": metrics_p["prr_text"],
+                    "prr_graph": metrics_p["prr_graph"],
+                    "aaf_defeat_cycles": metrics_p["aaf_defeat_cycles"],
+                    "total_debates": metrics_p["total_debates"],
+                    "ir": metrics_p["ir"],
+                }
+                console.print(
+                    f"    {profile_name}: PRR_text={metrics_p['prr_text']:.4f}  "
+                    f"cycles={metrics_p['aaf_defeat_cycles']:.2f}  "
+                    f"debates={metrics_p['total_debates']}"
+                )
+            except Exception as exc:
+                weight_sensitivity[profile_name] = {"error": str(exc)}
+                console.print(f"    [red]{profile_name}: failed — {exc}[/red]")
 
     # Per-metric std
     console.print(f"\n[bold]Seeds used:[/bold] {args.seeds}")
@@ -1321,10 +1838,14 @@ def main() -> None:
     safe_config = dict(vars(args))
     if "api_key" in safe_config:
         safe_config["api_key"] = "***REDACTED***"
+    if "judge_api_keys" in safe_config:
+        safe_config["judge_api_keys"] = "***REDACTED***"
     report = {
         "aggregate": agg_all,
         "per_seed": mode_runs,
         "statistical_tests": tests,
+        "judge_results": judge_results,
+        "weight_sensitivity": weight_sensitivity,
         "config": safe_config,
         "calibration": cal if cal else {"note": "defaults (no calibration file)"},
     }

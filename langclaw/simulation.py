@@ -2,15 +2,18 @@
 
 Three operating modes controlled by ``orchestration_mode``:
 
-  hrrl       — Agents run as asyncio coroutines; activation is endogenous
-               (homeostatic sigmoid gate + cognitive loop). Each agent
-               independently decides whether to participate via its
-               epistemic drive. DirectMessages routed per-recipient.
+  epr_q     — Same as EPR but with Q-learning enabled.  Ablation that
+               answers JAIIO R1b: does the Q-learner contribute, or does
+               the homeostatic loop alone drive the effect?
                Trigger tag: HOMEOSTATIC.
 
-  langgraph  — A neutral LLM router reads current discourse state and selects
-               the next speaker each tick (exogenous, state-informed routing).
-               No directed messaging. Trigger tag: ROUTER.
+  langgraph  — A neutral LLM router reads current discourse state AND
+               per-agent structural features (deficit, stimulus_utility,
+               recent_arguments, vsm_role) to select the next speaker each
+               tick (exogenous, state-informed routing).  The router sees
+               the SAME information EPR agents use internally — the only
+               difference is the locus of control (external router vs
+               internal sigmoid gate).  Trigger tag: ROUTER.
 
   round-robin — Every agent speaks in fixed order every tick. Trigger: FORCED.
   random      — A randomly selected agent speaks each tick. Trigger: FORCED.
@@ -43,7 +46,6 @@ from langclaw.events import (
     TickElapsedEvent,
 )
 from langclaw.router import LangGraphRouter
-from langclaw.router_informed import LangGraphInformedRouter
 from langclaw.schemas import AgentState, SimulationLog
 
 logger = logging.getLogger(__name__)
@@ -51,22 +53,24 @@ console = Console()
 
 
 class OrchestrationMode(str, Enum):
-    HRRL = "hrrl"
+    EPR_Q = "epr_q"
     LANGGRAPH = "langgraph"
     ROUND_ROBIN = "round-robin"
     RANDOM = "random"
-    # Ablation: HRRL minus Q-learning. Sigmoide + drive + StimulusEvaluator
-    # remain active; action selection collapses to a deterministic heuristic
-    # over {DEBATE_STIMULUS, DEBATE_PROACTIVE}. Used to isolate the
-    # contribution of the learning component from the rest of the homeostatic
-    # activation machinery.
+    # EPR (Ecuación Pro-Acción Reducida): scalar (n=1) instantiation of the
+    # Pro-Action operator Γ. Sigmoide + drive + StimulusEvaluator remain
+    # active; action selection uses a deterministic heuristic over
+    # {DEBATE_STIMULUS, DEBATE_PROACTIVE} without Q-learning. This is the
+    # primary experimental condition: endogenous homeostatic activation
+    # without reinforcement learning.
+    EPR = "epr"
+    # Backward-compatible alias for legacy checkpoints/configs.
     HRRL_NO_Q = "hrrl_no_q"
-    # Fair baseline: LangGraph router with access to the same structural
-    # features used by HRRL's StimulusEvaluator (factional relevance,
-    # centrality proxy, memory match, novelty, unanswered pressure) plus
-    # per-agent deficit. Isolates "endogenous vs exogenous" from "informed
-    # vs uninformed" routing.
-    LANGGRAPH_INFORMED = "langgraph_informed"
+    # EPR-sham: sigmoid activation with random δ (U[0.3, 0.9]) instead
+    # of the real epistemic deficit. Controls for the sigmoid gate
+    # mechanism — if EPR outperforms sham, it is the homeostatic loop
+    # (not the sigmoid shape) that drives the effect.
+    EPR_SHAM = "epr_sham"
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -223,7 +227,7 @@ class SotopiaEnvironment:
         api_key: str = "ollama",
         max_iterations: int = 80,
         seed: int | None = None,
-        orchestration_mode: OrchestrationMode | str = OrchestrationMode.HRRL,
+        orchestration_mode: OrchestrationMode | str = OrchestrationMode.EPR,
         api_hard_limit: int = 500,
         tick_interval: float = 0.0,
         initial_deficit: float = 0.5,
@@ -231,6 +235,7 @@ class SotopiaEnvironment:
         max_debates: int | None = None,
         stimulus_weights: dict[str, float] | None = None,
         debate_alpha: float = 2.0,
+        lambda_rate: float = 0.05,
     ) -> None:
         reset_shared_store()
         self.max_iterations = max_iterations
@@ -240,7 +245,6 @@ class SotopiaEnvironment:
         self._base_url = base_url
         self._api_key = api_key
         self._model = model
-        self.graph = ArgumentGraph()
         self.budget = APIBudget(hard_limit=api_hard_limit)
         self._on_tick = on_tick
 
@@ -249,9 +253,14 @@ class SotopiaEnvironment:
             self._seed_factory.get("simulation") if self._seed_factory else None
         )
 
-        # HRRL_NO_Q ablation: agents skip Q-learning but keep the rest of the
-        # homeostatic machinery intact (sigmoide, drive, StimulusEvaluator).
-        q_disabled = self.orchestration_mode == OrchestrationMode.HRRL_NO_Q
+        # EPR: agents skip Q-learning but keep the rest of the homeostatic
+        # machinery intact (sigmoide, drive, StimulusEvaluator).
+        q_disabled = self.orchestration_mode in (
+            OrchestrationMode.EPR, OrchestrationMode.HRRL_NO_Q,
+            OrchestrationMode.EPR_SHAM,
+        )
+        is_sham = self.orchestration_mode == OrchestrationMode.EPR_SHAM
+        self.graph = ArgumentGraph(connectivity_fix=True)
         self.agents: list[LangClawAgent] = [
             LangClawAgent(
                 agent_id=role["id"],
@@ -272,7 +281,13 @@ class SotopiaEnvironment:
                 faction_agents=_faction_agents(role["id"]),
                 stimulus_weights=stimulus_weights,
                 debate_alpha=debate_alpha,
+                lambda_rate=lambda_rate,
                 q_disabled=q_disabled,
+                sham=is_sham,
+                sham_seed=(
+                    self._seed_factory.get(f"agent_{role['id']}_sham")
+                    if self._seed_factory and is_sham else None
+                ),
             )
             for role in AGENT_ROLES
         ]
@@ -288,17 +303,10 @@ class SotopiaEnvironment:
                 model=model,
                 seed=router_seed,
             )
-        elif self.orchestration_mode == OrchestrationMode.LANGGRAPH_INFORMED:
-            router_seed = (
-                self._seed_factory.get("router_llm") if self._seed_factory else None
-            )
-            self._router = LangGraphInformedRouter(
-                base_url=base_url,
-                api_key=api_key,
-                model=model,
-                seed=router_seed,
-            )
         self._langgraph_pending_messages: dict[str, list[DirectMessageEvent]] = {
+            a.agent_id: [] for a in self.agents
+        }
+        self._epr_pending_messages: dict[str, list[DirectMessageEvent]] = {
             a.agent_id: [] for a in self.agents
         }
 
@@ -327,7 +335,10 @@ class SotopiaEnvironment:
             for component, prime in self._seed_factory.summary().items():
                 console.print(f"  [dim]  {component:<30} -> {prime}[/dim]")
 
-        if self.orchestration_mode in (OrchestrationMode.HRRL, OrchestrationMode.HRRL_NO_Q):
+        if self.orchestration_mode in (
+            OrchestrationMode.EPR_Q, OrchestrationMode.EPR, OrchestrationMode.HRRL_NO_Q,
+            OrchestrationMode.EPR_SHAM,
+        ):
             first_agent = self.agents[0]
             d0 = first_agent.drive.deficit
             theta = 0.7
@@ -337,14 +348,9 @@ class SotopiaEnvironment:
                 f"  [dim]Initial deficit: {d0:.2f} | theta={theta} | lambda={lambda_rate}/tick "
                 f"-> 50% activation at tick ~{ticks_to_50pct:.0f}[/dim]"
             )
-            asyncio.run(self._run_hrrl())
-        elif self.orchestration_mode in (
-            OrchestrationMode.LANGGRAPH,
-            OrchestrationMode.LANGGRAPH_INFORMED,
-        ):
+            self._run_epr_serial()
+        elif self.orchestration_mode == OrchestrationMode.LANGGRAPH:
             self._run_langgraph()
-        elif self.orchestration_mode == OrchestrationMode.HRRL_NO_Q:
-            asyncio.run(self._run_hrrl())
         else:
             self._run_baseline()
 
@@ -353,12 +359,12 @@ class SotopiaEnvironment:
         return self.logs
 
     def run_single_tick(self, tick: int) -> list[SimulationLog]:
-        if self.orchestration_mode in (OrchestrationMode.HRRL, OrchestrationMode.HRRL_NO_Q):
-            tick_logs = asyncio.run(self._hrrl_single_tick(tick))
-        elif self.orchestration_mode in (
-            OrchestrationMode.LANGGRAPH,
-            OrchestrationMode.LANGGRAPH_INFORMED,
+        if self.orchestration_mode in (
+            OrchestrationMode.EPR_Q, OrchestrationMode.EPR, OrchestrationMode.HRRL_NO_Q,
+            OrchestrationMode.EPR_SHAM,
         ):
+            tick_logs = self._epr_serial_tick(tick)
+        elif self.orchestration_mode == OrchestrationMode.LANGGRAPH:
             tick_logs = self._langgraph_single_tick(tick)
         else:
             tick_logs = self._baseline_tick(tick)
@@ -528,6 +534,263 @@ class SotopiaEnvironment:
         return self._build_tick_logs(tick_results, tick)
 
     # ──────────────────────────────────────────────────────────────────────────
+    # EPR serial loop (endogenous selection, 1 agent per tick)
+    # ──────────────────────────────────────────────────────────────────────────
+
+    def _run_epr_serial(self) -> None:
+        """Serial EPR orchestration — endogenous sigmoid gate selects 1 agent per tick.
+
+        Structurally identical to _run_langgraph, but selection is endogenous:
+        the agent with the highest activation probability that passes the
+        stochastic sigmoid gate acts. This matches LangGraph's throughput
+        (1 agent/tick) so the only difference between conditions is the
+        locus of control (endogenous gate vs exogenous router).
+        """
+        for tick in range(1, self.max_iterations + 1):
+            tick_logs = self._epr_serial_tick(tick)
+            self.logs.extend(tick_logs)
+            self._print_tick(tick, tick_logs)
+            if self._on_tick:
+                self._on_tick(tick, tick_logs, self)
+
+    def _epr_serial_tick(self, tick: int) -> list[SimulationLog]:
+        """One tick of serial EPR: sigmoid gate selects 1 agent to act.
+
+        1. ALL agents: decay + stimulus evaluation + activation_prob.
+        2. Endogenous selection: agents that pass the stochastic gate
+           (rng < activation_prob) are candidates; pick the one with
+           highest activation_prob. If none pass, all PASS.
+        3. Selected agent runs the cognitive loop (same step() path
+           as LangGraph for structural symmetry).
+        4. Events and messages routed identically to LangGraph.
+        """
+        tick_results: list[dict[str, Any]] = []
+        candidates: list[tuple[str, float]] = []  # (agent_id, activation_prob)
+
+        for agent in self.agents:
+            deficit_before = agent.drive.deficit
+            agent.drive.decay()
+            agent.memory.update_working_tick(tick)
+
+            buffered_events = list(agent._event_buffer)
+            agent._event_buffer.clear()
+            for evt in buffered_events:
+                relevance = agent.stimulus_evaluator.evaluate(
+                    evt, agent.agent_id, agent.memory, self.graph
+                )
+                agent.drive.stimulate(relevance, gamma=0.1)
+
+            incoming_msgs = list(self._epr_pending_messages[agent.agent_id])
+            self._epr_pending_messages[agent.agent_id].clear()
+            activation_prob = agent.drive.get_activation_probability()
+
+            res: dict[str, Any] = {
+                "agent_id": agent.agent_id,
+                "tick": tick,
+                "action_type": "PASS",
+                "node_id": None,
+                "claim": None,
+                "target_node_id": None,
+                "attack_type": None,
+                "deficit_before": deficit_before,
+                "deficit_after": agent.drive.deficit,
+                "activation_prob": activation_prob,
+                "delta_phi": 0.0,
+                "utility_scores": {},
+                "stimulus_event_id": None,
+                "stimulus_utility": 0.0,
+                "n_stimuli_evaluated": len(buffered_events),
+                "n_messages_received": len(incoming_msgs),
+                "reward": 0.0,
+                "q_values": {},
+                "agent_state": "active",
+                "cognitive_phase": None,
+                "messages": [],
+                "vsm_system": agent.vsm_system,
+                "send_to": None,
+                "message_content": None,
+                "message_type": None,
+                "_incoming_msgs": incoming_msgs,
+                "_buffered_events": buffered_events,
+            }
+            tick_results.append(res)
+
+            # Endogenous gate: does this agent activate?
+            if agent._rng.random() < activation_prob:
+                if self.budget.can_call(agent.agent_id, agent.drive.deficit, tick):
+                    candidates.append((agent.agent_id, activation_prob))
+
+        # Select the agent with highest activation_prob among those that passed the gate
+        selected_id: str | None = None
+        if candidates:
+            selected_id = max(candidates, key=lambda x: x[1])[0]
+
+        # Execute cognitive loop for selected agent
+        if selected_id is not None:
+            agent = next(a for a in self.agents if a.agent_id == selected_id)
+            res = next(r for r in tick_results if r["agent_id"] == selected_id)
+
+            discourse_context = self.graph.get_recent_context(last_n=6)
+            target_ids = self.graph.valid_target_ids()
+            incoming_msgs = res.pop("_incoming_msgs", [])
+            buffered_events = res.pop("_buffered_events", [])
+
+            messages_ctx = "No messages."
+            if incoming_msgs:
+                msg_lines = [
+                    f"[{m.performative.upper()}] from {m.from_agent}: {m.content}"
+                    for m in incoming_msgs
+                ]
+                messages_ctx = "\n".join(msg_lines)
+
+            faction_agents_str = ", ".join(
+                a for a in agent.faction_agents if a != agent.agent_id
+            ) or "None"
+
+            memory_ctx = agent.memory.get_prompt_context(
+                discourse_query=discourse_context[:200] if discourse_context else None
+            )
+
+            # Re-evaluate buffered events for stimulus context (they were cleared above)
+            best_stimulus_ctx = "No specific stimulus. Act proactively."
+            if buffered_events:
+                scored = [
+                    (e, agent.stimulus_evaluator.evaluate(
+                        e, agent.agent_id, agent.memory, self.graph))
+                    for e in buffered_events
+                ]
+                best_evt, best_u = max(scored, key=lambda x: x[1])
+                res["stimulus_event_id"] = best_evt.node_id
+                res["stimulus_utility"] = best_u
+                best_stimulus_ctx = (
+                    f"You are responding to: [{best_evt.node_id}] "
+                    f"{best_evt.agent_id} ({best_evt.faction}): "
+                    f'"{best_evt.claim}"'
+                )
+
+            faction_prefix = agent.agent_id.split("-")[0] + "-"
+            undefended = self.graph.get_undefended_attacks(faction_prefix)
+            undef_ctx = "None — your faction's claims are all defended."
+            if undefended:
+                udef_lines = [
+                    f"- [{u['attacker_node']}] attacks your "
+                    f"[{u['attacked_node']}]: \"{u['attacker_claim']}\""
+                    for u in undefended[:5]
+                ]
+                undef_ctx = "\n".join(udef_lines)
+
+            action_result = agent.step(
+                discourse_context,
+                target_ids,
+                incoming_messages=incoming_msgs,
+                stimulus_context=best_stimulus_ctx,
+                undefended_attacks_ctx=undef_ctx,
+            )
+
+            res["cognitive_phase"] = "execute"
+            res["agent_state"] = "working"
+
+            if action_result and action_result.action == "DEBATE" and action_result.claim:
+                node_id = self.graph.add_argument(
+                    agent_id=agent.agent_id,
+                    claim=action_result.claim,
+                    target_node_id=action_result.target_node_id,
+                    attack_type=action_result.attack_type,
+                    tick=tick,
+                )
+                delta_phi = self.graph.calculate_phi_star_proxy(
+                    node_id,
+                    agent_claim_history=[
+                        e.claim for e in agent.memory._episodic_cache if e.claim
+                    ],
+                )
+                agent.learn(discourse_context, action_result, delta_phi)
+                res.update({
+                    "action_type": "DEBATE",
+                    "node_id": node_id,
+                    "claim": action_result.claim,
+                    "target_node_id": action_result.target_node_id,
+                    "attack_type": action_result.attack_type,
+                    "delta_phi": delta_phi,
+                })
+
+            elif action_result and action_result.action == "MESSAGE" and action_result.send_to:
+                res.update({
+                    "action_type": "MESSAGE",
+                    "send_to": action_result.send_to,
+                    "message_content": action_result.message_content,
+                    "message_type": action_result.message_type,
+                })
+                res["messages"] = [{
+                    "to_agent": action_result.send_to,
+                    "content": action_result.message_content or "",
+                    "msg_type": action_result.message_type or "inform",
+                }]
+                content = (action_result.message_content or "").strip()
+                has_recipient = action_result.send_to in agent.faction_agents
+                word_count = len(content.split()) if content else 0
+                substance = min(1.0, word_count / 20.0) if has_recipient else 0.0
+                agent.drive.satiate(substance * 0.08, alpha=1.0)
+
+            elif action_result and action_result.action == "SEARCH":
+                res["action_type"] = "SEARCH"
+                res["search_query"] = action_result.search_query
+                agent.do_search_sync(self.graph, action_result.search_query, action_result.search_params)
+
+            elif action_result and action_result.action == "READ":
+                res["action_type"] = "READ"
+                agent.do_read_sync(self.graph, tick)
+
+            res["deficit_after"] = agent.drive.deficit
+            reward = agent.drive.compute_reward(
+                delta_before=res["deficit_before"],
+                delta_after=agent.drive.deficit,
+                epsilon=agent.drive.BASELINE,
+                m=agent.drive.m,
+            )
+            res["reward"] = round(reward, 6)
+
+        # Broadcast NewArgumentEvents
+        for r in tick_results:
+            if r["action_type"] == "DEBATE" and r.get("node_id"):
+                author_faction = _faction_of(r["agent_id"])
+                target_faction: str | None = None
+                target_nid = r.get("target_node_id")
+                if target_nid and self.graph.graph.has_node(target_nid):
+                    ta = self.graph.graph.nodes[target_nid].get("agent_id", "")
+                    target_faction = _faction_of(ta)
+                evt = NewArgumentEvent(
+                    tick=tick,
+                    node_id=r["node_id"],
+                    agent_id=r["agent_id"],
+                    claim=r["claim"] or "",
+                    delta_phi=r["delta_phi"],
+                    attack_type=r.get("attack_type"),
+                    target_node_id=target_nid,
+                    faction=author_faction,
+                    targets_faction=target_faction,
+                )
+                for other_agent in self.agents:
+                    if other_agent.agent_id != r["agent_id"]:
+                        other_agent.memory.observe(evt)
+                        other_agent._event_buffer.append(evt)
+
+        # Route DirectMessages
+        for r in tick_results:
+            for msg in r.get("messages", []):
+                to_id = msg.get("to_agent", "")
+                if to_id in self._epr_pending_messages:
+                    self._epr_pending_messages[to_id].append(DirectMessageEvent(
+                        tick=tick,
+                        from_agent=r["agent_id"],
+                        to_agent=to_id,
+                        content=msg.get("content", ""),
+                        performative=msg.get("msg_type", "inform"),
+                    ))
+
+        return self._build_tick_logs(tick_results, tick, trigger="HOMEOSTATIC")
+
+    # ──────────────────────────────────────────────────────────────────────────
     # Baseline sync loops
     # ──────────────────────────────────────────────────────────────────────────
 
@@ -622,17 +885,12 @@ class SotopiaEnvironment:
 
         discourse_context = self.graph.get_recent_context(last_n=6)
 
-        if isinstance(self._router, LangGraphInformedRouter):
-            agent_features = self._compute_router_features()
-            selected_id = self._router.select_next_agent_informed(
-                discourse_context=discourse_context,
-                agent_features=agent_features,
-            )
-        else:
-            selected_id = self._router.select_next_agent(
-                discourse_context=discourse_context,
-                agent_ids=agent_ids,
-            )
+        agent_features = self._compute_router_features()
+        selected_id = self._router.select_next_agent(
+            discourse_context=discourse_context,
+            agent_ids=agent_ids,
+            agent_features=agent_features,
+        )
 
         tick_results: list[dict[str, Any]] = []
 
@@ -781,7 +1039,12 @@ class SotopiaEnvironment:
                         attack_type=action_result.attack_type,
                         tick=tick,
                     )
-                    delta_phi = self.graph.calculate_phi_star_proxy(node_id)
+                    delta_phi = self.graph.calculate_phi_star_proxy(
+                        node_id,
+                        agent_claim_history=[
+                            e.claim for e in agent.memory._episodic_cache if e.claim
+                        ],
+                    )
                     agent.learn(discourse_context, action_result, delta_phi)
                     res.update({
                         "action_type": "DEBATE",
@@ -810,8 +1073,14 @@ class SotopiaEnvironment:
                     substance = min(1.0, word_count / 20.0) if has_recipient else 0.0
                     agent.drive.satiate(substance * 0.08, alpha=1.0)
 
-                elif action_result and action_result.action in ("SEARCH", "READ"):
-                    res["action_type"] = action_result.action
+                elif action_result and action_result.action == "SEARCH":
+                    res["action_type"] = "SEARCH"
+                    res["search_query"] = action_result.search_query
+                    agent.do_search_sync(self.graph, action_result.search_query, action_result.search_params)
+
+                elif action_result and action_result.action == "READ":
+                    res["action_type"] = "READ"
+                    agent.do_read_sync(self.graph, tick)
 
             res["deficit_after"] = agent.drive.deficit
             reward = agent.drive.compute_reward(
@@ -904,7 +1173,12 @@ class SotopiaEnvironment:
                         attack_type=result.attack_type,
                         tick=tick,
                     )
-                    delta_phi = self.graph.calculate_phi_star_proxy(node_id)
+                    delta_phi = self.graph.calculate_phi_star_proxy(
+                        node_id,
+                        agent_claim_history=[
+                            e.claim for e in agent.memory._episodic_cache if e.claim
+                        ],
+                    )
                     agent.learn(graph_context, result, delta_phi)
 
                     self._total_debate_turns += 1
@@ -996,6 +1270,7 @@ class SotopiaEnvironment:
                 message_type=res.get("message_type"),
                 n_messages_received=res.get("n_messages_received", 0),
                 vsm_system=res.get("vsm_system"),
+                search_query=res.get("search_query"),
             ))
 
         return logs

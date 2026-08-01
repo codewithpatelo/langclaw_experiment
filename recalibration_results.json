@@ -1,0 +1,114 @@
+{
+  "master_seed": 20260308,
+  "calibration_seed": 196379,
+  "best_config": {
+    "debate_alpha": 4.0,
+    "lambda_rate": 0.02
+  },
+  "criteria": {
+    "max_deficit_end": 1.0,
+    "min_debates": 10,
+    "max_share": 0.2
+  },
+  "all_configs": [
+    {
+      "debate_alpha": 3.0,
+      "lambda_rate": 0.02,
+      "n_debates": 17,
+      "avg_dphi": 0.5274,
+      "max_share": 0.1176,
+      "max_deficit_end": 0.8247,
+      "deficit_stable": true,
+      "passes_criteria": true,
+      "elapsed_s": 385.9
+    },
+    {
+      "debate_alpha": 3.0,
+      "lambda_rate": 0.03,
+      "n_debates": 15,
+      "avg_dphi": 0.5225,
+      "max_share": 0.1333,
+      "max_deficit_end": 1.1027,
+      "deficit_stable": false,
+      "passes_criteria": false,
+      "elapsed_s": 326.3
+    },
+    {
+      "debate_alpha": 3.0,
+      "lambda_rate": 0.05,
+      "n_debates": 17,
+      "avg_dphi": 0.5278,
+      "max_share": 0.1176,
+      "max_deficit_end": 1.3445,
+      "deficit_stable": false,
+      "passes_criteria": false,
+      "elapsed_s": 322.5
+    },
+    {
+      "debate_alpha": 4.0,
+      "lambda_rate": 0.02,
+      "n_debates": 16,
+      "avg_dphi": 0.5491,
+      "max_share": 0.1875,
+      "max_deficit_end": 0.836,
+      "deficit_stable": true,
+      "passes_criteria": true,
+      "elapsed_s": 259.6
+    },
+    {
+      "debate_alpha": 4.0,
+      "lambda_rate": 0.03,
+      "n_debates": 22,
+      "avg_dphi": 0.4755,
+      "max_share": 0.1364,
+      "max_deficit_end": 0.8099,
+      "deficit_stable": true,
+      "passes_criteria": true,
+      "elapsed_s": 236.7
+    },
+    {
+      "debate_alpha": 4.0,
+      "lambda_rate": 0.05,
+      "n_debates": 22,
+      "avg_dphi": 0.5066,
+      "max_share": 0.1364,
+      "max_deficit_end": 1.0408,
+      "deficit_stable": false,
+      "passes_criteria": false,
+      "elapsed_s": 290.9
+    },
+    {
+      "debate_alpha": 5.0,
+      "lambda_rate": 0.02,
+      "n_debates": 18,
+      "avg_dphi": 0.519,
+      "max_share": 0.1667,
+      "max_deficit_end": 0.9057,
+      "deficit_stable": true,
+      "passes_criteria": true,
+      "elapsed_s": 355.9
+    },
+    {
+      "debate_alpha": 5.0,
+      "lambda_rate": 0.03,
+      "n_debates": 16,
+      "avg_dphi": 0.5304,
+      "max_share": 0.125,
+      "max_deficit_end": 1.0045,
+      "deficit_stable": false,
+      "passes_criteria": false,
+      "elapsed_s": 319.2
+    },
+    {
+      "debate_alpha": 5.0,
+      "lambda_rate": 0.05,
+      "n_debates": 19,
+      "avg_dphi": 0.4848,
+      "max_share": 0.1579,
+      "max_deficit_end": 1.0384,
+      "deficit_stable": false,
+      "passes_criteria": false,
+      "elapsed_s": 360.6
+    }
+  ]
+}

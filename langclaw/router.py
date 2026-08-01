@@ -15,23 +15,42 @@ Key design decisions:
 
 from __future__ import annotations
 
+import json
 import logging
+from typing import Any
 
 from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
-# Neutral router prompt — does NOT reference evaluation metrics
+# Neutral router prompt — does NOT reference evaluation metrics.
+# Includes the same structural features EPR agents use internally (deficit,
+# stimulus_utility, recent_arguments, vsm_role) so the only difference between
+# EPR and LangGraph is the locus of control (endogenous sigmoid vs exogenous router).
 _ROUTER_PROMPT = """\
-You are a neutral debate moderator.
+You are a neutral debate moderator with access to the internal state of the participants.
 
-The following arguments have been made in the debate so far (most recent last):
+Recent debate arguments (most recent last):
 {context}
+
+Per-participant structural state (JSON, computed from the discourse graph):
+{features_json}
+
+Field meanings:
+- deficit: epistemic deficit (higher = more accumulated tension to discharge)
+- stimulus_utility: structural utility of responding to the most recent
+  unanswered argument, computed via a multi-criteria sensor (faction relevance,
+  target centrality, memory match, novelty, unanswered pressure)
+- recent_arguments: number of arguments produced by this agent in the last 10 turns
+- vsm_role: subsystem role (S1 Operations, S2 Coordination, S3 Control,
+  S4 Intelligence, S5 Strategy)
 
 Available participants: {agent_ids}
 
-Select the participant whose contribution would best advance the discussion at this point.
-Output ONLY the participant ID, exactly as listed above. No explanation, no punctuation.\
+Select the participant whose contribution would best advance the discussion
+at this point, taking BOTH the textual context AND the structural state into
+account. Output ONLY the participant ID, exactly as listed above. No
+explanation, no punctuation.\
 """
 
 
@@ -81,6 +100,7 @@ class LangGraphRouter:
         self,
         discourse_context: str,
         agent_ids: list[str],
+        agent_features: list[dict[str, Any]] | None = None,
         last_speaker: str | None = None,
     ) -> str:
         """Select the next agent to speak based on discourse state.
@@ -91,6 +111,10 @@ class LangGraphRouter:
             Textual summary of recent arguments (from ArgumentGraph.get_recent_context).
         agent_ids:
             All agent IDs eligible to speak this tick.
+        agent_features:
+            Per-agent structural features (deficit, stimulus_utility,
+            recent_arguments, vsm_role).  When provided, the router sees the
+            same internal state that EPR agents use for self-activation.
         last_speaker:
             The agent that spoke last (passed for context, not enforced).
 
@@ -101,13 +125,19 @@ class LangGraphRouter:
         if not agent_ids:
             raise ValueError("agent_ids must be non-empty")
 
+        features_json = (
+            json.dumps(agent_features, ensure_ascii=False, indent=2)
+            if agent_features
+            else "[]"
+        )
         prompt = _ROUTER_PROMPT.format(
             context=discourse_context or "No arguments have been made yet.",
+            features_json=features_json,
             agent_ids=", ".join(agent_ids),
         )
 
         try:
-            extra: dict = {}
+            extra: dict = {"temperature": 0.0}
             if self._seed is not None:
                 extra["seed"] = self._seed
 

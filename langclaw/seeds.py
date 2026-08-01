@@ -95,6 +95,16 @@ class SeedFactory:
             self._cache[component] = self._derive(component)
         return self._cache[component]
 
+    @classmethod
+    def derive_experiment_seeds(cls, master_seed: int, n: int = 20) -> list[int]:
+        """Derive n unique experiment seeds from a single master seed.
+
+        Each derived seed is a prime in [PRIME_MIN, PRIME_MIN + PRIME_RANGE).
+        Use these as per-run master seeds for SeedFactory(master_seed=derived_i).
+        """
+        factory = cls(master_seed)
+        return [factory.get(f"experiment_run_{i}") for i in range(n)]
+
     def summary(self) -> dict[str, int]:
         """Return all seeds derived so far (for logging / paper appendix)."""
         return dict(self._cache)

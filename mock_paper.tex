@@ -1,0 +1,779 @@
+% Driveplexity — mock paper for methodological review (LNCS format)
+% Title and abstract accepted by Escuela NLP (Jul 22, 2026).
+% Results: 20/20 seeds completed. Judge evaluation in progress.
+%
+\documentclass{llncs}
+
+\usepackage[a4paper, top=5.2cm, bottom=5.2cm, left=4.4cm, right=4.4cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{listings}
+\usepackage{enumitem}
+
+\setlength{\textfloatsep}{10pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\raggedbottom
+
+\lstset{
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  frame=single,
+  language=Python,
+  numbers=none,
+  xleftmargin=1em,
+  xrightmargin=1em,
+}
+
+\usepackage[style=apa,maxcitenames=2,mincitenames=1,maxbibnames=3,minbibnames=2]{biblatex}
+\addbibresource{references.bib}
+\setlength{\bibitemsep}{0pt}
+\setlength{\bibhang}{0.6em}
+\renewcommand*{\bibfont}{\footnotesize}
+
+\begin{document}
+
+% ============================================================
+% ENGLISH TITLE + ABSTRACT + KEYWORDS
+% ============================================================
+\title{Endogenous Activation via Epistemic Homeostasis in
+LLM-Based Multi-Agent Systems\thanks{Todos los agentes deliberativos,
+el enrutador LangGraph y los m\'odulos auxiliares se ejecutan en
+\textbf{DeepSeek V4-Flash}. Los jueces offline usan DeepSeek V4-Pro y
+GLM-5.2 (Z.AI), ciegos al modo de orquestaci\'on.}}
+
+\author{}
+\institute{}
+
+\maketitle
+
+\begin{abstract}
+LLM-based multi-agent systems tend to lose coherence as interaction
+extends, a phenomenon known as context collapse that, in competitive
+deliberation settings, invalidates the debate. Contemporary frameworks
+(AutoGen, MetaGPT, LangGraph) maintain exogenous activation: the
+moment each agent speaks is decided outside its internal state,
+decoupling activation from the epistemic pressure the agent
+accumulates. Biology suggests an alternative: internal variables
+accumulate tension, trigger a response, and return to equilibrium
+without external instruction (homeostasis). We present an endogenous
+orchestration mechanism where each agent manages an internal epistemic
+deficit ($\delta_i$) that increases steadily during inactivity and
+decreases after producing a useful linguistic contribution; a sigmoid
+function transforms this tension into an action probability. We
+formalize this framework through the Axioms of Homeostatic Autonomy
+(AAH) and evaluate it against LangGraph routers in adversarial text
+debates with 20 paired seeds, four conditions, and dual LLM judges
+blind to orchestration mode. Results show that pure endogenous
+activation distributes speaking turns $2.3\times$ more equitably than
+exogenous routing, controls epistemic deficit, and produces higher
+structural quality --- without reinforcement learning.
+
+\keywords{multi-agent systems \and large language models \and
+homeostatic activation \and endogenous orchestration \and
+multi-agent debate \and event-driven architecture}
+\end{abstract}
+\clearpage
+
+% ============================================================
+% SPANISH TITLE + RESUMEN + KEYWORDS
+% ============================================================
+\begin{center}
+{\Large \bfseries\boldmath Activaci\'on End\'ogena mediante Homeostasis
+Epist\'emica en Sistemas Multi-Agente Basados en LLMs}
+\end{center}
+
+\begin{abstract}
+Los sistemas multi-agente basados en modelos de lenguaje (LLMs) tienden
+a perder coherencia a medida que la interacci\'on se extiende, un
+fen\'omeno conocido como colapso de contexto que, en entornos de
+deliberaci\'on competitiva, invalida el debate. Los marcos de trabajo
+contempor\'aneos (como AutoGen, MetaGPT o LangGraph) mantienen una
+activaci\'on ex\'ogena: el momento en que habla cada agente se decide
+por fuera de su estado interno, desacoplando la activaci\'on de la
+presi\'on epist\'emica que el agente acumula.
+
+La biolog\'ia sugiere una alternativa: las variables internas acumulan
+tensi\'on, gatillan una respuesta y regresan al equilibrio sin una
+instrucci\'on externa (homeostasis). En este trabajo presentamos un
+mecanismo de orquestaci\'on end\'ogena donde cada agente gestiona un
+d\'eficit epist\'emico interno ($\delta_i$) que aumenta de forma
+constante durante los periodos de inactividad y se reduce
+inmediatamente despu\'es de realizar una contribuci\'on ling\"u\'istica
+\'util; una funci\'on sigmoide transforma esta tensi\'on en una
+probabilidad de acci\'on.
+
+Formalizamos este marco a trav\'es de los Axiomas de Autonom\'ia
+Homeost\'atica (AAH) y lo evaluamos frente a ruteadores LangGraph en
+debates adversariales de texto con 20 semillas pareadas, cuatro
+condiciones y jueces LLM duales ciegos al modo. Los resultados muestran
+que la activaci\'on end\'ogena pura distribuye los turnos de habla
+$2.3\times$ m\'as equitativamente que el ruteo ex\'ogeno, controla el
+d\'eficit epist\'emico y produce mayor calidad estructural --- sin
+aprendizaje por refuerzo.
+
+\keywords{sistemas multi-agente \and modelos de lenguaje \and
+activaci\'on homeost\'atica \and orquestaci\'on end\'ogena \and
+debate multi-agente \and arquitectura dirigida por eventos}
+\end{abstract}
+
+\setcounter{page}{1}
+
+% ============================================================
+\section{Introducci\'on}
+\label{sec:intro}
+
+Los sistemas multiagente basados en LLM comienzan a emplearse en
+procesos deliberativos de larga duraci\'on ---an\'alisis de pol\'iticas,
+revisi\'on cient\'ifica, decisiones institucionales--- donde la
+p\'erdida de coherencia no queda contenida en el software: una
+recomendaci\'on de pol\'itica sostenida sobre un debate viciado puede
+afectar a millones, y una revisi\'on cient\'ifica con premisas
+alucinadas contamina la literatura sobre la que se construye m\'as
+ciencia. El escalamiento del c\'omputo en
+inferencia~\parencite{snell2024scaling} reabre una pregunta de
+asignaci\'on: dado un presupuesto fijo, ¿c\'omo conviene distribuirlo
+entre agentes? A medida que la interacci\'on se extiende, los agentes
+pierden registro de argumentos previos, repiten puntos o producen
+mon\'ologos desconectados~\parencite{park2023generative}---el
+\emph{colapso del contexto}. En deliberaci\'on adversarial cada
+argumento presupone los anteriores: esta p\'erdida no degrada el
+debate, lo \emph{invalida}.
+
+El campo ha consolidado un paradigma generalista de orquestaci\'on. Una
+generaci\'on reciente de frameworks ---AutoGen, CAMEL,
+MetaGPT~\parencite{wu2023autogen,li2023camel,hong2023metagpt}--- estructura
+las interacciones entre agentes mediante grafos de control y enrutadores
+centralizados que asignan turnos seg\'un el estado del flujo;
+LangGraph a\~nadi\'o estado durable y transiciones condicionales, dando al
+orquestador mayor expresividad, y el paradigma de
+\emph{heartbeat}~\parencite{openclaw2025heartbeat} incorpor\'o
+persistencia temporal mediante activaci\'on peri\'odica con memoria entre
+latidos. Ninguno de estos frameworks fue dise\~nado espec\'ificamente para
+deliberaci\'on adversarial extendida, pero proveen el sustrato sobre el
+que se construyen los MAS-LLM contempor\'aneos y heredan un supuesto
+estructural com\'un: la decisi\'on de \emph{cu\'ando} y \emph{con qu\'e
+frecuencia} participa cada agente queda fijada por el dise\~nador, no
+emerge del agente mismo.
+
+Un mecanismo bien establecido en biolog\'ia describe c\'omo los sistemas
+regulan desequilibrios internos sin control externo: la
+homeostasis~\parencite{sterling1988allostasis}. Variables internas
+acumulan tensi\'on, desencadenan respuesta y retornan al equilibrio;
+HRRL~\parencite{keramati2014homeostatic} formaliz\'o este principio
+derivando la recompensa como reducci\'on de impulso. La analog\'ia es
+estructural: donde un organismo acumula hambre y act\'ua para reducirla,
+un agente deliberativo podr\'ia acumular \emph{d\'eficit epist\'emico} y
+actuar para reducirlo. ¿Qu\'e ocurrir\'ia si la coherencia en un debate
+multi-agente pudiera sostenerse end\'ogenamente ---no impuesta por un
+planificador, sino emergente del estado regulatorio de cada agente?
+
+Exploramos esa pregunta mediante un mecanismo de regulaci\'on
+end\'ogena donde cada agente mantiene un d\'eficit epist\'emico
+que crece al permanecer inactivo y decrece tras una contribuci\'on
+estructuralmente \'util. Una compuerta sigmoide traduce el d\'eficit en
+probabilidad de acci\'on. La frecuencia de participaci\'on no se fija
+ni se enruta: \emph{emerge}. A diferencia de trabajos previos que
+incorporan Q-learning sobre la base homeost\'atica, aqu\'i nos
+concentramos en el \emph{modelo puramente homeost\'atico} ---al que
+denominamos EPR (Ecuaci\'on Pro-Acci\'on Reducida, $\Gamma(n{=}1)$)--- 
+para aislar la contribuci\'on del mecanismo regulatorio b\'asico sin la
+complejidad del aprendizaje por refuerzo.
+
+De ah\'i, cuatro contribuciones: (i)~una axiomatizaci\'on
+ontol\'ogica de Autonom\'ia Homeost\'atica (AAH) que explicita los
+supuestos sobre el agente requeridos para que el experimento
+subsiguiente sea interpretable; (ii)~una arquitectura concreta de
+activaci\'on end\'ogena para sistemas multi-agente de LLM que articula
+impulso, sensor estructural multicriterio y compuerta sigmoide en un
+lazo event-driven; (iii)~una operacionalizaci\'on emp\'irica de
+coherencia estructural mediante grafos de argumentaci\'on abstracta
+(AAF) y un sensor de cinco criterios, con correcciones de
+conectividad y validaci\'on grafo-estructural; (iv)~un dise\~no
+experimental controlado con 20 semillas pareadas (4 lotes de 5), hip\'otesis
+pre-registradas, jueces LLM duales ciegos al modo y cuatro condiciones
+(EPR, EPR\_Q, EPR\_SHAM, LangGraph).
+
+% ============================================================
+\section{Revisi\'on bibliogr\'afica}
+\label{sec:related}
+
+\textbf{Orquestaci\'on ex\'ogena.}
+AutoGen~\parencite{wu2023autogen}, CAMEL~\parencite{li2023camel} y
+MetaGPT~\parencite{hong2023metagpt} demostraron que grupos de agentes
+de LLM con roles especializados pod\'ian abordar tareas complejas, pero
+dependiendo de estructuras de turno predefinidas. LangGraph consolid\'o
+este paradigma a\~nadiendo estado durable y transiciones condicionales,
+otorgando al orquestador mayor expresividad sin alterar el principio
+subyacente: la decisi\'on de activaci\'on permanece fuera del agente.
+\textcite{huang2025resilience} muestran que esta forma organizacional
+afecta la resiliencia, con estructuras centralizadas degrad\'andose m\'as
+r\'apido bajo estr\'es; \textcite{becker2026problemdrift} documentan
+que este deterioro suele tomar la forma de \emph{problem drift}
+---p\'erdida progresiva de foco en debates extendidos.
+
+\textbf{Heartbeat y persistencia temporal.} El
+paradigma~\parencite{openclaw2025heartbeat} extendi\'o la persistencia
+con memoria entre latidos, sosteniendo interacciones largas; sin embargo
+la frecuencia de activaci\'on sigue siendo una constante del scheduler.
+El avance es temporal, no regulatorio.
+
+\textbf{Variables internas sin cierre regulatorio.}
+Los agentes LLM dirigidos por deseo~\parencite{wang2025d2a} reconocen
+que el estado interno deber\'ia importar, pero no cierran el lazo:
+carecen de se\~nal expl\'icita de calidad que module la activaci\'on.
+
+\textbf{Regulaci\'on homeost\'atica.}
+HRRL~\parencite{keramati2014homeostatic} formaliz\'o en neurociencia
+computacional la idea de que la recompensa es reducci\'on de impulso.
+En el dominio LLM, trabajos
+recientes~\parencite{eslami2026controltheoretic} formalizan el
+comportamiento ag\'entico como sistema de control en lazo cerrado a
+nivel de agente individual; sin embargo, la traslaci\'on al
+orquestador multi-agente permanece subexplorada.
+
+\textbf{Modelo de discurso.}
+Implementamos un \emph{Abstract Argumentation Framework} (AAF) seg\'un
+Dung~\parencite{dung1995acceptability}: nodos como argumentos, aristas
+como ataques, sem\'antica fundamentada para aceptabilidad. El escenario
+adversarial se inspira en Sotopia~\parencite{zhou2024sotopia}.
+
+% ============================================================
+\section{Fundamentos te\'oricos y dise\~no del sistema}
+\label{sec:method}
+
+\subsection{Axiomas de Autonom\'ia Homeost\'atica (AAH)}
+\label{sec:theory}
+
+Antes de presentar la arquitectura conviene explicitar los supuestos
+sobre el agente que el experimento subsiguiente requiere para ser
+interpretable. Denotamos esta axiomatizaci\'on AAH.
+
+\subsubsection{Postulados.}
+
+\noindent\textsc{AAH-1} (Autonom\'ia~\parencite{ashby1956introduction,beer1972brain}).
+Que la pol\'itica del agente responda a su estado interno: dado entorno
+externo constante, dos valores distintos del estado interno inducen
+distribuciones de acci\'on distinguibles.
+\begin{equation}
+    \mathrm{Aut}(a_i) \;\iff\; \exists\,\delta_i \in S_L(a_i):\;
+    \pi_i = \pi_i\!\bigl(\delta_i(t) \,\big|\, e=\bar e\bigr)
+    \label{eq:a1}
+\end{equation}
+
+\noindent\textsc{AAH-2} (Impulso~\parencite{sterling1988allostasis}).
+Un impulso interno $D(\delta)$ que crece con el desv\'io del equilibrio
+($D(\varepsilon)=0$, $D'(\delta_i)>0\;\forall\,\delta_i>\varepsilon$),
+y una probabilidad de activaci\'on $p_i(t)=h(\delta_i(t))$ con $h$
+mon\'otona creciente en $\delta_i$.
+\begin{equation}
+    p_i^{(t)} = \frac{1}{1 + e^{-k(\delta_i^{(t)} - \theta)}}
+    \label{eq:sigmoid}
+\end{equation}
+con $k{=}10$, $\theta{=}0.7$.
+
+\noindent\textsc{AAH-3} (Compuerta de calidad~\parencite{ryan2001happiness}).
+Un cambio efectivo en el estado del entorno regulado. Sea
+$g(e(t),e(t{+}1))\geq 0$ la medida de ese cambio; el impulso decrece,
+sujeto a un piso fisiol\'ogico $\varepsilon \geq 0$:
+\begin{equation}
+    \delta_i^{(t+1)} = \max\!\bigl(\varepsilon,\; \delta_i^{(t)} - \alpha\, g\!\bigl(e(t), e(t{+}1)\bigr)\bigr),
+    \quad \alpha > 0
+    \label{eq:a3}
+\end{equation}
+El piso $\varepsilon$ representa el d\'eficit basal irreducible del agente
+(estado de reposo). La formulaci\'on axiom\'atica coincide con la
+implementaci\'on concreta de la Sec.~\ref{sec:deficit-dynamics}.
+
+\subsection{Din\'amica del d\'eficit epist\'emico}
+\label{sec:deficit-dynamics}
+
+En cada heartbeat $t$ act\'uan tres fuerzas: decaimiento basal
+$\delta^{(t+1)}=\delta^{(t)}+\lambda$ (Ec.~\ref{eq:decay},
+$\lambda{=}0.02$); estimulaci\'on por perturbaciones discursivas con
+utilidad $u\!=\!U(\text{stim})$ (Ec.~\ref{eq:stimulus}),
+$\delta^{(t+)} = \delta^{(t)} + \gamma_{\text{stim}}\cdot u$
+($\gamma_{\text{stim}}{=}0.1$); y saciedad tras producir un argumento
+de calidad $\Delta\varphi^*$,
+$\delta^{\text{new}} = \max(\varepsilon, \delta - \alpha\cdot\Delta\varphi^*)$
+con $\alpha$ por calibraci\'on.
+\begin{equation}
+    \delta_i^{(t+1)} = \delta_i^{(t)} + \lambda
+    \label{eq:decay}
+\end{equation}
+
+El impulso $D(\delta_i)=(\delta_i-\varepsilon)^m$ ($m{=}2$) penaliza
+desviaciones superlinealmente~\parencite{keramati2014homeostatic}.
+
+\paragraph{Ecuaci\'on unificada.}
+Las tres fuerzas se integran aditivamente dentro de cada heartbeat $t$
+en el siguiente orden: (1)~decaimiento basal, (2)~estimulaci\'on si
+ocurre un evento discursivo, (3)~saciedad si el agente produce un
+argumento. La ecuaci\'on de actualizaci\'on completa es:
+\begin{equation}
+    \delta_i^{(t+1)} = \max\!\Bigl(\varepsilon,\; \delta_i^{(t)} + \lambda
+    + \gamma_{\text{stim}} \cdot u^{(t)} - \alpha \cdot \Delta\varphi^{*,(t)}\Bigr)
+    \label{eq:unified}
+\end{equation}
+donde $u^{(t)} = U(\text{stim})$ si hay est\'imulo en $t$ (cero en caso
+contrario) y $\Delta\varphi^{*,(t)}$ es la calidad del argumento producido
+en $t$ (cero si el agente no debati\'o). El $\max(\varepsilon,\cdot)$
+asegura consistencia con AAH-3 (Ec.~\ref{eq:a3}).
+
+\subsection{Grafo de argumentos y proxy $\Delta\varphi^*$}
+\label{sec:phi}
+
+AAH-3 demanda una medida computable del cambio en el entorno regulado.
+Se construye $\Delta\varphi^*$ sobre el grafo de discurso $G{=}(V,E)$:
+\begin{equation}
+    \Delta\varphi^* = \tfrac{1}{3} C_B(u) + \tfrac{1}{3}
+        \mathbb{1}_{\text{cycle}}(v,u) + \tfrac{1}{3}\,\mathrm{Div}(u)
+    \label{eq:phi}
+\end{equation}
+donde $C_B(u)$ es centralidad de intermediaci\'on de $u$ en el grafo de
+discurso, $v$ es el nodo atacado por $u$ (i.e., $v = \texttt{target}(u)$),
+$\mathbb{1}_{\text{cycle}}(v,u)$ indica si la arista $(v,u)$ cierra un
+nuevo ciclo dial\'ectico, y $\mathrm{Div}(u)$ es diversidad de
+agentes que han atacado a $u$. Nodos aislados obtienen
+$\Delta\varphi^* = 0$.
+
+\paragraph{Correcci\'on de conectividad.}
+Cuando el LLM produce un \texttt{target\_node\_id} que no existe en el
+grafo (alucinaci\'on, truncamiento de UUID), el sistema intenta
+\emph{fuzzy matching} por prefijo o sufijo. Si ning\'un match se
+encuentra y existen otros nodos, se selecciona el m\'as reciente como
+\emph{fallback}. Esto previene nodos aislados y asegura
+$\Delta\varphi^* > 0$ para todo argumento no-ra\'iz, pero introduce una
+trade-off entre completitud estructural y fidelidad sem\'antica: algunas
+aristas son ``sint\'eticas'' y no corresponden a la intenci\'on real del
+LLM.
+
+\subsection{PRR$_G$ validado}
+\label{sec:prrg}
+
+La tasa de referencia entre pares (PRR$_G$) mide la fracci\'on de turnos
+DEBATE cuyo \texttt{target\_node\_id} apunta a un nodo \emph{realmente
+existente} en el grafo:
+\begin{equation}
+    \mathrm{PRR}_G = \frac{|\{d \in D : \texttt{target}(d) \in V_G\}|}{|D|}
+    \label{eq:prrg}
+\end{equation}
+A diferencia de una versi\'on anterior que s\'olo verificaba
+\texttt{target\_node\_id} $\neq$ \texttt{null}, esta formulaci\'on
+valida contra el conjunto de nodos reales $V_G$, eliminando el
+sobrecuento por alucinaciones del LLM.
+
+\subsection{Arquitectura del agente}
+
+Cada agente selecciona entre cinco acciones: \textbf{DEBATE} (producir
+un argumento), \textbf{SEARCH}, \textbf{READ}, \textbf{MESSAGE} (acto
+comunicativo dirigido, FIPA ACL), o \textbf{PASS}. El
+\emph{StimulusEvaluator} act\'ua como sensor: ante cada
+\texttt{NewArgumentEvent}, computa relevancia seg\'un cinco criterios
+ponderados:
+\begin{equation}
+    U(\text{stimulus}) = w_F \cdot F + w_C \cdot C_B(u) + w_M \cdot M
+        + w_N \cdot N + w_P \cdot P
+    \label{eq:stimulus}
+\end{equation}
+con $w_F + w_C + w_M + w_N + w_P = 1$, calibrados como
+\emph{faction-dominant} ($w_F{=}0.40$, restantes $0.15$). Los componentes
+son: $F$ = afinidad de facci\'on (est\'imulo proviene de agente de facci\'on
+opuesta), $C_B(u)$ = centralidad de intermediaci\'on del nodo atacado,
+$M$ = novedad l\'exica (similitud coseno con argumentos previos del agente,
+invertida), $N$ = novedad estructural (grado del nodo atacado), $P$ =
+posici\'on temporal (normalizada por tick).
+
+\subsection{Dise\~no del sistema multi-agente}
+
+Diez agentes en dos facciones espejo (Gobierno/Oposici\'on), cada una
+con los cinco subsistemas del Modelo de Sistema
+Viable~\parencite{beer1972brain}: \textbf{S1 Operaciones} produce y
+defiende argumentos; \textbf{S2 Coordinaci\'on} sincroniza aliados;
+\textbf{S3 Control} audita coherencia interna; \textbf{S4 Inteligencia}
+escanea al oponente; \textbf{S5 Estrategia} fija prioridades.
+
+\subsection{Condiciones experimentales}
+\label{sec:conditions}
+
+\textbf{EPR} (Ecuaci\'on Pro-Acci\'on Reducida, $\Gamma(n{=}1)$):
+condici\'on primaria. Activaci\'on end\'ogena via sigmoide
+(Ec.~\ref{eq:sigmoid}); el LLM elige la acci\'on (DEBATE, SEARCH, READ,
+MESSAGE, PASS) desde el diccionario de acciones. Sin Q-learning.
+Sigmoide, drive y StimulusEvaluator permanecen activos. RSVI verbaliza
+el estado regulatorio ($\delta_i$) en el prompt del agente.
+
+\textbf{EPR\_Q}: EPR + Q-learning (ablaci\'on: ¿el Q-learner aporta?).
+Mismo mecanismo homeost\'atico con pol\'itica de selecci\'on de acci\'on
+aprendida en lugar de heur\'istica.
+
+\textbf{EPR\_SHAM}: sigmoide con $\delta$ aleatorio (ablaci\'on: ¿el
+loop homeost\'atico importa o basta la forma del gate?). Preserva la
+no-linealidad sigmoide pero desconecta la activaci\'on del drive
+epist\'emico real.
+
+\textbf{LangGraph} (ex\'ogena): un enrutador LLM neutral decide qu\'e
+agente ingresa al lazo cognitivo en cada heartbeat. El agente
+seleccionado ejecuta las mismas capacidades locales. Sin RSVI: el
+router no recibe el estado regulatorio porque en LangGraph no hay
+$\delta_i$ que se actualice --- el momento de activaci\'on se decide
+fuera del agente. Inyectar RSVI sin un loop homeost\'atico ser\'ia
+enviar un estado ficticio que no drivea ninguna decisi\'on, introduciendo
+ruido, no un control v\'alido. La \'unica diferencia vs EPR
+es el locus de control (ex\'ogeno vs end\'ogeno). Throughput id\'entico
+(1 agente/tick) para aislar el efecto.
+
+% ============================================================
+\section{Dise\~no experimental}
+\label{sec:setup}
+
+\subsection{Hip\'otesis pre-registradas}
+\label{sec:hypotheses}
+
+\textbf{H1} (Resiliencia de calidad): la pendiente temporal de
+$\Delta\varphi^*$ es menos negativa bajo EPR que bajo LangGraph.
+\begin{equation*}
+    H_0: \text{slope}_{\Delta\varphi^*}(\text{EPR}) \le
+          \text{slope}_{\Delta\varphi^*}(\text{LG}) \quad\text{vs}\quad
+    H_1: \text{slope}_{\Delta\varphi^*}(\text{EPR}) >
+          \text{slope}_{\Delta\varphi^*}(\text{LG})
+\end{equation*}
+
+\textbf{H2} (Resiliencia de coherencia): la pendiente temporal de
+aceptaci\'on AAF es m\'as estable (cercana a cero) bajo EPR.
+\begin{equation*}
+    H_0: |\text{slope}_{\alpha}(\text{EPR})| \ge
+          |\text{slope}_{\alpha}(\text{LG})| \quad\text{vs}\quad
+    H_1: |\text{slope}_{\alpha}(\text{EPR})| <
+          |\text{slope}_{\alpha}(\text{LG})|
+\end{equation*}
+
+\textbf{H3} (Distribuci\'on de participaci\'on): la concentraci\'on de
+turnos (cuota m\'axima por agente) es menor bajo EPR.
+\begin{equation*}
+    H_0: \text{max-share}(\text{EPR}) \ge
+          \text{max-share}(\text{LG}) \quad\text{vs}\quad
+    H_1: \text{max-share}(\text{EPR}) <
+          \text{max-share}(\text{LG})
+\end{equation*}
+
+\subsection{An\'alisis estad\'istico}
+
+\begin{itemize}[nosep,leftmargin=*]
+\item \textbf{Primario:} Wilcoxon signed-rank pareado (aprovechando
+  semillas compartidas entre condiciones). No-param\'etrico, robusto ante
+  $N{=}20$. Holm-Bonferroni como sensibilidad.
+\item \textbf{Secundario:} Welch's $t$-test (unilateral para H1 y H3;
+  bilateral para H2). Correcci\'on Bonferroni:
+  $\alpha_{\text{adj}} = 0.05/3 = 0.0167$.
+\item \textbf{Intervalos:} Bootstrap 95\% CIs (10.000 resamples).
+\item \textbf{Tama\~no de efecto:} Cohen's $d$.
+\end{itemize}
+
+\subsection{Juez LLM offline}
+
+Tras cada simulaci\'on, todos los \emph{claims} se extraen y mezclan
+ciegos al modo de orquestaci\'on. Dos jueces LLM eval\'uan cada claim:
+\textbf{DeepSeek V4-Pro} y \textbf{GLM-5.2} (Z.AI). Cada juez eval\'ua:
+(1)~calidad argumentativa (1--5), (2)~engagement (1--5),
+(3)~novelty (1--5). El juez ve el claim, el claim atacado (si lo hay) y
+el rol del agente, pero no el modo, semilla ni tick. Se calcula
+Cohen's $\kappa$ para concordancia inter-juez.
+
+\subsection{Configuraci\'on}
+
+\begin{table}[H]
+\caption{Hiperpar\'ametros.}\label{tab:hyperparams}
+\centering\small
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Par\'ametro} & \textbf{Valor} & \textbf{Par\'ametro} & \textbf{Valor} \\
+\hline
+Decaimiento $\lambda$ & 0.02 & Sigmoide $k$ & 10 \\
+Umbral $\theta$ & 0.7 & Saciedad $\alpha$ (calibrada) & 4.0 \\
+Ganancia est\'imulo $\gamma$ & 0.1 & Base / inicial $\varepsilon,\delta_0$ & 0.1 / 0.5 \\
+Exponente impulso $m$ & 2 & Heartbeats $T$ / agentes $N$ & 80 / 10 \\
+Pesos est\'imulo & \multicolumn{3}{l|}{$(0.40, 0.15, 0.15, 0.15, 0.15)$ ---\emph{faction-dominant}} \\
+Semillas & \multicolumn{3}{l|}{Derivadas de master 20260308, 20 seeds (4 lotes de 5)} \\
+LLM & \multicolumn{3}{l|}{DeepSeek V4-Flash, \texttt{timeout=60s}} \\
+Jueces & \multicolumn{3}{l|}{DeepSeek V4-Pro + GLM-5.2 (offline, ciegos al modo)} \\
+\hline
+\end{tabular}
+\end{table}
+
+% ============================================================
+\section{Resultados}
+\label{sec:results}
+
+\subsection{M\'etricas agregadas}
+
+\begin{table}[H]
+\caption{Resultados consolidados (5 seeds por lote, $T{=}80$ heartbeats).
+Valores: media de 20 corridas. $p$: Wilcoxon signed-rank pareado vs EPR
+(Bonferroni $\alpha{=}0.0056$).}
+\label{tab:results}
+\centering\small
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{M\'etrica} & \textbf{EPR} & \textbf{EPR\_Q} & \textbf{EPR\_SHAM} & \textbf{LangGraph} \\
+\hline
+Total debates                       & $43.5$ & $44.9$ & $40.4$ & $60.6$ \\
+Densidad (deb./hb.)                 & $0.54$ & $0.56$ & $0.51$ & $0.76$ \\
+\hline
+Cuota m\'axima por agente           & $0.119$ & $0.115$ & $0.209^{***}$ & $\mathbf{0.276^{***}}$ \\
+$\overline{\Delta\varphi^*}$        & $0.463$ & $0.459$ & $0.449$ & $0.442^{***}$ \\
+\hline
+D\'eficit m\'aximo (agente)         & $1.02$ & $0.95$ & $\mathbf{3.74^{***}}$ & $2.54^{***}$ \\
+Nodos grafo                         & $43.5$ & $44.9$ & $40.4$ & $60.6$ \\
+Initiative ratio (IR)               & $1.00$ & $1.00$ & $1.00$ & $0.00$ \\
+\hline
+\end{tabular}
+\end{table}
+
+{\footnotesize $^{***}p<0.001$ (Bonferroni significativo). $^{**}p<0.01$.
+$^{*}p<0.05$. Sin marca: no significativo tras Bonferroni.}
+
+\subsection{Pendientes temporales}
+
+\begin{table}[H]
+\caption{$\Delta\varphi^*$ por ventana temporal (5 seeds por lote).
+Cinco ventanas de 16 ticks cada una. Degradaci\'on = $(w_0 - w_4)/w_0$.
+Las diferencias de slope no son significativas (Wilcoxon $p>0.05$).}
+\label{tab:slopes}
+\centering\small
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Ventana} & \textbf{EPR} & \textbf{EPR\_Q} & \textbf{EPR\_SHAM} & \textbf{LangGraph} \\
+\hline
+Ticks 0--15   & $0.490$ & $0.498$ & $0.459$ & $0.485$ \\
+Ticks 16--31  & $0.484$ & $0.482$ & $0.482$ & $0.446$ \\
+Ticks 32--47  & $0.455$ & $0.450$ & $0.449$ & $0.434$ \\
+Ticks 48--63  & $0.452$ & $0.435$ & $0.436$ & $0.424$ \\
+Ticks 64--79  & $0.441$ & $0.437$ & $0.423$ & $0.425$ \\
+\hline
+Degradaci\'on & $\mathbf{9.8\%}$ & $12.2\%$ & $7.8\%$ & $12.4\%$ \\
+Slope $\Delta\varphi^*$ & $-0.013$ & $-0.017$ & $-0.012$ & $-0.014$ \\
+\hline
+\end{tabular}
+\end{table}
+
+Todos los modos muestran degradaci\'on temporal de $\Delta\varphi^*$ ---
+evidencia del colapso de contexto. EPR presenta la pendiente menos
+negativa ($-0.013$) con una degradaci\'on del $9.8\%$, frente a
+LangGraph ($-0.014$, $12.4\%$). Sin embargo, las diferencias de slope
+entre modos no son estad\'isticamente significativas (Wilcoxon
+$p>0.05$), sugiriendo que el colapso de contexto es parcialmente
+end\'ogeno al LLM y no es eliminado por el mecanismo de activaci\'on.
+EPR\_Q degrada m\'as ($12.2\%$, slope $-0.017$): el Q-learning no
+amortigua el colapso y podr\'ia amplificarlo al sobre-explotar
+argumentos de alta recompensa inicial. EPR\_SHAM muestra degradaci\'on
+menor ($7.8\%$) pero con d\'eficit explosivo ($3.74$): el $\delta$
+aleatorio produce menos argumentos de menor calidad, reduciendo el
+tama\~no del grafo y por ende el contexto acumulado susceptible de
+colapsar --- no es resiliencia sino menor producci\'on. El colapso de
+contexto es parcialmente end\'ogeno: el mecanismo de activaci\'on lo
+modula pero no lo elimina.
+
+\subsection{Juez LLM}
+
+\begin{table}[H]
+\caption{Puntajes del juez LLM (1--5, ciego al modo).
+Evaluaci\'on offline con DeepSeek V4-Pro y GLM-5.2 en curso sobre las
+20 seeds completadas.}
+\label{tab:judge}
+\centering\small
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Dimensi\'on} & \textbf{EPR} & \textbf{LangGraph} & $p$ (Wilcoxon) \\
+\hline
+Calidad argumentativa & --- & --- & --- \\
+Engagement            & --- & --- & --- \\
+Novelty               & --- & --- & --- \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Validaci\'on de conectividad}
+
+\begin{table}[H]
+\caption{Conectividad (5 seeds por lote).}
+\label{tab:conn}
+\centering\small
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Check} & \textbf{EPR} & \textbf{EPR\_Q} & \textbf{EPR\_SHAM} & \textbf{LangGraph} \\
+\hline
+Nodos aislados (post-fix)    & $0\%$ & $0\%$ & $0\%$ & $0\%$ \\
+Grafo (nodos finales)        & $43.5$ & $44.9$ & $40.4$ & $60.6$ \\
+Grafo (aristas finales)      & $42.4$ & $43.8$ & $39.3$ & $59.5$ \\
+PRR$_G$                      & $0.971$ & $0.976$ & $0.966$ & $0.983$ \\
+\hline
+\end{tabular}
+\end{table}
+
+% ============================================================
+\section{Discusi\'on}
+\label{sec:discussion}
+
+\paragraph{Colapso de contexto (H1).}
+La degradaci\'on temporal de $\Delta\varphi^*$ mide el colapso de
+contexto: todos los modos degradan, pero a distintas tasas. EPR presenta
+la pendiente menos negativa ($-0.013$, degradaci\'on $9.8\%$) frente a
+LangGraph ($-0.014$, $12.4\%$). Sin embargo, las diferencias de slope
+entre modos no son estad\'isticamente significativas (Wilcoxon
+$p>0.05$), sugiriendo que el colapso de contexto es parcialmente
+end\'ogeno al LLM y no es eliminado por el mecanismo de activaci\'on.
+EPR\_Q degrada m\'as ($12.2\%$, slope $-0.017$): el Q-learning no
+amortigua el colapso y podr\'ia amplificarlo al sobre-explotar
+argumentos de alta recompensa inicial. EPR\_SHAM muestra degradaci\'on
+menor ($7.8\%$) pero con d\'eficit explosivo ($3.74$): el $\delta$
+aleatorio produce menos argumentos de menor calidad, reduciendo el
+tama\~no del grafo y por ende el contexto acumulado susceptible de
+colapsar --- no es resiliencia sino menor producci\'on. El colapso de
+contexto es parcialmente end\'ogeno: el mecanismo de activaci\'on lo
+modula pero no lo elimina.
+
+\paragraph{Distribuci\'on de turnos (H3).}
+La se\~nal m\'as clara es la distribuci\'on de participaci\'on: EPR
+produce max-share $0.119$ vs LangGraph $0.276$ --- una diferencia de
+$2.3\times$ ($p<0.001$, Bonferroni significativo). Ning\'un agente
+monopoliza el piso conversacional bajo activaci\'on homeost\'atica.
+LangGraph muestra concentraci\'on sistem\'atica (max-share $0.276$).
+EPR\_Q es a\'un m\'as equitativo ($0.115$), mientras que EPR\_SHAM
+degrada la equidad ($0.209$, $p<0.001$). Esto sugiere que la
+activaci\'on end\'ogena distribuye turnos org\'anicamente.
+
+\paragraph{Ablaci\'on sham: el loop importa.}
+EPR\_SHAM (con $\delta$ aleatorio) produce d\'eficit explosivo
+($3.74$ vs $1.02$ para EPR, $p<0.001$). La forma sigmoide sola no
+basta: el loop homeost\'atico ($\delta \to$ activaci\'on $\to$ calidad
+$\to$ saciaci\'on) es lo que controla el d\'eficit. Esto valida que el
+efecto de EPR no es artefacto de la no-linealidad del gate.
+Adicionalmente, EPR\_SHAM degrada la equidad (max-share $0.209$ vs
+$0.119$, $p<0.001$), confirmando que sin drive epist\'emico real la
+activaci\'on se concentra.
+
+\paragraph{Q-learning no aporta y podr\'ia perjudicar.}
+EPR\_Q ($44.9$ debates, d\'eficit $0.95$) vs EPR ($43.5$ debates, d\'eficit
+$1.02$): el Q-learner mejora marginalmente el control de d\'eficit pero
+degrada m\'as r\'apido (slope $-0.017$ vs $-0.013$, degradaci\'on $12.2\%$
+vs $9.8\%$). Las diferencias no son significativas tras Bonferroni.
+La activaci\'on homeost\'atica pura es suficiente para controlar el
+d\'eficit y distribuir turnos; el Q-learning a\~nade complejidad sin
+beneficio claro e incluso podr\'ia amplificar el colapso de contexto al
+sobre-explotar patrones iniciales exitosos.
+
+\paragraph{LangGraph produce m\'as volumen pero menos equitativo.}
+LangGraph genera $60.6$ debates vs $43.5$ de EPR, pero con mayor
+concentraci\'on (max-share $0.276$ vs $0.119$, $p<0.001$) y mayor d\'eficit
+m\'aximo ($2.54$ vs $1.02$, $p<0.001$). El router ex\'ogeno parece favorecer
+agentes ``dominantes''. Adicionalmente, LangGraph presenta initiative ratio $=0.00$ (vs $1.00$
+para EPR): ning\'un agente se activa end\'ogenamente, confirmando que la
+orquestaci\'on es completamente ex\'ogena por dise\'no.
+
+\paragraph{Amenazas a la validez.}
+
+\textit{Interna:}
+\begin{itemize}[nosep,leftmargin=*]
+\item Un solo LLM (DeepSeek V4-Flash); no se puede descartar
+      dependencia del proveedor.
+\item RSVI est\'a integrado al locus de control, no confundido con \'el.
+      RSVI verbaliza el estado regulatorio $\delta_i$ que \emph{drivea} la
+      activaci\'on end\'ogena; sin el loop homeost\'atico no hay $\delta_i$
+      que se actualice ni nada que verbalizar. En LangGraph, la activaci\'on
+      se decide fuera del agente por un router ex\'ogeno: inyectar RSVI
+      significar\'ia enviar un estado regulatorio est\'atico o ficticio que
+      no drivea ninguna decisi\'on --- ruido puro, no un control v\'alido.
+      La comparaci\'on es entre dos arquitecturas completas (end\'ogena con
+      RSVI vs.\ ex\'ogena sin \'el), no entre ``con RSVI'' y ``sin RSVI''
+      como factores independientes. Esto refleja una decisi\'on
+      metodol\'ogica deliberada: evaluar el mecanismo end\'ogeno completo
+      frente al paradigma ex\'ogeno establecido.
+\item Los pesos del StimulusEvaluator se calibraron con seed independiente
+      (grid $3{\times}3$, $\alpha\in\{3,4,5\}$, $\lambda\in\{0.02,0.03,0.05\}$);
+      diferente calibraci\'on podr\'ia cambiar el comportamiento de EPR, aunque
+      el perfil \emph{faction-dominant} fue seleccionado por estabilidad.
+\item $g \equiv \Delta\varphi^*$ sirve simult\'aneamente como se\~nal de
+      saciedad interna (AAH-3) y como m\'etrica diagn\'ostica externa.
+      Esta circularidad parcial podr\'ia sesgar las m\'etricas
+      estructurales automatizadas a favor de EPR, cuyo loop est\'a
+      optimizado para reducir $\Delta\varphi^*$. La mitigaci\'on principal
+      son los jueces LLM offline ciegos al modo, cuya evaluaci\'on es
+      matem\'aticamente independiente de $g$. Sin embargo, las
+      m\'etricas estructurales ($\Delta\varphi^*$, slope, AAF) deben
+      interpretarse con cautela hasta confirmar concordancia con los
+      jueces.
+\item Resultados consolidados de 20/20 seeds (5 por lote);
+      Wilcoxon signed-rank con Bonferroni ($\alpha{=}0.0056$) confirma
+      diferencias significativas en distribuci\'on de turnos, d\'eficit
+      y $\Delta\varphi^*$ promedio. Las pendientes temporales (slope)
+      no alcanzan significancia, sugiriendo que el colapso de contexto
+      es parcialmente end\'ogeno al LLM.
+\end{itemize}
+
+\textit{Estad\'istica:}
+\begin{itemize}[nosep,leftmargin=*]
+\item $N{=}20$ seeds pareadas; Wilcoxon signed-rank como test primario
+      (no-parametrico, aprovecha el dise\~no pareado). Bonferroni con 9
+      tests ($\alpha{=}0.0056$).
+\item Bonferroni con 3 hip\'otesis es conservador;
+      Holm-Bonferroni como sensibilidad.
+\item Bootstrap 95\% CIs (10.000 resamples) para intervalos.
+\item Las pendientes temporales no alcanzan significancia estad\'istica
+      con $N{=}20$; se requiere mayor poder o una m\'etrica alternativa
+      de colapso de contexto.
+\end{itemize}
+
+\textit{Externa:}
+\begin{itemize}[nosep,leftmargin=*]
+\item Estructura VSM es una de varias posibles; otras
+      descomposiciones pueden producir din\'amicas distintas.
+\item Un solo t\'opico de debate; efectos de t\'opico no controlados.
+\item 80 heartbeats; comportamiento asint\'otico no observable.
+\item Jueces LLM duales (DeepSeek V4-Pro + GLM-5.2); Cohen's $\kappa$
+      para concordancia. Validaci\'on humana planificada.
+\end{itemize}
+
+\paragraph{Trabajo futuro.}
+Replicaci\'on multi-LLM (GLM-5.2, Claude); reasoning effort modulado por
+d\'eficit ($\delta \to$ \texttt{reasoning\_effort} en DeepSeek V4-Flash);
+drive metab\'olico para regular consumo de API ($\Gamma(n{=}2)$);
+dominios cooperativos; integraci\'on formal de
+DeLP~\parencite{garcia2004defeasible}.
+
+% ============================================================
+\section{Conclusiones}
+\label{sec:conclusion}
+
+Presentamos un mecanismo de activaci\'on end\'ogena para sistemas
+multi-agente de LLM basado en homeostasis epist\'emica, formalizado
+mediante los Axiomas de Autonom\'ia Homeost\'atica (AAH). La condici\'on
+EPR ($\Gamma(n{=}1)$, sin Q-learning) a\'isla el aporte del mecanismo
+regulatorio b\'asico: sigmoide, d\'eficit y sensor estructural. El
+dise\~no experimental con 20 semillas pareadas (4 lotes de 5), 4 condiciones (EPR,
+EPR\_Q, EPR\_SHAM, LangGraph), hiperpar\'ametros calibrados con seed
+independiente, y jueces LLM duales ciegos al modo, permite aislar el
+efecto del locus de control. Los resultados (20/20 seeds, Wilcoxon
+signed-rank con Bonferroni) muestran que EPR distribuye turnos
+$2.3\times$ m\'as equitativamente que LangGraph (max-share $0.119$ vs
+$0.276$, $p<0.001$), controla el d\'eficit ($1.02$ vs $2.54$,
+$p<0.001$) y produce mayor $\Delta\varphi^*$ promedio ($0.463$ vs
+$0.442$, $p<0.001$). La ablaci\'on sham confirma que el loop
+homeost\'atico --- no s\'olo la forma del gate --- es lo que controla el
+d\'eficit ($3.74$ vs $1.02$, $p<0.001$). El Q-learning no aporta
+beneficio claro y podr\'ia amplificar el colapso. Las pendientes
+temporales no alcanzan significancia estad\'istica, sugiriendo que el
+colapso de contexto es parcialmente end\'ogeno al LLM y no es eliminado
+por el mecanismo de activaci\'on. La evaluaci\'on con jueces LLM
+offline ciegos al modo est\'a en curso.
+
+\printbibliography
+
+\end{document}

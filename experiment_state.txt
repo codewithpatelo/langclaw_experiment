@@ -1,4 +1,0 @@
-STATE: FAILED
-PHASE: benchmark
-UPDATED_AT: 2026-04-16T17:48:34.022344+00:00
-MESSAGE: benchmark failed with code 1

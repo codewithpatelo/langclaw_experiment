@@ -94,7 +94,7 @@ class LangGraphInformedRouter(LangGraphRouter):
         )
 
         try:
-            extra: dict = {}
+            extra: dict = {"temperature": 0.0}
             if self._seed is not None:
                 extra["seed"] = self._seed
 

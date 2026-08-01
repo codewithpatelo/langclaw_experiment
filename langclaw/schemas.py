@@ -7,7 +7,7 @@ typed records for the simulation event log.
 from __future__ import annotations
 
 from enum import Enum
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -74,6 +74,17 @@ class AgentAction(BaseModel):
         default=None,
         description="FIPA ACL performative for the message.",
     )
+    search_query: str | None = Field(
+        default=None,
+        description="Graph query name (required when action=SEARCH). "
+                    "One of: undefended_attacks, weak_opponent_nodes, "
+                    "unattacked_nodes, attack_chains, centrality_ranking, "
+                    "faction_balance, contradictions.",
+    )
+    search_params: dict[str, Any] | None = Field(
+        default=None,
+        description="Parameters for the graph query (e.g. {\"faction\": \"GOV\"}).",
+    )
 
 
 class SimulationLog(BaseModel):
@@ -117,3 +128,5 @@ class SimulationLog(BaseModel):
     n_messages_received: int = 0
     # VSM subsystem
     vsm_system: str | None = None
+    # Graph query (SEARCH action)
+    search_query: str | None = None
