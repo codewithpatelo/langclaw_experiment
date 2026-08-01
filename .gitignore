@@ -198,9 +198,6 @@ benchmark_results_v7/*_CONTAMINATED_*
 benchmark_results_v7/logs_hrrl_seed42.json
 benchmark_results_v7/logs_langgraph_seed42.json
 
-# --- figures (generated, not tracked) ---
-langclaw/figs/
-
 # --- IDE ---
 .vscode/
 .idea/

@@ -101,7 +101,7 @@ Los agentes ejecutan un loop cognitivo con acciones `DEBATE`, `SEARCH`,
 │   ├── budget.py                   # Rate limits de API
 │   ├── actions.py                  # Utilidades de acciones, StimulusEvaluator
 │   ├── core_metric.py              # Métrica de coherencia temporal CORE
-│   ├── metrics.py                  # PRR_G, IR, aceptación AAF, pendientes
+│   ├── metrics.py                  # PRR_G, aceptación AAF, pendientes
 │   ├── events.py                   # Eventos de tick/argumento/shutdown
 │   ├── schemas.py                  # Schemas de logging (Pydantic)
 │   ├── seeds.py                    # Fábrica determinista de semillas
@@ -354,7 +354,6 @@ Bonferroni α = 0.0056) en `benchmark_results_v7/benchmark_report.json`:
 | Share máx. por agente      | 0.119  | 0.115  | 0.209*** | 0.276***  |
 | Δφ* (media)                | 0.463  | 0.459  | 0.449    | 0.442***  |
 | Déficit máx. (agente)      | 1.02   | 0.95   | 3.74***  | 2.54***   |
-| Initiative ratio (IR)      | 1.00   | 1.00   | 1.00     | 0.00      |
 
 > `***p < 0.001` (significativo tras Bonferroni). Detalles
 > estadísticos completos en `mock_paper.tex`, Tabla 1.
