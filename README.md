@@ -46,7 +46,7 @@ comparar estos mecanismos regulatorios a medida que la línea avanza.
 
 La trayectoria se describe como un tránsito gradual: de software
 bio-inspirado a sistemas multi-agente regulados, y de allí a
-experimentación en hardware neuromórfico. El próximo avance relevante en
+experimentación en hardware neuromórfico. Esta línea apuesta a que el próximo avance relevante en
 IA no debería buscarse únicamente en el escalado ciego de modelos o
 centros de datos, sino en diseñar sustratos regulatorios capaces de
 administrar acción, memoria, atención y recursos, en conjunto con nuevos

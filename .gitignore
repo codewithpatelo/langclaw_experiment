@@ -79,9 +79,6 @@ fairbaseline_runner_*.log
 seed99_runner.log
 server_err.txt
 server_out.txt
-benchmark_checkpoint.json
-calibration_checkpoint.json
-
 # --- old / superseded experiment results ---
 benchmark_results/
 benchmark_results_v2/
