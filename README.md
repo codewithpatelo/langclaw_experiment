@@ -3,11 +3,18 @@
 > Repositorio del trabajo experimental presentado como póster en la
 > **Escuela Sudamericana de NLP 2026**. Contiene el código del
 > benchmark, los resultados de 20 semillas pareadas, los scripts de
-> análisis, el mock paper y el póster entregado.
+> análisis, el poster presentado.
 >
 > **Pregunta de investigación:** ¿la activación endógena (regulación
 > homeostática) es más resiliente al colapso de contexto que el
 > ruteo exógeno (LangGraph) en debate adversarial?
+
+> **Nota sobre el naming:** `langclaw` fue el nombre original del
+> proyecto y del paquete Python. Quedó deprecado como naming público
+> pero se mantiene en el repositorio y en los imports para evitar
+> disrupciones en el código experimental.
+
+![Póster SANLP 2026](langclaw/figs/poster_sanlp.png)
 
 ---
 
@@ -59,7 +66,14 @@ la homeostasis sí produce auto-organización emergente en lo que respecta a la 
 0.119 vs 0.276 (2.3× menor concentración, p<0.001) sin sacrificar
 calidad. La ablación SHAM confirma que el bucle homeostático —no la
 forma del gate— controla el déficit (3.74 vs 1.02, p<0.001). El
-aprendizaje por refuerzo no aporta beneficio detectable.
+aprendizaje por refuerzo no aporta beneficio detectable. El trabajo
+futuro apunta a extender el bucle homeostático a la fidelidad
+argumental: Γ(n=2) con una necesidad de fidelidad que gobierne qué
+entra al prompt y cuánta verificación se exige antes de emitir,
+tensionada contra una necesidad metabólica que regule el esfuerzo de
+razonamiento y la ventana de contexto. También se planea replicación
+multi-LLM, validación humana (Spearman ρ) y un validador simbólico
+que evite la estocasticidad del LLM al juzgar calidad argumentativa.
 
 ### Condiciones experimentales
 
@@ -117,9 +131,15 @@ La simulación corre durante 80 pulsos (ticks). En cada pulso:
    (`rng < p`) son candidatos; se selecciona el de mayor `p`. En
    LangGraph, un router LLM exógeno selecciona un agente. Si ningún
    agente pasa el gate, todos pasan (PASS).
-4. **Loop cognitivo**: el agente seleccionado recibe el contexto del
-   debate (grafo reciente, estímulos, mensajes, memoria, estado
-   interno) y el LLM elige una acción del diccionario indicativo.
+4. **Loop cognitivo**: el agente seleccionado ejecuta el ciclo
+   TRIAGE → THINK → PLAN → EXECUTE → OBSERVE. En TRIAGE drena los
+   eventos buffered y evalúa su relevancia con el StimulusEvaluator;
+   en THINK computa `p = σ(k(δ − θ))` y decide si actuar; en PLAN
+   el LLM elige una acción del diccionario indicativo usando el
+   contexto del grafo, estímulos, mensajes, memoria semántica y
+   estado interno (RSVI); en EXECUTE ejecuta la acción; en OBSERVE
+   computa la recompensa como reducción del déficit y actualiza el
+   Q-learner si está habilitado.
 5. **Ejecución y saciación**: la acción se ejecuta. Si es DEBATE, el
    argumento se agrega al grafo y el déficit se sacia proporcional a
    `g`. Otras acciones tienen saciación parcial o nula.
@@ -300,7 +320,7 @@ del argumento que ataca o produce monólogo desconectado.
 **Limitación:** es una métrica léxica — no captura paráfrasis ni
 respuesta semántica sin overlap de superficie. Un argumento que
 dice "la inflación es alta" respondiendo a "el IPC subió 40%" tiene
-engagement bajo aunque sea topically correcto. Esta limitación es
+engagement bajo aunque sea tematicamente correcto. Esta limitación es
 deliberada: usar un LLM para medir engagement introduciría sesgo
 circular (el mismo modelo que genera evalúa) y estocasticidad no
 reproducible. En experimentos futuros podría robustecerse con
@@ -625,7 +645,15 @@ misatribución, distorsión de objetivo, amnesia, conflación). Con
 colapso severo (≥3 flags), `g` es negativo — el agente se depleta en
 lugar de saciarse.
 
-> Resultados preliminares (8/20 semillas completas, corrida en
+**Riesgo de circularidad:** esta ablación tiene un riesgo inherente:
+el mismo tipo de sistema (LLM) que genera los argumentos los evalúa.
+Si el juez comparte sesgos o limitaciones con los agentes, la señal
+de fidelidad puede ser espuria. La dirección más robusta a futuro es
+un validador simbólico (verificación determinista de claims contra el
+grafo) acoplado a un LLM razonador que interprete los resultados, sin
+que el LLM sea el evaluador único.
+
+> Resultados preliminares (9/20 semillas completas, corrida en
 > progreso).
 
 ---
