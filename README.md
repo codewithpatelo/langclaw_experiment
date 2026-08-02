@@ -18,6 +18,53 @@
 
 ---
 
+## Línea de investigación
+
+Este póster no es un trabajo aislado: forma parte de una línea de
+investigación más amplia sobre agentes con activación endógena y
+regulación bioinspirada. El hilo conductor es la hipótesis de que los
+agentes basados en LLM necesitan estados internos, umbrales y mecanismos
+de feedback que regulen cuándo actuar, inhibirse o conservar recursos
+—no solo prompts y orquestadores externos.
+
+El punto de partida fue el **Operador Pro-Action (Γ)**, presentado en
+**ICML 2026** en el taller LatinX in AI, donde fue seleccionado **mejor
+paper**. Γ envuelve a un ejecutor LLM con 6 subsistemas regulatorios
+acoplados y dinámica multi-escala, construido en un problema donde la
+activación fue estrictamente por turnos (sin gate probabilístico).
+
+El **experimento de este repositorio** reduce Γ a su núcleo más simple
+—un solo drive homeostático con gate sigmoide probabilístico— para
+aislar y medir el efecto puro de la regulación endógena frente al ruteo
+exógeno. Es la misma matemática, reducida a single-drive y presentada
+como póster en **SANLP 2026**.
+
+El siguiente eslabón es **Binsai**, aceptado en **Research Software
+Latinoamérica (RSLA26)** con demo virtual en agosto 2026. Binsai es el
+sustrato experimental open-source donde implementar, instrumentar y
+comparar estos mecanismos regulatorios a medida que la línea avanza.
+
+La trayectoria se describe como un tránsito gradual: de software
+bio-inspirado a sistemas multi-agente regulados, y de allí a
+experimentación en hardware neuromórfico. El próximo avance relevante en
+IA no debería buscarse únicamente en el escalado ciego de modelos o
+centros de datos, sino en diseñar sustratos regulatorios capaces de
+administrar acción, memoria, atención y recursos, en conjunto con nuevos
+sustratos físicos de computación. La Ley de Moore tocó techo por el
+efecto túnel cuántico y la arquitectura de Von Neumann impone un cuello
+de botella energético insostenible: mientras los modelos fundacionales
+dependen de centros de datos masivos, el cerebro humano opera con ~20
+Watts.
+
+**Trabajos próximos:** usaré datos de este mismo experimento para mi
+trabajo integrador de la Especialización en Explotación de Datos (UBA),
+sobre detección temprana de estancamiento de consistencia en debates
+multi-agente mediante precursores de critical slowing down. También
+estoy en contacto con el consorcio **IA-CONSOFI** del CONICET para
+probar la ecuación Pro-Action en simulación de hardware neuromórfico.
+
+---
+
 ## Tabla de contenidos
 
 1. [Resumen](#1-resumen)
