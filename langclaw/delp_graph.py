@@ -110,11 +110,12 @@ class ArgumentGraph:
         - attack_type : "undercut" | "rebuttal"
     """
 
-    def __init__(self, connectivity_fix: bool = True) -> None:
+    def __init__(self, connectivity_fix: bool = True, diversity_enabled: bool = True) -> None:
         self._graph = nx.DiGraph()
         self._node_order: list[str] = []
         self._lock = asyncio.Lock()  # guards concurrent writes from async agents
         self._connectivity_fix = connectivity_fix
+        self._diversity_enabled = diversity_enabled
 
     @property
     def graph(self) -> nx.DiGraph:
@@ -334,23 +335,29 @@ class ArgumentGraph:
         else:
             novelty = 1.0
 
-        # --- 3. Diversity: distinct agents among target's neighbours ---
-        neighbours = set(self._graph.predecessors(target)) | set(
-            self._graph.successors(target)
-        )
-        neighbours.add(node_id)
-        unique_agents = {
-            self._graph.nodes[n].get("agent_id") for n in neighbours if n in self._graph
-        }
-        total_agents_in_graph = len(
-            {d.get("agent_id") for _, d in self._graph.nodes(data=True)}
-        )
-        diversity_score = (
-            len(unique_agents) / total_agents_in_graph if total_agents_in_graph else 0.0
-        )
+        if self._diversity_enabled:
+            # --- 3. Diversity: distinct agents among target's neighbours ---
+            neighbours = set(self._graph.predecessors(target)) | set(
+                self._graph.successors(target)
+            )
+            neighbours.add(node_id)
+            unique_agents = {
+                self._graph.nodes[n].get("agent_id") for n in neighbours if n in self._graph
+            }
+            total_agents_in_graph = len(
+                {d.get("agent_id") for _, d in self._graph.nodes(data=True)}
+            )
+            diversity_score = (
+                len(unique_agents) / total_agents_in_graph if total_agents_in_graph else 0.0
+            )
 
-        w_e, w_n, w_d = 1/3, 1/3, 1/3
-        g = w_e * engagement + w_n * novelty + w_d * diversity_score
+            w_e, w_n, w_d = 1/3, 1/3, 1/3
+            g = w_e * engagement + w_n * novelty + w_d * diversity_score
+        else:
+            # Post-hoc ablation: diversity removed from g.
+            # g = (engagement + novelty) / 2
+            w_e, w_n = 1/2, 1/2
+            g = w_e * engagement + w_n * novelty
         return min(1.0, max(0.0, g))
 
     # Backward-compatible alias

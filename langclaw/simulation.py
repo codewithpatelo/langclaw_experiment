@@ -71,6 +71,17 @@ class OrchestrationMode(str, Enum):
     # mechanism — if EPR outperforms sham, it is the homeostatic loop
     # (not the sigmoid shape) that drives the effect.
     EPR_SHAM = "epr_sham"
+    # EPR without diversity in g: post-hoc ablation to test whether the
+    # diversity term (which incentivises herd behaviour rather than
+    # exploration) contaminates the homeostatic satiation signal.
+    EPR_NO_DIV = "epr_no_div"
+    # EPR with g computed by an LLM judge (DeepSeek V4-Pro) online.
+    # Replaces the structural formula (engagement + novelty + diversity)
+    # with a fidelity audit: the judge sees the full debate history and
+    # evaluates context collapse flags + fluency. g = (fluidez/10) * colapso
+    # where colapso = (2.5 - n_flags) / 2.5, mapping 0 flags → +1, 5 → -1.
+    # Positive g saciates; negative g depletes (collapse worsens deficit).
+    EPR_LLM_JUDGE = "epr_llm_judge"
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -236,6 +247,10 @@ class SotopiaEnvironment:
         stimulus_weights: dict[str, float] | None = None,
         debate_alpha: float = 2.0,
         lambda_rate: float = 0.05,
+        judge_model: str | None = None,
+        judge_base_url: str | None = None,
+        judge_api_key: str | None = None,
+        judge_seed: int | None = None,
     ) -> None:
         reset_shared_store()
         self.max_iterations = max_iterations
@@ -257,10 +272,13 @@ class SotopiaEnvironment:
         # machinery intact (sigmoide, drive, StimulusEvaluator).
         q_disabled = self.orchestration_mode in (
             OrchestrationMode.EPR, OrchestrationMode.HRRL_NO_Q,
-            OrchestrationMode.EPR_SHAM,
+            OrchestrationMode.EPR_SHAM, OrchestrationMode.EPR_NO_DIV,
+            OrchestrationMode.EPR_LLM_JUDGE,
         )
         is_sham = self.orchestration_mode == OrchestrationMode.EPR_SHAM
-        self.graph = ArgumentGraph(connectivity_fix=True)
+        is_llm_judge = self.orchestration_mode == OrchestrationMode.EPR_LLM_JUDGE
+        diversity_enabled = self.orchestration_mode != OrchestrationMode.EPR_NO_DIV
+        self.graph = ArgumentGraph(connectivity_fix=True, diversity_enabled=diversity_enabled)
         self.agents: list[LangClawAgent] = [
             LangClawAgent(
                 agent_id=role["id"],
@@ -288,6 +306,11 @@ class SotopiaEnvironment:
                     self._seed_factory.get(f"agent_{role['id']}_sham")
                     if self._seed_factory and is_sham else None
                 ),
+                llm_judge_enabled=is_llm_judge,
+                judge_model=judge_model,
+                judge_base_url=judge_base_url,
+                judge_api_key=judge_api_key,
+                judge_seed=judge_seed,
             )
             for role in AGENT_ROLES
         ]
@@ -361,7 +384,8 @@ class SotopiaEnvironment:
     def run_single_tick(self, tick: int) -> list[SimulationLog]:
         if self.orchestration_mode in (
             OrchestrationMode.EPR_Q, OrchestrationMode.EPR, OrchestrationMode.HRRL_NO_Q,
-            OrchestrationMode.EPR_SHAM,
+            OrchestrationMode.EPR_SHAM, OrchestrationMode.EPR_NO_DIV,
+            OrchestrationMode.EPR_LLM_JUDGE,
         ):
             tick_logs = self._epr_serial_tick(tick)
         elif self.orchestration_mode == OrchestrationMode.LANGGRAPH:
@@ -698,12 +722,20 @@ class SotopiaEnvironment:
                     attack_type=action_result.attack_type,
                     tick=tick,
                 )
-                delta_phi = self.graph.calculate_phi_star_proxy(
-                    node_id,
-                    agent_claim_history=[
-                        e.claim for e in agent.memory._episodic_cache if e.claim
-                    ],
-                )
+                if agent._llm_judge_enabled:
+                    judge_prompt = agent._build_judge_prompt(
+                        self.graph, action_result.claim,
+                        action_result.target_node_id, tick,
+                    )
+                    delta_phi, judge_info = agent._call_judge(judge_prompt)
+                    res["judge_info"] = judge_info
+                else:
+                    delta_phi = self.graph.calculate_phi_star_proxy(
+                        node_id,
+                        agent_claim_history=[
+                            e.claim for e in agent.memory._episodic_cache if e.claim
+                        ],
+                    )
                 agent.learn(discourse_context, action_result, delta_phi)
                 res.update({
                     "action_type": "DEBATE",
@@ -1271,6 +1303,7 @@ class SotopiaEnvironment:
                 n_messages_received=res.get("n_messages_received", 0),
                 vsm_system=res.get("vsm_system"),
                 search_query=res.get("search_query"),
+                judge_info=res.get("judge_info"),
             ))
 
         return logs

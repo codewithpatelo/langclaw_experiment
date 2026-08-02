@@ -1,0 +1,487 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><style>
+:root{
+  --dark:#0E3A43;--teal:#138A72;--teal2:#2A9D8F;--amber:#E9A23B;--coral:#C25A32;
+  --ink:#16282E;--muted:#54707A;--grey:#F5F7F7;--grey2:#F3F5F5;--line:#DCE3E4;
+  --chip:#DEF0EB;--chipink:#0D5C4B;--tteal:#E5F2EE;--tamber:#FAF0E1;
+  --code:#E7EBEC;
+}
+@page{size:841mm 1189mm;margin:0;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:#fff;width:841mm;height:1189mm;}
+#page{width:2384px;height:3370px;overflow:hidden;background:#fff;margin:0 auto;}
+#poster{width:2384px;height:3370px;display:flex;flex-direction:column;
+  font-family:'Helvetica Neue',Arial,sans-serif;color:var(--ink);}
+.serif{font-family:Georgia,'Times New Roman',serif;}
+.band{padding:10px 56px;}
+.grow{display:flex;flex-direction:column;flex:1;padding-top:14px;gap:12px;}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;
+  box-shadow:0 3px 12px rgba(14,58,67,.06);display:flex;flex-direction:column;height:100%;}
+.card.grey{background:var(--grey);}
+.banner{background:var(--teal);color:#fff;display:flex;align-items:center;gap:14px;
+  font-weight:700;font-size:24px;letter-spacing:.3px;padding:14px 22px;}
+.banner .sn{font-size:18px;opacity:.55;font-weight:400;font-family:Georgia,serif;}
+.cbody{padding:16px 26px;flex:1;display:flex;flex-direction:column;justify-content:center;}
+.body{font-size:19px;line-height:1.5;}
+.muted{color:var(--muted);}
+.kw{color:var(--teal);font-weight:700;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;flex:1;}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;align-items:stretch;}
+table{width:100%;border-collapse:collapse;font-size:17px;background:#fff;border-radius:8px;overflow:hidden;}
+th{background:#EAEDEE;color:var(--ink);font-weight:700;padding:11px 9px;text-align:center;
+  border-bottom:2px solid #D2DADB;font-size:16px;}
+td{padding:10px 9px;text-align:center;border-bottom:1px solid var(--line);font-size:16px;}
+td.l{text-align:left;font-weight:600;}
+.eq{display:inline-block;background:var(--grey2);border:1px solid var(--line);border-radius:10px;
+  padding:10px 24px;text-align:center;font-family:Georgia,serif;font-style:italic;font-size:22px;}
+.eq sub{font-style:normal;font-size:14px;}
+.legend{font-size:14px;color:var(--muted);text-align:center;margin-top:8px;}
+.flowbox{background:#EEF3F3;border-left:5px solid var(--teal);border-radius:8px;padding:10px 8px;
+  font-weight:600;font-size:16px;text-align:center;line-height:1.2;display:flex;
+  align-items:center;justify-content:center;}
+.arrow{font-size:24px;display:flex;align-items:center;color:var(--teal);font-weight:700;}
+.stat{background:var(--grey2);border:1px solid var(--line);border-radius:10px;padding:14px 4px;text-align:center;}
+.stat .n{font-size:38px;font-weight:700;color:var(--teal);font-family:Georgia,serif;line-height:1;}
+.stat .l{font-size:15px;color:var(--muted);margin-top:6px;}
+.ax{background:var(--grey2);border-radius:10px;padding:14px 16px;border-left:5px solid var(--teal2);}
+.ax .t{font-weight:700;color:var(--teal);font-size:18px;margin-bottom:4px;}
+.ax .eqs{font-family:Georgia,serif;font-style:italic;font-size:17px;color:var(--ink);margin:4px 0;}
+.ax .d{font-size:14px;color:var(--muted);line-height:1.3;}
+ul.scope{list-style:none;} ul.scope li{position:relative;padding-left:24px;margin:10px 0;font-size:16px;line-height:1.38;}
+ul.scope li:before{content:"\25B8";position:absolute;left:0;top:0;color:var(--coral);font-weight:700;font-size:20px;}
+.find{border-radius:8px;padding:10px 14px;border:1px solid var(--line);margin:6px 0;}
+.find .lab{font-size:13px;font-weight:700;letter-spacing:.4px;margin-bottom:3px;}
+.find .tx{font-size:15px;line-height:1.35;}
+.tag{display:inline-block;padding:2px 9px;border-radius:16px;font-size:13px;font-weight:700;margin:1px;}
+.tag.epr{background:var(--chip);color:var(--chipink);}
+.tag.lg{background:#EAEDEE;color:var(--ink);}
+.tag.sham{background:#FDEEEA;color:#C25A32;}
+.tag.q{background:#EDE9FE;color:#6C5CE7;}
+.note{font-size:14px;color:var(--muted);font-style:italic;margin-top:8px;}
+.contrib{font-size:18px;line-height:1.42;padding:10px 14px;border-left:4px solid var(--teal);
+  background:var(--tteal);border-radius:0 8px 8px 0;margin:8px 0;}
+.contrib b{color:var(--teal);}
+.code{background:var(--code);border:1px solid #D3DADB;border-radius:10px;padding:16px 18px;
+  font-family:'SF Mono','Consolas',monospace;font-size:16px;line-height:1.6;color:#1E2A2E;white-space:pre;}
+.code b{color:#0D5C4B;} .code .g{color:#B5731A;font-weight:700;} .code .w{color:#16282E;font-weight:700;}
+</style></head><body><div id="page"><div id="poster">
+
+<!-- ═══ HEADER ═══ -->
+<div class="band" style="background:var(--dark);color:#fff;padding-top:28px;padding-bottom:28px;
+  display:flex;align-items:center;justify-content:space-between;gap:48px;">
+  <div style="flex:1;min-width:0;">
+    <div style="font-size:16px;font-weight:700;letter-spacing:2px;color:var(--teal2);margin-bottom:8px;">
+      ESCUELA SUDAMERICANA DE NLP 2026 &nbsp;&middot;&nbsp; POSTER
+    </div>
+    <div class="serif" style="font-size:46px;font-weight:700;line-height:1.05;">
+      Activaci&oacute;n End&oacute;gena mediante<br>Homeostasis Epist&eacute;mica en Sistemas<br>Multi-Agente Basados en LLMs
+    </div>
+    <div class="serif" style="font-size:22px;font-style:italic;color:#C6DCE0;margin-top:10px;">
+      &iquest;Puede la coherencia en un debate multi-agente sostenerse end&oacute;genamente &mdash; no impuesta por un planificador, sino emergente del estado regulatorio de cada agente?
+    </div>
+    <div style="font-size:19px;margin-top:10px;">
+      <b>Patricio Juli&aacute;n Gerpe</b>
+      <span style="color:#9FBEC4;"> &nbsp;&middot;&nbsp; Universidad de Buenos Aires</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ INTRO BAND ═══ -->
+<div class="band" style="background:var(--grey);color:var(--ink);padding-top:20px;padding-bottom:20px;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);">
+  <div style="font-size:20px;line-height:1.5;">
+    Los frameworks contempor&aacute;neos (AutoGen, MetaGPT, LangGraph) externalizan la activaci&oacute;n: un orquestador decide
+    <b>cu&aacute;ndo</b> habla cada agente. Esto desacopla la participaci&oacute;n de la presi&oacute;n epist&eacute;mica que el agente acumula.
+    &iquest;Qu&eacute; pasa si la activaci&oacute;n <b style="color:var(--teal);">emerge del estado interno</b> del agente &mdash; como la homeostasis biol&oacute;gica &mdash; en vez de ser programada externamente?
+    Presentamos <b>EPR</b> (Ecuaci&oacute;n Pro-Acci&oacute;n Reducida), la reducci&oacute;n escalar del operador Pro-Action &Gamma; (n=1) (Gerpe, ICML LatinX in AI Workshop, 2026).
+  </div>
+</div>
+
+<div class="grow">
+
+<!-- ═══ 1. PROBLEM | 2. MOTIVATION ═══ -->
+<div class="band"><div class="grid2">
+
+  <div class="card">
+    <div class="banner"><span class="sn">1</span> El problema: colapso de contexto</div>
+    <div class="cbody">
+      <div class="body">
+        En deliberaci&oacute;n adversarial extendida, los agentes LLM pierden registro de argumentos previos,
+        repiten puntos o producen mon&oacute;logos desconectados &mdash; el
+        <span class="kw">colapso de contexto</span>. En debates competitivos cada argumento presupone los
+        anteriores: esta p&eacute;rdida no degrada el debate, lo <b>invalida</b>.
+      </div>
+      <div style="height:12px;"></div>
+      <div class="body">
+        Los orquestadores ex&oacute;genos (LangGraph, AutoGen) rutean turnos seg&uacute;n el estado del flujo,
+        no seg&u;n la presi&oacute;n epist&eacute;mica del agente. Un agente que acumula contra-argumentos
+        sin responder espera pasivamente hasta que el orquestador lo elige.
+      </div>
+      <div style="height:12px; border-left:4px solid var(--coral); padding-left:14px; font-size:18px; color:var(--coral); font-weight:600;">
+        Ley de Ashby: un regulador debe modelar la variedad de lo que controla. Si el orquestador ignora el estado epistémico del agente, no puede regularlo.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="banner"><span class="sn">2</span> Motivaci&oacute;n: homeostasis epist&eacute;mica</div>
+    <div class="cbody">
+      <div class="body">
+        La biolog&iacute;a describe c&oacute;mo los sistemas regulan desequilibrios sin control externo:
+        variables internas acumulan tensi&oacute;n, desencadenan respuesta y retornan al equilibrio
+        (<b>homeostasis</b>, Sterling &amp; Eyer 1988). HRRL (Keramati &amp; Gutkin 2014) formaliz&oacute;
+        esto derivando la recompensa como reducci&oacute;n de impulso.
+      </div>
+      <div style="height:12px;"></div>
+      <div class="body">
+        <b>Analog&iacute;a estructural:</b> donde un organismo acumula hambre y act&uacute;a para reducirla,
+        un agente deliberativo acumula <b>d&eacute;ficit epist&eacute;mico</b> &mdash; tensi&oacute;n por
+        argumentos no respondidos, informaci&oacute;n no procesada, presi&oacute;n competitiva &mdash; y
+        act&uacute;a para reducirlo.
+      </div>
+      <div style="height:12px;"></div>
+      <div class="body" style="color:var(--teal);font-weight:600;">
+        La frecuencia de participaci&oacute;n no se fija ni se rutea: emerge del estado regulatorio de cada agente.
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+<!-- ═══ 3. BACKGROUND | 4. AXIOMS ═══ -->
+<div class="band"><div class="grid2">
+
+  <div class="card">
+    <div class="banner"><span class="sn">3</span> Antecedentes: la brecha de la orquestaci&oacute;n ex&oacute;gena</div>
+    <div class="cbody">
+      <div class="body" style="margin-bottom:12px;">
+        <b>AutoGen</b> (Wu et al. 2023), <b>CAMEL</b> (Li et al. 2023) y <b>MetaGPT</b> (Hong et al. 2023)
+        estructuran interacciones mediante grafos de control y enrutadores centralizados.
+        <b>LangGraph</b> a&ntilde;adi&oacute; estado durable y transiciones condicionales, dando al
+        orquestador mayor expresividad.
+      </div>
+      <div class="body" style="margin-bottom:12px;">
+        El paradigma <b>heartbeat</b> (OpenClaw 2025) incorpor&oacute; persistencia temporal mediante
+        activaci&oacute;n peri&oacute;dica con memoria entre latidos. <b>D2A</b> (Wang et al. 2025)
+        reconoce que el estado interno deber&iacute;a importar, pero no cierra el lazo: carece de
+        se&ntilde;al expl&iacute;cita de calidad que module la activaci&oacute;n.
+      </div>
+      <div class="body" style="color:var(--teal);font-weight:600;font-size:18px;">
+        En todos estos casos, la decisi&oacute;n de cu&aacute;ndo participa cada agente queda
+        fijada por el dise&ntilde;ador, no emerge del agente mismo.
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="banner"><span class="sn">4</span> Axiomas de Autonom&iacute;a Homeost&aacute;tica (AAH)</div>
+    <div class="cbody">
+      <div class="body" style="margin-bottom:14px;font-size:18px;">
+        Los supuestos sobre el agente que el experimento requiere para ser interpretable.
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+        <div class="ax">
+          <div class="t">A1 &middot; Autonom&iacute;a</div>
+          <div class="eqs">Aut(a<sub>i</sub>) &hArr; &exist;&delta;<sub>i</sub>: &pi;<sub>i</sub> = &pi;<sub>i</sub>(&delta;<sub>i</sub>(t))</div>
+          <div class="d">La pol&iacute;tica del agente depende de su estado interno.</div>
+        </div>
+        <div class="ax">
+          <div class="t">A2 &middot; Impulso</div>
+          <div class="eqs">D(&epsilon;)=0, D'(&delta;<sub>i</sub>)&gt;0, p<sub>i</sub> = &sigma;(D(&delta;<sub>i</sub>(t)))</div>
+          <div class="d">A mayor d&eacute;ficit, mayor probabilidad de activaci&oacute;n. El impulso es nulo en el equilibrio.</div>
+        </div>
+        <div class="ax">
+          <div class="t">A3 &middot; Compuerta de calidad</div>
+          <div class="eqs">&Delta;&delta;<sub>i</sub> = &minus;&alpha;&middot;g(e<sup>(t)</sup>,e<sup>(t+1)</sup>), &alpha;&gt;0</div>
+          <div class="d">Un est&iacute;mulo es saciante en tanto reduzca el d&eacute;ficit que lo produjo. La se&ntilde;al de calidad g mide la reducci&oacute;n efectiva: &Delta;&delta;<sub>i</sub> = &minus;&alpha;&middot;g.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+<!-- ═══ 5. PRO-ACTION OPERATOR (EPR) ═══ -->
+<div class="band">
+  <div class="card">
+    <div class="banner"><span class="sn">5</span> Operador Pro-Acci&oacute;n reducido: EPR = &Gamma;(n=1)</div>
+    <div class="cbody" style="padding:14px 26px;">
+      <div class="body" style="margin-bottom:8px;">
+        <b>EPR</b> es la reducci&oacute;n escalar del operador Pro-Action &Gamma; (Gerpe, ICML LatinX in AI Workshop, 2026):
+        un solo subsistema (n=1), sin aprendizaje por refuerzo, sin cross-coupling. Un termostato epist&eacute;mico que
+        mantiene el d&eacute;ficit &delta; en un rango viable.
+      </div>
+      <div style="text-align:center;margin:6px 0;">
+        <div class="eq">&delta;<sub>i</sub><sup>(t+1)</sup> = &delta;<sub>i</sub><sup>(t)</sup> + &lambda; &minus; &alpha; &middot; g<sub>i</sub><sup>(t)</sup></div>
+      </div>
+      <div class="legend">
+        &lambda; = 0.02 decaimiento basal &nbsp;&middot;&nbsp; &alpha; = 4.0 saciacion por debate &nbsp;&middot;&nbsp; g = se&ntilde;al de calidad estructural
+      </div>
+      <div style="height:6px;"></div>
+      <div style="text-align:center;margin:6px 0;">
+        <div class="eq">p<sub>i</sub><sup>(t)</sup> = &sigma;(k &middot; (&delta;<sub>i</sub><sup>(t)</sup> &minus; &theta;))</div>
+      </div>
+      <div class="legend">k = 10 &nbsp;&middot;&nbsp; &theta; = 0.7 &nbsp;&middot;&nbsp; &sigma; = sigmoide log&iacute;stica</div>
+      <div style="height:8px;"></div>
+      <div class="body" style="font-size:15px;line-height:1.5;background:var(--grey);border-radius:6px;padding:10px 14px;">
+        <b>&iquest;C&oacute;mo se mide g?</b> g es la calidad estructural del argumento en el grafo de debate:
+        g = (engagement + novedad l&eacute;xica + diversidad de atacantes) / 3. En EPR, g sacia &delta; (A3).
+        En todos los modos, g se registra como m&eacute;trica observacional para cuantificar la degradaci&oacute;n temporal.
+        Adicionalmente, <b>jueces LLM offline ciegos al modo</b> (DeepSeek V4-Pro + GLM-5.2) punt&uacute;an cada
+        argumento en escala 1&ndash;10 seg&uacute;n relevancia, originalidad y fuerza argumentativa, sin conocer qu&eacute;
+        condici&oacute;n lo produjo. La concordancia entre jueces se mide con Cohen's &kappa;.
+      </div>
+      <div style="height:10px;"></div>
+      <div style="display:flex;align-items:stretch;gap:8px;">
+        <div class="flowbox" style="flex:1.1;">&delta; crece<br>(basal &lambda;)</div>
+        <div class="arrow">&rarr;</div>
+        <div class="flowbox" style="flex:1.2;">&sigma;(&delta;&minus;&theta;) &gt; umbral<br>activaci&oacute;n</div>
+        <div class="arrow">&rarr;</div>
+        <div class="flowbox" style="flex:1.4;border-color:var(--teal2);">RSVI verbaliza &delta;<br>al prompt del LLM</div>
+        <div class="arrow">&rarr;</div>
+        <div class="flowbox" style="flex:1.1;border-color:var(--amber);">LLM elige<br>acci&oacute;n</div>
+        <div class="arrow">&rarr;</div>
+        <div class="flowbox" style="flex:1;">g sacia &delta;<br>(feedback)</div>
+      </div>
+      <div style="height:8px;"></div>
+      <div class="body" style="font-size:16px;">
+        <b>RSVI</b> (Regulatory State Verbalized Interoception): el estado regulatorio se inyecta al prompt
+        como contexto descriptivo &mdash; no prescriptivo. El LLM puede seguir o ignorar la se&ntilde;al.
+        A diferencia de &Gamma; (6 subsistemas), EPR tiene un solo &delta; escalar.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 6. EXPERIMENTAL DESIGN | 7. RSVI ═══ -->
+<div class="band"><div class="grid2">
+
+  <div class="card">
+    <div class="banner"><span class="sn">6</span> Dise&ntilde;o experimental</div>
+    <div class="cbody">
+      <div class="body" style="font-size:16px;margin-bottom:14px;line-height:1.5;">
+        Dos facciones de LLMs (GOV y OPP, 5 agentes cada una) debaten sobre la gesti&oacute;n gubernamental
+        de la crisis sanitaria y sus consecuencias econ&oacute;micas. Cada agente tiene un rol asignado dentro
+        de su facci&oacute;n y puede debatir, buscar informaci&oacute;n, leer o pasar. El objetivo de cada facci&oacute;n es
+        construir el argumento m&aacute;s s&oacute;lido atacando los puntos del bando contrario y defendiendo los propios.
+        El experimento a&iacute;sla el efecto del locus de control: &iquest;la activaci&oacute;n emerge del estado interno
+        del agente (end&oacute;gena) o es decidida por un router externo (ex&oacute;gena)?
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px;">
+        <div class="stat"><div class="n">10</div><div class="l">Agentes VSM<br>(2 &times; 5 subsist.)</div></div>
+        <div class="stat"><div class="n">80</div><div class="l">Pulsos / corrida<br>(budget-matched)</div></div>
+        <div class="stat"><div class="n">5</div><div class="l">Semillas pareadas<br>(4 lotes)</div></div>
+        <div class="stat"><div class="n">4</div><div class="l">Condiciones<br>experimentales</div></div>
+      </div>
+      <table>
+        <tr><th>Condici&oacute;n</th><th>Activaci&oacute;n</th><th>RSVI</th><th>Prop&oacute;sito</th></tr>
+        <tr><td class="l"><span class="tag epr">EPR</span></td><td>End&oacute;gena (sigmoide + necesidad)</td><td>S&iacute;</td><td>Condici&oacute;n principal</td></tr>
+        <tr><td class="l"><span class="tag q">EPR_Q</span></td><td>End&oacute;gena + aprendizaje por refuerzo</td><td>S&iacute;</td><td>Ablaci&oacute;n: &iquest;aporta el RL?</td></tr>
+        <tr><td class="l"><span class="tag sham">EPR_SHAM</span></td><td>&delta; aleatorio (sigmoide roto)</td><td>No</td><td>Ablaci&oacute;n: &iquest;el bucle importa?</td></tr>
+        <tr><td class="l"><span class="tag lg">LANGGRAPH</span></td><td>Ex&oacute;gena (orquestador externo)</td><td>No</td><td>Baseline ex&oacute;geno</td></tr>
+      </table>
+      <div style="height:10px;"></div>
+      <div class="body" style="font-size:16px;">
+        <b>Ablaci&oacute;n limpia:</b> EPR y LangGraph difieren s&oacute;lo en el locus de control
+        (end&oacute;geno vs ex&oacute;geno) y la presencia de RSVI. Mismo LLM, mismos agentes,
+        mismo grafo, mismo throughput (1 agente/tick). Hiperpar&aacute;metros calibrados con
+        semilla independiente (grid 3&times;3, &alpha;&isin;{3,4,5}, &lambda;&isin;{0.02,0.03,0.05}).
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="banner"><span class="sn">7</span> Configuraci&oacute;n de reproducibilidad</div>
+    <div class="cbody">
+      <div class="body" style="font-size:16px;margin-bottom:12px;">
+        Utilizamos <b>SeedFactory</b>, un generador determinista que parte de una semilla madre
+        (20260308) y deriva primos &uacute;nicos por componente (agentes, router, simulaci&oacute;n)
+        mediante SHA-256. Esto garantiza que cada agente tenga su propia semilla reproducible
+        sin acoplamiento entre componentes.
+      </div>
+      <table style="font-size:15px;margin-bottom:10px;">
+        <tr><th>Rol</th><th>Modelo</th><th>Temperatura</th><th>Semilla</th></tr>
+        <tr><td class="l">Agentes (10)</td><td>DeepSeek V4-Flash</td><td>0.0</td><td>Por agente (SeedFactory)</td></tr>
+        <tr><td class="l">Router LG</td><td>DeepSeek V4-Flash</td><td>0.0</td><td>router_llm (SeedFactory)</td></tr>
+        <tr><td class="l">Juez 1</td><td>DeepSeek V4-Pro</td><td>0.0</td><td>JUDGE_SEED (fijo)</td></tr>
+        <tr><td class="l">Juez 2</td><td>GLM-5.2 (Z.AI)</td><td>do_sample=False</td><td>JUDGE_SEED (fijo)</td></tr>
+        <tr><td class="l">Embeddings</td><td>text-embedding-3-small (OpenAI)</td><td>&mdash;</td><td>&mdash;</td></tr>
+      </table>
+      <div class="body" style="font-size:15px;margin-bottom:8px;">
+        <b>Calibraci&oacute;n:</b> grid 3&times;3, &alpha;&isin;{3,4,5}, &lambda;&isin;{0.02,0.03,0.05},
+        semilla independiente 196379. Seleccionado: &alpha;=4.0, &lambda;=0.02.
+      </div>
+      <div class="body" style="font-size:15px;">
+        <b>RSVI en EPR, no en LangGraph:</b> el d&eacute;ficit &delta; se inyecta al prompt como
+        contexto descriptivo. LangGraph no recibe RSVI porque no hay &delta; que se actualice &mdash;
+        la activaci&oacute;n se decide fuera del agente. Inyectar un estado ficticio sin loop
+        homeost&aacute;tico ser&iacute;a ruido, no un control v&aacute;lido. C&oacute;digo y logs:
+        <b style="color:var(--teal);">github.com/codewithpatelo/langclaw_experiment</b>.
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+<!-- ═══ 8. PRELIMINARY RESULTS ═══ -->
+<div class="band">
+  <div class="card grey">
+    <div class="banner"><span class="sn">8</span> Resultados consolidados &mdash; 5 semillas por lote (20/20 semillas)</div>
+    <div class="cbody" style="padding:16px 24px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+        <!-- Left column: aggregate table + context collapse table -->
+        <div>
+          <table style="font-size:15px;">
+            <tr><th>M&eacute;trica</th><th><span class="tag epr">EPR</span></th><th><span class="tag q">Q</span></th><th><span class="tag sham">SHAM</span></th><th><span class="tag lg">LG</span></th></tr>
+            <tr><td class="l">Debates</td><td><b>43.5</b></td><td>44.9</td><td>40.4</td><td><b>60.6</b></td></tr>
+            <tr><td class="l">Max-share</td><td><b>0.119</b></td><td>0.115</td><td>0.209</td><td>0.276</td></tr>
+            <tr><td class="l">M&aacute;x. &delta;</td><td><b>1.02</b></td><td>0.95</td><td><span style="color:var(--coral);font-weight:700;">3.74</span></td><td>N/A</td></tr>
+            <tr><td class="l">g Promedio</td><td>0.463</td><td>0.459</td><td>0.449</td><td>0.442</td></tr>
+            <tr><td class="l">Pendiente g</td><td>-0.013</td><td>-0.017</td><td>-0.012</td><td>-0.014</td></tr>
+          </table>
+          <div style="color:var(--muted);font-size:13px;margin-top:6px;">
+            Media de 20 corridas (5 semillas por lote). &delta; = d&eacute;ficit epist&eacute;mico (se&ntilde;al de control, solo modos end&oacute;genos). g = calidad estructural del argumento (m&eacute;trica observacional, todos los modos). Wilcoxon signed-rank, Bonferroni &alpha;=0.0056.
+          </div>
+          <div style="height:14px;"></div>
+          <div style="font-size:15px;font-weight:700;color:var(--teal2);margin-bottom:6px;">Colapso de contexto: g por ventana temporal</div>
+          <table style="font-size:14px;">
+            <tr><th>Ventana</th><th><span class="tag epr">EPR</span></th><th><span class="tag q">Q</span></th><th><span class="tag sham">SHAM</span></th><th><span class="tag lg">LG</span></th></tr>
+            <tr><td class="l">Pulsos 0-15</td><td>0.490</td><td>0.498</td><td>0.459</td><td>0.485</td></tr>
+            <tr><td class="l">Pulsos 16-31</td><td>0.484</td><td>0.482</td><td>0.482</td><td>0.446</td></tr>
+            <tr><td class="l">Pulsos 32-47</td><td>0.455</td><td>0.450</td><td>0.449</td><td>0.434</td></tr>
+            <tr><td class="l">Pulsos 48-63</td><td>0.452</td><td>0.435</td><td>0.436</td><td>0.424</td></tr>
+            <tr><td class="l">Pulsos 64-79</td><td>0.441</td><td>0.437</td><td>0.423</td><td>0.425</td></tr>
+            <tr><td class="l"><b>Degrad.</b></td><td style="color:var(--teal);font-weight:700;">9.8%</td><td>12.2%</td><td>7.8%</td><td>12.4%</td></tr>
+          </table>
+        </div>
+        <!-- Right column: findings -->
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="find" style="background:var(--tteal);border-color:#C4E2DA;padding:10px 14px;">
+            <div class="lab" style="color:var(--teal);font-size:13px;">(A) DISTRIBUCI&Oacute;N DE TURNOS</div>
+            <div class="tx" style="font-size:15px;">
+              La activaci&oacute;n end&oacute;gena distribuye turnos org&aacute;nicamente: EPR produce max-share <b>0.119</b> vs <b>0.276</b> en LangGraph
+              (<b>2.3&times;</b> menor concentraci&oacute;n). Esta diferencia es <b>estad&iacute;sticamente significativa</b> (Wilcoxon p&lt;0.001,
+              Bonferroni). Bajo homeostasis, ning&uacute;n agente acapara el piso conversacional; el router ex&oacute;geno de LangGraph
+              concentra sistem&aacute;ticamente la participaci&oacute;n en pocos agentes dominantes.
+            </div>
+          </div>
+          <div class="find" style="background:var(--tamber);border-color:#EAD9BE;padding:10px 14px;">
+            <div class="lab" style="color:#B5731A;font-size:13px;">(B) ABLACI&Oacute;N SHAM &mdash; EL BUCLE IMPORTA</div>
+            <div class="tx" style="font-size:15px;">
+              Reemplazar el d&eacute;ficit epist&eacute;mico por ruido aleatorio (SHAM) produce d&eacute;ficit explosivo
+              (<b>3.74 vs 1.02</b>, p&lt;0.001) y degrada la equidad (max-share <b>0.209 vs 0.119</b>, p&lt;0.001).
+              La sigmoide sola no basta: el <b>bucle homeost&aacute;tico</b> &mdash; d&eacute;ficit real, activaci&oacute;n,
+              calidad, saciaci&oacute;n &mdash; es lo que controla el sistema. La diferencia es altamente significativa,
+              confirmando que el efecto de EPR no es artefacto de la no-linealidad del gate.
+            </div>
+          </div>
+          <div class="find" style="background:#fff;padding:10px 14px;">
+            <div class="lab" style="color:var(--teal);font-size:13px;">(C) EL APRENDIZAJE POR REFUERZO NO APORTA Y PODR&Iacute;A PERJUDICAR</div>
+            <div class="tx" style="font-size:15px;">
+              EPR_Q muestra mejora marginal en d&eacute;ficit (0.95 vs 1.02) pero degrada m&aacute;s r&aacute;pido
+              (slope -0.017 vs -0.013, 12.2% vs 9.8% de degradaci&oacute;n). Las diferencias con EPR no alcanzan
+              significancia estad&iacute;stica. El aprendizaje por refuerzo a&ntilde;ade complejidad sin beneficio claro y podr&iacute;a
+              amplificar el colapso al sobre-explotar patrones iniciales exitosos.
+            </div>
+          </div>
+          <div class="find" style="background:var(--grey);border-color:var(--line);padding:10px 14px;">
+            <div class="lab" style="color:var(--muted);font-size:13px;">(D) LANGGRAPH: M&Aacute;S VOLUMEN, MENOS EQUIDAD</div>
+            <div class="tx" style="font-size:15px;">
+              LangGraph genera 60.6 debates vs 43.5 en EPR, pero esta mayor productividad viene acompa&ntilde;ada
+              de significativamente mayor concentraci&oacute;n (max-share <b>0.276 vs 0.119</b>, p&lt;0.001).
+              Adicionalmente, los agentes no mantienen su rol asignado (IR=0.00 vs 1.00): bajo orquestaci&oacute;n
+              ex&oacute;gena tienen mayor probabilidad de comportarse fuera de su rol que bajo activaci&oacute;n end&oacute;gena.
+            </div>
+          </div>
+          <div class="find" style="background:#fff;border-color:var(--teal2);padding:10px 14px;">
+            <div class="lab" style="color:var(--teal2);font-size:13px;">(E) COLAPSO DE CONTEXTO &mdash; H1</div>
+            <div class="tx" style="font-size:15px;">
+              Todos los modos degradan g a lo largo de las ventanas temporales, evidenciando colapso
+              de contexto. La activaci&oacute;n end&oacute;gena consistentemente degrada menos en cada semilla que la
+              orquestaci&oacute;n ex&oacute;gena (9.8% vs 12.4%, pendiente -0.013 vs -0.014). Sin embargo, las diferencias de
+              pendiente <b>no alcanzan significancia estad&iacute;stica</b> (Wilcoxon p&gt;0.05): el colapso parece en
+              parte inherente al LLM &mdash; todos degradan &mdash; y la activaci&oacute;n homeost&aacute;tica lo modula
+              consistentemente sin eliminarlo. La menor degradaci&oacute;n aparente de SHAM (7.8%) es enga&ntilde;osa:
+              sus agentes producen menos y peor (40.4 debates, d&eacute;ficit 3.74), por lo que hay menos contexto
+              que colapsar.
+              <br><br>
+              <b>Conclusi&oacute;n:</b> la activaci&oacute;n homeost&aacute;tica modula el colapso de contexto de forma
+              consistente, pero la diferencia no alcanza significancia. Se requiere un mecanismo complementario
+              de memoria a largo plazo.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px;">
+        Resultados consolidados: 5 semillas por lote (20/20 semillas). Wilcoxon signed-rank, Bonferroni &alpha;=0.0056.
+        Jueces LLM offline ciegos al modo en curso.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ 9. LIMITATIONS | 10. FUTURE WORK ═══ -->
+<div class="band"><div class="grid2">
+
+  <div class="card">
+    <div class="banner"><span class="sn">9</span> Limitaciones</div>
+    <div class="cbody">
+      <ul class="scope">
+        <li><b>Proveedor &uacute;nico:</b> DeepSeek V4-Flash para todos los agentes. Efectos dependientes
+          del modelo no controlados. Replicaci&oacute;n multi-LLM pendiente.</li>
+        <li><b>T&oacute;pico &uacute;nico:</b> "Gesti&oacute;n gubernamental de la crisis sanitaria y sus
+          consecuencias econ&oacute;micas". Efectos de t&oacute;pico no controlados.</li>
+        <li><b>N consolidado:</b> 20/20 semillas completadas (5 por lote). Wilcoxon signed-rank con Bonferroni confirma diferencias significativas
+          en distribuci&oacute;n de turnos, d&eacute;ficit y g promedio. Las pendientes temporales no alcanzan significancia.</li>
+        <li><b>Pesos calibrados:</b> StimulusEvaluator con perfil faction-dominant calibrado con semilla independiente
+          (grid 3&times;3, &alpha;&isin;{3,4,5}, &lambda;&isin;{0.02,0.03,0.05}). Diferente calibraci&oacute;n podr&iacute;a
+          cambiar el comportamiento, aunque el perfil fue seleccionado por estabilidad.</li>
+        <li><b>80 pulsos:</b> Puede ser demasiado corto para comportamiento asint&oacute;tico.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card grey">
+    <div class="banner"><span class="sn">10</span> Trabajo futuro y contribuciones</div>
+    <div class="cbody">
+      <div style="font-size:19px;line-height:1.44;color:var(--ink);margin-bottom:14px;">
+        <div style="margin-bottom:14px;"><b style="color:var(--teal);">1 &middot; Reformulaci&oacute;n.</b>
+          Tratar la activaci&oacute;n como un proceso end&oacute;geno regulado &mdash; no una decisi&oacute;n
+          de scheduling externa. Nombra un gap estructural en el paradigma de orquestaci&oacute;n actual.</div>
+        <div style="margin-bottom:14px;"><b style="color:var(--teal);">2 &middot; Mecanismo.</b>
+          EPR (&Gamma;(n=1)) + RSVI exponen el estado regulatorio al LLM como superficie
+          de control inspeccionable &mdash; sin prescribir qu&eacute; acci&oacute;n tomar.</div>
+        <div><b style="color:var(--teal);">3 &middot; Evidencia.</b>
+          20/20 semillas muestran distribuci&oacute;n de turnos 2.3&times; m&aacute;s equitativa que LangGraph (p&lt;0.001),
+          la ablaci&oacute;n sham confirma que el loop homeost&aacute;tico &mdash; no s&oacute;lo la
+          forma del gate &mdash; es lo que produce el efecto (d&eacute;ficit 3.74 vs 1.02, p&lt;0.001), y la degradaci&oacute;n temporal de
+          g (colapso de contexto) es menor bajo EPR (9.8%) que bajo LangGraph (12.4%), aunque no significativa.</div>
+      </div>
+      <div style="height:6px;"></div>
+      <div class="body" style="font-size:16px;line-height:1.5;">
+        <b>Extensiones planificadas:</b> incorporar un drive metab&oacute;lico (&Gamma;(n=2)) que regule
+        el consumo de API y modular el reasoning effort del LLM seg&uacute;n el d&eacute;ficit
+        (&delta; &rarr; reasoning_effort en DeepSeek V4-Flash); replicar con otros LLMs (GLM-5.2, Claude);
+        validar con evaluaci&oacute;n humana (Spearman &rho;); e integrar formalmente
+        DeLP para razonamiento derrotable.
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+</div><!-- /grow -->
+
+<!-- ═══ FOOTER ═══ -->
+<div class="band" style="background:var(--dark);color:#9FBEC4;padding:14px 56px;display:flex;
+  align-items:center;justify-content:space-between;gap:28px;">
+  <div style="font-size:15px;line-height:1.4;">
+    <div><b>Patricio Juli&aacute;n Gerpe</b> &mdash; Universidad de Buenos Aires</div>
+    <div>Code &amp; data: <b style="color:var(--teal2);">github.com/codewithpatelo/langclaw_experiment</b></div>
+  </div>
+  <div style="font-size:13px;text-align:right;">
+    Resultados consolidados &mdash; 20/20 semillas (5 por lote)<br>
+    Wilcoxon signed-rank, Bonferroni &alpha;=0.0056
+  </div>
+</div>
+
+</div></div></body></html>

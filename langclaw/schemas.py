@@ -130,3 +130,5 @@ class SimulationLog(BaseModel):
     vsm_system: str | None = None
     # Graph query (SEARCH action)
     search_query: str | None = None
+    # LLM judge ablation: collapse flags, fluidez, g breakdown
+    judge_info: dict[str, Any] | None = None

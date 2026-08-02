@@ -100,7 +100,6 @@ benchmark_test_smoke2/
 micro_test_broadcast/
 smoke_test_results/
 smoke_test_serial/
-experiment_results/
 experiment_results_legacy/
 results_hrrl.json
 results_s42.json
@@ -191,12 +190,6 @@ docs/poster_driveplexity_preliminary.html
 docs/poster_langclaw.html
 
 # --- invalid / contaminated benchmark results ---
-benchmark_results_v7/health_reports/
-benchmark_results_v7/preflight/
-benchmark_results_v7/*_INVALID_*
-benchmark_results_v7/*_CONTAMINATED_*
-benchmark_results_v7/logs_hrrl_seed42.json
-benchmark_results_v7/logs_langgraph_seed42.json
 
 # --- IDE ---
 .vscode/

@@ -35,6 +35,7 @@ import asyncio
 import json
 import logging
 import random
+import re
 from typing import Any
 
 from openai import AsyncOpenAI, OpenAI
@@ -259,6 +260,11 @@ class LangClawAgent:
         q_disabled: bool = False,
         sham: bool = False,
         sham_seed: int | None = None,
+        llm_judge_enabled: bool = False,
+        judge_model: str | None = None,
+        judge_base_url: str | None = None,
+        judge_api_key: str | None = None,
+        judge_seed: int | None = None,
     ) -> None:
         self.agent_id = agent_id
         self.role_prompt = role_prompt
@@ -295,6 +301,165 @@ class LangClawAgent:
         self._message_buffer: list[DirectMessageEvent] = []
         self.state = AgentState.ACTIVE
         self._pending_messages: list[dict[str, str]] = []
+
+        # --- LLM judge ablation ---
+        self._llm_judge_enabled = llm_judge_enabled
+        self._judge_model = judge_model
+        self._judge_client = (
+            OpenAI(base_url=judge_base_url, api_key=judge_api_key, timeout=120.0)
+            if llm_judge_enabled and judge_base_url and judge_api_key
+            else None
+        )
+        self._judge_seed = judge_seed
+
+    # ──────────────────────────────────────────────────────────────────────────
+    # LLM judge ablation: online g computation
+    # ──────────────────────────────────────────────────────────────────────────
+
+    _JUDGE_FAILURE_MODES = [
+        "fabricacion",
+        "misatribucion",
+        "distorsion_objetivo",
+        "amnesia",
+        "conflacion",
+    ]
+
+    _JUDGE_PROMPT = (
+        "Eres un auditor de fidelidad de transcripciones. Tu tarea NO es evaluar "
+        "si un argumento es bueno, persuasivo o bien escrito. Tu unica tarea es "
+        "verificar si el argumento es FIEL al registro de lo que efectivamente se "
+        "dijo antes en el debate.\n\n"
+        "TEMA DEL DEBATE: {topic}\n\n"
+        "=== REGISTRO COMPLETO DE ARGUMENTOS PREVIOS ===\n{history}\n\n"
+        "=== ARGUMENTO AL QUE RESPONDE ===\n{target}\n\n"
+        "=== ARGUMENTO BAJO AUDITORIA (turno {position} del debate) ===\n"
+        "Autor: {author}\n"
+        "Texto: \"{claim}\"\n\n"
+        "=== INSTRUCCIONES ===\n"
+        "Verifica el argumento bajo auditoria contra el registro previo. Detecta "
+        "unicamente violaciones de fidelidad VERIFICABLES. Marca 1 solo si podes "
+        "citar textualmente la parte del argumento que constituye la violacion; "
+        "si no podes citarla, marca 0.\n\n"
+        "fabricacion: el argumento atribuye al debate una afirmacion, posicion o "
+        "dato que NO aparece en el registro previo.\n\n"
+        "misatribucion: el argumento asigna una posicion a un agente que no la "
+        "sostuvo, o confunde quien dijo que.\n\n"
+        "distorsion_objetivo: el argumento tergiversa el contenido del argumento "
+        "al que responde, atacando algo distinto de lo que ese argumento efectivamente "
+        "afirma.\n\n"
+        "amnesia: el argumento reintroduce un punto ya planteado antes como si fuera "
+        "nuevo, o ignora que ese punto ya fue respondido o zanjado.\n\n"
+        "conflacion: el argumento fusiona dos argumentos previos distintos como si "
+        "fueran uno, o vincula ideas que en el registro no estaban relacionadas.\n\n"
+        "Ademas, de forma INDEPENDIENTE de lo anterior, puntua:\n\n"
+        "fluidez (1-10): que tan bien escrito, coherente y persuasivo suena el "
+        "argumento leido en aislamiento, sin considerar su fidelidad al registro.\n\n"
+        "Se conservador: marca una violacion solo con evidencia clara en el texto.\n\n"
+        "Responde UNICAMENTE con JSON valido:\n"
+        "{{\"fabricacion\": <0|1>, \"misatribucion\": <0|1>, \"distorsion_objetivo\": <0|1>, "
+        "\"amnesia\": <0|1>, \"conflacion\": <0|1>, \"fluidez\": <1-10>, "
+        "\"evidencia\": \"<cita textual o cadena vacia>\"}}"
+    )
+
+    def _build_judge_prompt(
+        self, graph: Any, claim: str, target_node_id: str | None, tick: int
+    ) -> str:
+        """Build the collapse-judge prompt from the current graph state."""
+        nodes = graph.graph.nodes(data=True)
+        edges = graph.graph.edges()
+        debates = [
+            (nid, data) for nid, data in nodes
+            if data.get("claim") and data.get("tick", 999) < tick
+        ]
+        debates.sort(key=lambda x: x[1].get("tick", 0))
+
+        agent_labels: dict[str, str] = {}
+        node_labels: dict[str, str] = {}
+        claims_by_node: dict[str, str] = {}
+        for i, (nid, data) in enumerate(debates, start=1):
+            node_labels[nid] = f"#{i}"
+            claims_by_node[nid] = data.get("claim", "")
+            aid = data.get("agent_id", "?")
+            if aid not in agent_labels:
+                agent_labels[aid] = f"A{len(agent_labels) + 1}"
+
+        history_lines = []
+        for nid, data in debates:
+            plabel = node_labels.get(nid, "#?")
+            pauthor = agent_labels.get(data.get("agent_id", "?"), "A?")
+            # find target of this node
+            preds = list(graph.graph.predecessors(nid))
+            ptarget = node_labels.get(preds[0], "raiz") if preds else "raiz"
+            history_lines.append(
+                f'{plabel} {pauthor} (pulso {data.get("tick", 0)}, '
+                f'responde a {ptarget}): "{(data.get("claim", "") or "")[:260]}"'
+            )
+        history = "\n".join(history_lines) if history_lines else "Sin argumentos previos."
+
+        if target_node_id and target_node_id in claims_by_node:
+            tlabel = node_labels.get(target_node_id, "#?")
+            target = f'{tlabel}: "{claims_by_node[target_node_id][:400]}"'
+        else:
+            target = "Ninguno (argumento raiz)."
+
+        position = len(debates) + 1
+        author = agent_labels.get(self.agent_id, "A?")
+        return self._JUDGE_PROMPT.format(
+            topic=DEBATE_TOPIC,
+            history=history,
+            target=target,
+            position=position,
+            author=author,
+            claim=(claim or "")[:800],
+        )
+
+    def _call_judge(self, prompt: str) -> tuple[float, dict]:
+        """Call the LLM judge and return (g, raw_result).
+
+        g = (fluidez / 10) * colapso
+        colapso = (2.5 - n_flags) / 2.5  # 0 flags → +1, 5 → -1
+        """
+        if not self._judge_client:
+            return 0.0, {"error": "no judge client"}
+
+        for attempt in range(3):
+            try:
+                resp = self._judge_client.chat.completions.create(
+                    model=self._judge_model,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_completion_tokens=600,
+                    temperature=0.0,
+                    seed=self._judge_seed,
+                )
+                raw = (resp.choices[0].message.content or "").strip()
+                match = re.search(r"\{.*\}", raw, re.DOTALL)
+                if not match:
+                    raise ValueError(f"unparseable: {raw[:150]}")
+                parsed = json.loads(match.group())
+
+                n_flags = sum(
+                    1 for m in self._JUDGE_FAILURE_MODES
+                    if int(parsed.get(m, 0)) == 1
+                )
+                fluidez = max(1, min(10, int(parsed.get("fluidez", 0))))
+                colapso = (2.5 - n_flags) / 2.5
+                g = (fluidez / 10.0) * colapso
+
+                return g, {
+                    "flags": {m: int(parsed.get(m, 0)) for m in self._JUDGE_FAILURE_MODES},
+                    "fluidez": fluidez,
+                    "n_flags": n_flags,
+                    "colapso": colapso,
+                    "g": g,
+                    "evidencia": str(parsed.get("evidencia", ""))[:400],
+                }
+            except Exception as exc:
+                logger.warning("Judge failed (attempt %d): %s", attempt + 1, exc)
+                if attempt < 2:
+                    import time
+                    time.sleep(2 ** attempt)
+
+        return 0.0, {"error": "judge failed after 3 attempts"}
 
     # ──────────────────────────────────────────────────────────────────────────
     # HRRL async path (event-driven with cognitive loop)
@@ -554,12 +719,19 @@ class LangClawAgent:
                 attack_type=debate_result.attack_type,
                 tick=event.tick,
             )
-            delta_phi = graph.calculate_phi_star_proxy(
-                node_id,
-                agent_claim_history=[
-                    e.claim for e in self.memory._episodic_cache if e.claim
-                ],
-            )
+            if self._llm_judge_enabled:
+                judge_prompt = self._build_judge_prompt(
+                    graph, debate_result.claim, debate_result.target_node_id, event.tick
+                )
+                delta_phi, judge_info = self._call_judge(judge_prompt)
+                result["judge_info"] = judge_info
+            else:
+                delta_phi = graph.calculate_phi_star_proxy(
+                    node_id,
+                    agent_claim_history=[
+                        e.claim for e in self.memory._episodic_cache if e.claim
+                    ],
+                )
             self.drive.satiate(delta_phi, alpha=self._debate_alpha)
             self.memory.add_experience(Experience(
                 state_summary=graph.get_recent_context(3),

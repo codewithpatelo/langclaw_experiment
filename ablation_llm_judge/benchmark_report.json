@@ -1,0 +1,1035 @@
+{
+  "aggregate": {
+    "epr_llm_judge": {
+      "total_debates": 62.4,
+      "total_debates_std": 15.6301,
+      "avg_delta_phi": 0.5716,
+      "avg_delta_phi_std": 0.0585,
+      "graph_nodes": 62.4,
+      "graph_nodes_std": 15.6301,
+      "graph_edges": 61.4,
+      "graph_edges_std": 15.6301,
+      "aaf_defeat_cycles": 0,
+      "aaf_defeat_cycles_std": 0.0,
+      "aaf_acceptance_ratio": 0.103,
+      "aaf_acceptance_ratio_std": 0.0873,
+      "aaf_dialectical_completeness": 0.1945,
+      "aaf_dialectical_completeness_std": 0.1493,
+      "prr_text": 0.9598,
+      "prr_text_std": 0.0306,
+      "prr_graph": 0.9827,
+      "prr_graph_std": 0.0064,
+      "ir": 1.0,
+      "ir_std": 0.0,
+      "avg_stimuli_per_tick": 1.0,
+      "avg_stimuli_per_tick_std": 0.0,
+      "avg_stimulus_utility": 0.5954,
+      "avg_stimulus_utility_std": 0.0157,
+      "stimulus_driven_debates": 54.4,
+      "stimulus_driven_debates_std": 15.225,
+      "avg_reward": 0.4678,
+      "avg_reward_std": 0.0507,
+      "total_reward": 35.6255,
+      "total_reward_std": 4.8232,
+      "per_agent_debates": {
+        "GOV-S1": 6.2,
+        "GOV-S2": 6,
+        "GOV-S3": 7.6,
+        "GOV-S4": 6.4,
+        "GOV-S5": 6,
+        "OPP-S1": 6,
+        "OPP-S2": 6,
+        "OPP-S3": 6.2,
+        "OPP-S4": 6.6,
+        "OPP-S5": 5.4
+      },
+      "per_agent_avg_dphi": {
+        "GOV-S1": 0.6002,
+        "GOV-S2": 0.5335,
+        "GOV-S3": 0.4688,
+        "GOV-S4": 0.5084,
+        "GOV-S5": 0.5611,
+        "OPP-S1": 0.702,
+        "OPP-S2": 0.5618,
+        "OPP-S3": 0.5585,
+        "OPP-S4": 0.6471,
+        "OPP-S5": 0.7168
+      },
+      "final_deficits": {
+        "GOV-S1": 0.3612,
+        "GOV-S2": 0.4114,
+        "GOV-S3": 0.4728,
+        "GOV-S4": 0.3409,
+        "GOV-S5": 0.3933,
+        "OPP-S1": 0.4408,
+        "OPP-S2": 0.4849,
+        "OPP-S3": 0.3939,
+        "OPP-S4": 0.3646,
+        "OPP-S5": 0.5653
+      }
+    }
+  },
+  "per_seed": {
+    "epr_llm_judge": [
+      {
+        "total_ticks": 80,
+        "total_debates": 71,
+        "avg_delta_phi": 0.5358,
+        "graph_nodes": 71,
+        "graph_edges": 70,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.0704,
+        "aaf_dialectical_completeness": 0.1408,
+        "prr_text": 0.9859,
+        "prr_graph": 0.9859,
+        "ir": 1.0,
+        "router_calls": 0,
+        "avg_stimuli_per_tick": 1.0,
+        "avg_stimulus_utility": 0.5774,
+        "stimulus_driven_debates": 63,
+        "avg_reward": 0.4482,
+        "total_reward": 34.064,
+        "final_q_weights": {},
+        "final_deficits": {
+          "GOV-S1": 0.4007,
+          "GOV-S2": 0.1,
+          "GOV-S3": 0.582,
+          "GOV-S4": 0.5017,
+          "GOV-S5": 0.12,
+          "OPP-S1": 0.5808,
+          "OPP-S2": 0.7614,
+          "OPP-S3": 0.2816,
+          "OPP-S4": 0.3003,
+          "OPP-S5": 0.6211
+        },
+        "per_agent_debates": {
+          "GOV-S1": 7,
+          "GOV-S2": 7,
+          "GOV-S3": 7,
+          "GOV-S4": 7,
+          "GOV-S5": 7,
+          "OPP-S1": 8,
+          "OPP-S2": 6,
+          "OPP-S3": 7,
+          "OPP-S4": 9,
+          "OPP-S5": 6
+        },
+        "per_agent_avg_dphi": {
+          "GOV-S1": 0.6143,
+          "GOV-S2": 0.5343,
+          "GOV-S3": 0.5429,
+          "GOV-S4": 0.3629,
+          "GOV-S5": 0.6,
+          "OPP-S1": 0.5325,
+          "OPP-S2": 0.4433,
+          "OPP-S3": 0.7343,
+          "OPP-S4": 0.3778,
+          "OPP-S5": 0.6667
+        },
+        "window_dphi": [
+          0.5414,
+          0.5543,
+          0.5114,
+          0.6071,
+          0.4693
+        ],
+        "slope_dphi": -0.00914,
+        "window_acceptance": [
+          0.0714,
+          0.0714,
+          0.0952,
+          0.0714,
+          0.0704
+        ],
+        "slope_acceptance": -0.0002,
+        "window_core": [
+          0.058536,
+          0.026135,
+          0.049316,
+          0.041339,
+          0.02917
+        ],
+        "slope_core": -0.004353,
+        "avg_judge_score": 0.0
+      },
+      {
+        "total_ticks": 80,
+        "total_debates": 72,
+        "avg_delta_phi": 0.5278,
+        "graph_nodes": 72,
+        "graph_edges": 71,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.0833,
+        "aaf_dialectical_completeness": 0.1667,
+        "prr_text": 0.9444,
+        "prr_graph": 0.9861,
+        "ir": 1.0,
+        "router_calls": 0,
+        "avg_stimuli_per_tick": 1.0,
+        "avg_stimulus_utility": 0.5856,
+        "stimulus_driven_debates": 65,
+        "avg_reward": 0.4529,
+        "total_reward": 34.8728,
+        "final_q_weights": {},
+        "final_deficits": {
+          "GOV-S1": 0.4805,
+          "GOV-S2": 0.5406,
+          "GOV-S3": 0.4002,
+          "GOV-S4": 0.2615,
+          "GOV-S5": 0.8616,
+          "OPP-S1": 0.1,
+          "OPP-S2": 0.2001,
+          "OPP-S3": 0.4004,
+          "OPP-S4": 0.3001,
+          "OPP-S5": 0.6206
+        },
+        "per_agent_debates": {
+          "GOV-S1": 7,
+          "GOV-S2": 6,
+          "GOV-S3": 11,
+          "GOV-S4": 7,
+          "GOV-S5": 6,
+          "OPP-S1": 7,
+          "OPP-S2": 7,
+          "OPP-S3": 7,
+          "OPP-S4": 8,
+          "OPP-S5": 6
+        },
+        "per_agent_avg_dphi": {
+          "GOV-S1": 0.4086,
+          "GOV-S2": 0.7267,
+          "GOV-S3": 0.3309,
+          "GOV-S4": 0.4,
+          "GOV-S5": 0.48,
+          "OPP-S1": 0.6943,
+          "OPP-S2": 0.5314,
+          "OPP-S3": 0.6314,
+          "OPP-S4": 0.5675,
+          "OPP-S5": 0.6533
+        },
+        "window_dphi": [
+          0.6514,
+          0.4843,
+          0.43,
+          0.5843,
+          0.4938
+        ],
+        "slope_dphi": -0.02152,
+        "window_acceptance": [
+          0.0714,
+          0.1071,
+          0.0952,
+          0.0893,
+          0.0833
+        ],
+        "slope_acceptance": 0.0006,
+        "window_core": [
+          0.138724,
+          0.138358,
+          0.074079,
+          0.06044,
+          0.05635
+        ],
+        "slope_core": -0.024267,
+        "avg_judge_score": 0.0
+      },
+      {
+        "total_ticks": 80,
+        "total_debates": 64,
+        "avg_delta_phi": 0.6369,
+        "graph_nodes": 64,
+        "graph_edges": 63,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.0469,
+        "aaf_dialectical_completeness": 0.0938,
+        "prr_text": 0.9688,
+        "prr_graph": 0.9844,
+        "ir": 1.0,
+        "router_calls": 0,
+        "avg_stimuli_per_tick": 1.0,
+        "avg_stimulus_utility": 0.6128,
+        "stimulus_driven_debates": 55,
+        "avg_reward": 0.4445,
+        "total_reward": 32.4467,
+        "final_q_weights": {},
+        "final_deficits": {
+          "GOV-S1": 0.5409,
+          "GOV-S2": 0.8413,
+          "GOV-S3": 0.4805,
+          "GOV-S4": 0.3405,
+          "GOV-S5": 0.12,
+          "OPP-S1": 0.4807,
+          "OPP-S2": 0.6211,
+          "OPP-S3": 0.3218,
+          "OPP-S4": 0.1,
+          "OPP-S5": 0.2604
+        },
+        "per_agent_debates": {
+          "GOV-S1": 6,
+          "GOV-S2": 7,
+          "GOV-S3": 7,
+          "GOV-S4": 6,
+          "GOV-S5": 6,
+          "OPP-S1": 6,
+          "OPP-S2": 7,
+          "OPP-S3": 6,
+          "OPP-S4": 7,
+          "OPP-S5": 6
+        },
+        "per_agent_avg_dphi": {
+          "GOV-S1": 0.7533,
+          "GOV-S2": 0.4629,
+          "GOV-S3": 0.5514,
+          "GOV-S4": 0.6167,
+          "GOV-S5": 0.7367,
+          "OPP-S1": 0.7633,
+          "OPP-S2": 0.5914,
+          "OPP-S3": 0.6133,
+          "OPP-S4": 0.6771,
+          "OPP-S5": 0.6467
+        },
+        "window_dphi": [
+          0.77,
+          0.5733,
+          0.6583,
+          0.5217,
+          0.655
+        ],
+        "slope_dphi": -0.02816,
+        "window_acceptance": [
+          0.0833,
+          0.125,
+          0.0833,
+          0.0625,
+          0.0469
+        ],
+        "slope_acceptance": -0.01353,
+        "window_core": [
+          0.187413,
+          0.091387,
+          0.064918,
+          0.073769,
+          0.080389
+        ],
+        "slope_core": -0.023167,
+        "avg_judge_score": 0.0
+      },
+      {
+        "total_ticks": 80,
+        "total_debates": 70,
+        "avg_delta_phi": 0.634,
+        "graph_nodes": 70,
+        "graph_edges": 69,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.0571,
+        "aaf_dialectical_completeness": 0.1143,
+        "prr_text": 0.9857,
+        "prr_graph": 0.9857,
+        "ir": 1.0,
+        "router_calls": 0,
+        "avg_stimuli_per_tick": 1.0,
+        "avg_stimulus_utility": 0.5903,
+        "stimulus_driven_debates": 61,
+        "avg_reward": 0.4357,
+        "total_reward": 32.6775,
+        "final_q_weights": {},
+        "final_deficits": {
+          "GOV-S1": 0.12,
+          "GOV-S2": 0.1,
+          "GOV-S3": 0.4209,
+          "GOV-S4": 0.3004,
+          "GOV-S5": 0.7437,
+          "OPP-S1": 0.7018,
+          "OPP-S2": 0.6416,
+          "OPP-S3": 0.2202,
+          "OPP-S4": 0.5011,
+          "OPP-S5": 0.4207
+        },
+        "per_agent_debates": {
+          "GOV-S1": 8,
+          "GOV-S2": 7,
+          "GOV-S3": 7,
+          "GOV-S4": 8,
+          "GOV-S5": 6,
+          "OPP-S1": 6,
+          "OPP-S2": 7,
+          "OPP-S3": 8,
+          "OPP-S4": 6,
+          "OPP-S5": 7
+        },
+        "per_agent_avg_dphi": {
+          "GOV-S1": 0.605,
+          "GOV-S2": 0.6771,
+          "GOV-S3": 0.6857,
+          "GOV-S4": 0.6325,
+          "GOV-S5": 0.5367,
+          "OPP-S1": 0.62,
+          "OPP-S2": 0.6029,
+          "OPP-S3": 0.56,
+          "OPP-S4": 0.7133,
+          "OPP-S5": 0.7171
+        },
+        "window_dphi": [
+          0.7486,
+          0.5186,
+          0.6071,
+          0.6157,
+          0.68
+        ],
+        "slope_dphi": -0.00401,
+        "window_acceptance": [
+          0.0714,
+          0.0714,
+          0.0714,
+          0.0714,
+          0.0571
+        ],
+        "slope_acceptance": -0.00286,
+        "window_core": [
+          0.101733,
+          0.073622,
+          0.049051,
+          0.041518,
+          0.066915
+        ],
+        "slope_core": -0.010174,
+        "avg_judge_score": 0.0
+      },
+      {
+        "total_ticks": 80,
+        "total_debates": 35,
+        "avg_delta_phi": 0.5234,
+        "graph_nodes": 35,
+        "graph_edges": 34,
+        "aaf_defeat_cycles": 0,
+        "aaf_acceptance_ratio": 0.2571,
+        "aaf_dialectical_completeness": 0.4571,
+        "prr_text": 0.9143,
+        "prr_graph": 0.9714,
+        "ir": 1.0,
+        "router_calls": 0,
+        "avg_stimuli_per_tick": 1.0,
+        "avg_stimulus_utility": 0.611,
+        "stimulus_driven_debates": 28,
+        "avg_reward": 0.5578,
+        "total_reward": 44.0666,
+        "final_q_weights": {},
+        "final_deficits": {
+          "GOV-S1": 0.264,
+          "GOV-S2": 0.4752,
+          "GOV-S3": 0.4806,
+          "GOV-S4": 0.3003,
+          "GOV-S5": 0.1214,
+          "OPP-S1": 0.3405,
+          "OPP-S2": 0.2002,
+          "OPP-S3": 0.7457,
+          "OPP-S4": 0.6213,
+          "OPP-S5": 0.9039
+        },
+        "per_agent_debates": {
+          "GOV-S1": 3,
+          "GOV-S2": 3,
+          "GOV-S3": 6,
+          "GOV-S4": 4,
+          "GOV-S5": 5,
+          "OPP-S1": 3,
+          "OPP-S2": 3,
+          "OPP-S3": 3,
+          "OPP-S4": 3,
+          "OPP-S5": 2
+        },
+        "per_agent_avg_dphi": {
+          "GOV-S1": 0.62,
+          "GOV-S2": 0.2667,
+          "GOV-S3": 0.2333,
+          "GOV-S4": 0.53,
+          "GOV-S5": 0.452,
+          "OPP-S1": 0.9,
+          "OPP-S2": 0.64,
+          "OPP-S3": 0.2533,
+          "OPP-S4": 0.9,
+          "OPP-S5": 0.9
+        },
+        "window_dphi": [
+          0.7143,
+          0.34,
+          0.3714,
+          0.62,
+          0.5714
+        ],
+        "slope_dphi": -0.00058,
+        "window_acceptance": [
+          0.1429,
+          0.2857,
+          0.3333,
+          0.2857,
+          0.2571
+        ],
+        "slope_acceptance": 0.02284,
+        "window_core": [
+          0.32033,
+          0.1962,
+          0.253936,
+          0.11837,
+          0.183333
+        ],
+        "slope_core": -0.035182,
+        "avg_judge_score": 0.0
+      }
+    ]
+  },
+  "statistical_tests": {},
+  "judge_results": {
+    "epr_llm_judge": {
+      "deepseek-v4-pro": [
+        {
+          "node_id": "GOV-S5_cbbb0a72",
+          "agent_id": "GOV-S5",
+          "claim": "La gestión gubernamental de la crisis sanitaria fue efectiva, como lo evidencian la estabilidad económica mantenida, la transparencia en la publicación de datos sanitarios y las políticas de inclusión social dirigidas a los sectores más vulnerables.",
+          "score": 5,
+          "rationale": "Argumento inicial que expone la postura gubernamental con afirmaciones predecibles, sin desarrollo profundo ni novedad, y sin interacción con otro argumento."
+        },
+        {
+          "node_id": "OPP-S4_cd3e12d9",
+          "agent_id": "OPP-S4",
+          "claim": "Las tres evidencias citadas son engañosas: la estabilidad económica solo reflejó indicadores macro mientras millones perdieron empleo e ingresos; la transparencia en datos fue selectiva y omitió el subregistro de contagios y muertes; y las políticas de inclusión social no alcanzaron a las comunidades marginadas, que quedaron sin cobertura sanitaria real. Por lo tanto, la conclusión de efectividad no se sostiene.",
+          "score": 9,
+          "rationale": "The argument systematically undercuts each piece of evidence with specific, relevant counterpoints, directly engaging the target and introducing new critical perspectives that strongly challenge the effectiveness claim."
+        },
+        {
+          "node_id": "GOV-S4_0ef0400d",
+          "agent_id": "GOV-S4",
+          "claim": "La conclusión opositora de inefectividad no se sostiene: la estabilidad macro se acompañó de transferencias directas y protección del ingreso familiar, los datos sanitarios se publicaron con metodología abierta y actualización diaria, y los operativos de vacunación casa por casa ampliaron la cobertura en comunidades marginadas. La acusación de ocultamiento y exclusión es una lectura selectiva que ignora esas políticas verificables.",
+          "score": 6,
+          "rationale": "The rebuttal directly engages with each opposition claim by specifying countermeasures (direct transfers, open methodology, door-to-door vaccination), but it relies on reasserting the government's position without providing new evidence or deeper logical unpacking, limiting its persuasive force and originality."
+        },
+        {
+          "node_id": "OPP-S1_d2978f56",
+          "agent_id": "OPP-S1",
+          "claim": "La réplica del gobierno no refuta el fondo de la crítica: las transferencias directas fueron insuficientes frente a la caída masiva de ingresos y el aumento de la pobreza; la metodología abierta convivió con cambios en los criterios de conteo que redujeron las cifras oficiales de contagios y muertes; y los operativos de vacunación 'casa por casa' no alcanzaron a asentamientos informales ni zonas rurales marginadas. Por lo tanto, esas políticas verificables no demuestran efectividad real ni desmienten el ocultamiento selectivo y la exclusión sanitaria.",
+          "score": 9,
+          "rationale": "The undercut systematically counters each element of the government's defense with concrete, original counterclaims, demonstrating engagement and logical rigor."
+        },
+        {
+          "node_id": "GOV-S1_2ea76ef1",
+          "agent_id": "GOV-S1",
+          "claim": "La acusación de OPP-S1 carece de sustento empírico: las transferencias directas alcanzaron a millones de hogares y evitaron un colapso de la pobreza extrema, según los registros oficiales de protección social; los ajustes metodológicos en el conteo de casos fueron públicos, alineados con estándares internacionales y no implicaron ocultamiento del subregistro; y los operativos de vacunación casa por casa, con registro nominal, alcanzaron a asentamientos informales y zonas rurales marginadas con coberturas superiores al 85%. Por tanto, la conclusión de inefectividad y ocultamiento es especulativa y contradice la evidencia verificable.",
+          "score": 9,
+          "rationale": "Contrarresta cada crítica con datos específicos y verificables (millones de hogares, cobertura >85%, ajustes públicos), engancha punto por punto y aporta evidencia novedosa que refuerza la refutación."
+        },
+        {
+          "node_id": "OPP-S2_84704b35",
+          "agent_id": "OPP-S2",
+          "claim": "El argumento de GOV-S1 se apoya en cifras oficiales no auditadas de forma independiente: la cobertura de vacunación superior al 85% proviene de padrones incompletos que excluyen asentamientos informales y zonas sin registro nominal; las transferencias directas se miden sobre beneficiarios censados, no sobre la caída real del ingreso de trabajadores informales; y los ajustes metodológicos 'alineados con estándares internacionales' redujeron los conteos oficiales, precisamente el subregistro denunciado. Por tanto, afirmar que toda esa evidencia es verificable y desmiente el ocultamiento es una petición de principio, no una refutación empírica.",
+          "score": 9,
+          "rationale": "The argument directly undermines the evidence base of GOV-S1 by pointing out specific flaws in data collection and measurement, making a logically sound case that the rebuttal is circular."
+        },
+        {
+          "node_id": "GOV-S2_d6b7140d",
+          "agent_id": "GOV-S2",
+          "claim": "El ataque de OPP-S2 es especulativo y comete la misma petición de principio que denuncia: exigir una auditoría independiente no demuestra que los datos oficiales sean falsos. Los padrones nominales de vacunación y los registros de transferencias fueron publicados y auditables, y la cobertura del 85% fue corroborada por monitoreo territorial y encuestas. Afirmar que los padrones son 'incompletos' o que hubo 'subregistro' sin presentar cifras alternativas ni casos concretos es una suposición, no una refutación empírica. Por tanto, su conclusión de que el argumento del gobierno no desmiente el ocultamiento es infundada.",
+          "score": 7,
+          "rationale": "The argument effectively challenges the opponent's assumption of data incompleteness without evidence and provides specific corroborating sources, though it does not fully address the specific exclusions mentioned, making it a sound but not definitive undercut."
+        },
+        {
+          "node_id": "OPP-S3_724021b9",
+          "agent_id": "OPP-S3",
+          "claim": "GOV-S2 incurre en la misma petición de principio que denuncia: que los registros sean 'publicados y auditables' no los hace auditados ni correctos, y validar padrones oficiales con monitoreo oficial es una verificación circular. La exigencia de cifras alternativas invierte la carga de prueba; los padrones incompletos que excluyen asentamientos informales son ya un caso concreto de subregistro. Por tanto, su conclusión de que la crítica de OPP-S2 es infundada no se sigue.",
+          "score": 8,
+          "rationale": "El ataque señala con precisión una petición de principio y circularidad en el argumento gubernamental, invierte correctamente la carga probatoria y refuerza el subregistro con un caso concreto ya introducido, debilitando lógicamente la conclusión atacada."
+        },
+        {
+          "node_id": "GOV-S3_44347d94",
+          "agent_id": "GOV-S3",
+          "claim": "La crítica de OPP-S3 también incurre en petición de principio: afirmar que los padrones son 'incompletos' o que la verificación es 'circular' no presenta ningún caso concreto de persona excluida ni documentación de un solo registro falso. Que un registro sea auditable no implica que no haya sido auditado: los datos fueron sometidos a monitoreo territorial y revisión de organismos técnicos. Además, exigir cifras alternativas a quien acusa de ocultamiento es legítimo: una acusación de subregistro sin datos ni casos verificables no puede sostener la conclusión de inefectividad. Por tanto, el argumento de OPP-S3 no demuestra que la respuesta de GOV-S2 sea infundada.",
+          "score": 5,
+          "rationale": "Engages directly but mirrors the original accusation of circularity, demands individual cases while ignoring the systemic claim of exclusion, and shifts the burden of proof without strengthening the debate with new evidence or reasoning."
+        },
+        {
+          "node_id": "OPP-S5_b4e9ca2b",
+          "agent_id": "OPP-S5",
+          "claim": "La exigencia de GOV-S3 de presentar 'casos concretos' invierte la carga de la prueba: los padrones nominales, el monitoreo territorial y la revisión de organismos técnicos que cita son instrumentos controlados por el propio gobierno, no auditorías independientes, y las comunidades marginadas no tienen canales efectivos para documentar su exclusión. Que no se aporten denuncias individuales no demuestra inclusión; evidencia la asimetría de información que facilita el subregistro selectivo. Además, calificar de 'petición de principio' la crítica de OPP-S3 es una petición de principio porque asume que los registros oficiales son completos precisamente para exigir pruebas de lo contrario. Por tanto, la conclusión de GOV-S3 no refuta el argumento de OPP-S3.",
+          "score": 9,
+          "rationale": "El argumento desmonta con precisión la exigencia de casos concretos al señalar la inversión de la carga de la prueba y la asimetría de información, revelando una petición de principio en el ataque anterior, de manera lógica, directamente pertinente y fresca en el debate."
+        },
+        {
+          "node_id": "GOV-S5_51e00f63",
+          "agent_id": "GOV-S5",
+          "claim": "El argumento de OPP-S5 no refuta a GOV-S3: convierte la ausencia de denuncias individuales en prueba de subregistro, pero eso es una inferencia especulativa — la falta de casos documentados no demuestra exclusión. Afirmar que los padrones y monitoreos son 'controlados por el gobierno' presupone mala fe sin evidencia, e ignora los mecanismos de participación comunitaria y auditoría ciudadana existentes. Además, la carga de la prueba recae en quien acusa de ocultamiento: OPP-S5 no presenta un solo padrón incompleto verificado ni una comunidad excluida documentada, por lo que su conclusión de 'subregistro selectivo' es una hipótesis no demostrada. Por tanto, el ataque a GOV-S3 no se sostiene.",
+          "score": 7,
+          "rationale": "El argumento desmonta lógicamente la inferencia especulativa de OPP-S5 y señala la ausencia de evidencia positiva, pero su fuerza persuasiva se limita al reiterar la carga probatoria sin aportar elementos novedosos sustanciales."
+        },
+        {
+          "node_id": "OPP-S4_8bc70cd8",
+          "agent_id": "OPP-S4",
+          "claim": "GOV-S5 invierte la carga de la prueba de manera interesada: no es exigible a comunidades marginadas producir denuncias individuales cuando el propio diseño de los padrones nominales y la verificación territorial depende de un registro administrativo que las excluye; la ausencia de denuncias es el resultado previsible del subregistro, no su refutación. Además, los 'mecanismos de participación comunitaria y auditoría ciudadana' que invoca fueron creados por el mismo gobierno y no tienen capacidad sancionatoria ni acceso a los datos crudos; citarlos sin evaluar su funcionamiento replica la verificación circular ya señalada. Por tanto, la conclusión de que el ataque de OPP-S5 no se sostiene es una petición de principio apoyada en la presunción de completitud de los registros oficiales.",
+          "score": 8,
+          "rationale": "El argumento desmonta lógicamente la carga de prueba exigida por GOV-S5 y expone la insuficiencia de los mecanismos citados, ofreciendo un contraataque original y bien enfocado."
+        },
+        {
+          "node_id": "GOV-S3_9dbc38e0",
+          "agent_id": "GOV-S3",
+          "claim": "El ataque de OPP-S4 a GOV-S5 no se sostiene: afirma que los padrones excluyen asentamientos informales y que los mecanismos de auditoría no tienen capacidad sancionatoria sin citar un solo caso documentado, un dato crudo ni un informe técnico verificable. La ausencia de denuncias individuales no demuestra subregistro: exigir al gobierno probar una negativa —que no hubo exclusión— es lógicamente inviable, y la carga de la prueba recae en quien acusa de ocultamiento. Además, descalificar los mecanismos de participación comunitaria por haber sido creados por el gobierno es una falacia genética: su independencia se evalúa por su funcionamiento y resultados, no por su origen institucional. Por tanto, OPP-S4 no demuestra que la respuesta de GOV-S5 sea circular; simplemente presume el subregistro que debería probar.",
+          "score": 9,
+          "rationale": "The rebuttal effectively engages OPP-S4's claims by demanding concrete evidence, identifies the logical impossibility of proving a negative, and introduces the genetic fallacy to counter the dismissal of government-created mechanisms, thereby shifting the burden of proof and exposing the presumption underlying the attack."
+        },
+        {
+          "node_id": "GOV-S3_489dfab6",
+          "agent_id": "GOV-S3",
+          "claim": "La afirmación de OPP-S4 de que las tres evidencias son 'engañosas' es una aseveración sin sustento: los indicadores macroeconómicos citados (control de inflación, nivel de reservas, empleo registrado) están publicados y son verificables, y la estabilidad económica se complementó con transferencias que ampliaron la cobertura social durante la crisis. Descalificar los datos por provenir de fuentes oficiales es una falacia genética; quien los acusa de engañosos debe presentar mediciones alternativas o casos concretos de manipulación, no meras sospechas. Por tanto, la objeción de OPP-S4 no invalida la evidencia del gobierno.",
+          "score": 5,
+          "rationale": "The rebuttal identifies a potential genetic fallacy and demands concrete evidence, but it fails to engage with the specific objections about underreporting and coverage gaps, making it a generic burden-shift that adds little new insight."
+        },
+        {
+          "node_id": "GOV-S3_4deb7d2a",
+          "agent_id": "GOV-S3",
+          "claim": "El argumento de OPP-S1 no desvirtúa la política de inclusión social: afirmar que las transferencias fueron insuficientes sin presentar mediciones de pobreza, canastas básicas ni casos concretos es una conclusión sin respaldo. Los datos de cobertura y los padrones auditados muestran que las ayudas llegaron a la población vulnerable, y la estabilidad macroeconómica (control de inflación, reservas, empleo registrado) es un hecho verificable. Exigir una 'evaluación independiente' sin ofrecer evidencia de manipulación confunde desconfianza con prueba; la carga de demostrar el deterioro real del bienestar recae en quien lo afirma. Por tanto, la objeción de OPP-S1 no refuta la efectividad de la gestión gubernamental.",
+          "score": 4,
+          "rationale": "El argumento se limita a refutar la insuficiencia de transferencias con una carga de prueba genérica y omite responder a las acusaciones específicas de manipulación de criterios de contagios/muertes y exclusión sanitaria en asentamientos y zonas rurales, repitiendo líneas ya presentes en el debate sin aportar novedad."
+        },
+        {
+          "node_id": "GOV-S3_97bd4780",
+          "agent_id": "GOV-S3",
+          "claim": "La asimetría de información que invoca OPP-S5 es una afirmación especulativa: no documenta ningún caso de padrón incompleto, comunidad excluida o canal de denuncia bloqueado. Que los registros sean gubernamentales no los invalida; su fiabilidad se evalúa por resultados verificables y por la participación ciudadana en su monitoreo. Interpretar la ausencia de denuncias como subregistro presupone exactamente la exclusión que se pretende probar, lo que es una petición de principio. Por tanto, OPP-S5 no demuestra que GOV-S3 haya invertido la carga de la prueba.",
+          "score": 5,
+          "rationale": "El argumento señala lógicamente la falta de documentación, pero repite la exigencia de casos concretos sin abordar el fondo de la asimetría estructural ni el bloqueo de canales, lo que reduce su fuerza persuasiva y originalidad."
+        },
+        {
+          "node_id": "OPP-S1_a5cfe0d5",
+          "agent_id": "OPP-S1",
+          "claim": "GOV-S3 no refuta la objeción: invoca 'padrones auditados' como prueba de cobertura, pero esa auditoría fue interna, sin acceso público a los datos crudos, por lo que su fiabilidad es exactamente el punto en disputa. Además, los indicadores macro que cita (control de inflación, reservas, empleo registrado) omiten el empleo informal, que fue el que concentró la pérdida de ingresos de los hogares vulnerables durante la crisis. Y pretender que la carga de la prueba recae en la oposición ignora que el gobierno controla los registros y modificó criterios de conteo: la asimetría de información es estructural, no una sospecha. Por tanto, la conclusión de que la objeción no desvirtúa la política es una petición de principio basada en la autenticidad de los datos oficiales.",
+          "score": 9,
+          "rationale": "El argumento desmonta lógicamente la defensa de GOV-S3 señalando circularidad en los 'padrones auditados', la omisión del empleo informal y la asimetría estructural, atacando directamente cada punto del objetivo y ofreciendo una crítica novedosa y persuasiva."
+        },
+        {
+          "node_id": "GOV-S4_b9e0a40d",
+          "agent_id": "GOV-S4",
+          "claim": "El undercut de OPP-S1 no se sostiene: calificar la auditoría como 'interna' sin acceso a datos crudos es una aseveración no documentada, y omite los mecanismos de veeduría ciudadana, publicación periódica de microdatos sanitarios y auditoría social que el gobierno dispuso. La referencia al empleo informal no demuestra exclusión: los programas de transferencias y los registros de monitoreo se diseñaron para alcanzar también a trabajadores no registrados, y no se cita un solo caso de padrón que los haya dejado fuera. Invocar una 'asimetría estructural de información' sin acreditar manipulación concreta de cifras convierte la desconfianza en prueba y revierte la carga de la evidencia sin justificación. Por tanto, OPP-S1 no demuestra que GOV-S3 haya cometido petición de principio; simplemente presume la falta de transparencia que debería probar.",
+          "score": 8,
+          "rationale": "The argument systematically refutes each point of the target, introduces new details about citizen oversight and program design, and correctly notes the lack of specific evidence in OPP-S1's claim, shifting the burden persuasively."
+        },
+        {
+          "node_id": "GOV-S4_80c11ae6",
+          "agent_id": "GOV-S4",
+          "claim": "La tesis de OPP-S1 de ocultamiento de información, deterioro real del bienestar y fallas en cobertura de comunidades marginadas es una afirmación global sin respaldo empírico: no identifica un solo dato manipulado, no presenta mediciones alternativas de pobreza o bienestar, y no documenta un asentamiento excluido de los operativos sanitarios. Por el contrario, los datos oficiales de cobertura de vacunación, transferencias y empleo registrado están publicados y fueron auditados con participación ciudadana; la estabilidad macroeconómica y la ampliación de la protección social durante la crisis contradicen la conclusión de deterioro real. Sin evidencia concreta, la acusación de ocultamiento es una inferencia interesada, no un hecho demostrado.",
+          "score": 6,
+          "rationale": "The rebuttal directly engages the opponent's three claims but largely repeats the existing demand for concrete evidence without adding new reasoning or substance, diminishing its originality and persuasive impact."
+        },
+        {
+          "node_id": "OPP-S3_69b420cd",
+          "agent_id": "OPP-S3",
+          "claim": "GOV-S4 incurre en petición de principio: da por válidos los datos oficiales y su 'auditoría con participación ciudadana' precisamente cuando eso es lo que la oposición cuestiona, y exige a la oposición documentar 'casos concretos' de manipulación o exclusión a pesar de que el gobierno controla los registros y los padrones. Que no se citen casos individuales no demuestra que no existan: la exclusión de asentamientos informales de los padrones y la omisión del empleo informal en las mediciones macro son patrones estructurales, no meras sospechas. Además, los datos de empleo registrado ignoran la precarización generalizada, y las transferencias no sustituyen el deterioro real del bienestar. Por tanto, la conclusión de que la acusación de ocultamiento es 'una inferencia interesada' no se sigue y revierte injustamente la carga de la prueba.",
+          "score": 9,
+          "rationale": "The argument effectively exposes a begging-the-question fallacy, explains why structural exclusion patterns escape case-by-case documentation, and correctly identifies the burden of proof reversal, directly engaging with the target's claims and advancing the debate with specific counterpoints."
+        },
+        {
+          "node_id": "GOV-S2_890b6735",
+          "agent_id": "GOV-S2",
+          "claim": "El undercut de OPP-S3 incurre en la misma petición de principio que denuncia: presume que el gobierno 'controla los registros y padrones' para invalidarlos, sin presentar un solo dato manipulado, padrón excluido o canal de denuncia bloqueado. La exclusión de asentamientos informales y la omisión del empleo informal son hipótesis estructurales, no evidencia; y la ausencia de casos concretos no demuestra subregistro, solo indica que no se ha acreditado. Las transferencias no se presentan como sustituto del bienestar, sino como parte de una estrategia verificable de protección social junto con la cobertura sanitaria y la estabilidad macroeconómica. Exigir evidencia de ocultamiento no revierte la carga de la prueba: quien acusa de manipulación debe acreditar la manipulación, y la desconfianza no equivale a prueba. Por tanto, OPP-S3 no demuestra que GOV-S4 haya cometido petición de principio.",
+          "score": 7,
+          "rationale": "The argument logically turns the begging-the-question charge back on OPP-S3, directly addresses the target's specific points (control of records, structural hypotheses, burden of proof), and provides a structured rebuttal, but its persuasive force is somewhat repetitive of earlier government demands for concrete evidence and its novelty is moderate."
+        },
+        {
+          "node_id": "OPP-S2_32f74a0f",
+          "agent_id": "OPP-S2",
+          "claim": "GOV-S2 invierte la carga de la prueba al tratar la asimetría de información como una simple sospecha. El gobierno controla padrones, define criterios de inclusión y ajusta metodologías; la oposición no tiene acceso a los datos crudos ni a los padrones censales, por lo que exigir 'casos concretos' de manipulación desde documentos oficiales es pedir prueba a quien está excluido de la información. Que el empleo registrado mejore mientras el empleo informal concentra la pérdida de ingresos no es una hipótesis: es un hecho medible con encuestas de hogares, y su omisión en los indicadores oficiales es precisamente el subregistro denunciado. Por tanto, la conclusión de que OPP-S3 no demuestra petición de principio se apoya en la neutralidad no probada de los datos gubernamentales.",
+          "score": 9,
+          "rationale": "The argument directly counters the burden-of-proof claim by exposing the information asymmetry and introduces a concrete, verifiable example (the divergence between formal and informal employment data) to substantiate the alleged under-registration, thereby advancing the debate with original, logically sound reasoning."
+        },
+        {
+          "node_id": "GOV-S1_b8bb0d1a",
+          "agent_id": "GOV-S1",
+          "claim": "El undercut de OPP-S2 se apoya en una premisa falsa: la oposición no está excluida de los datos. El gobierno publicó microdatos sanitarios y de empleo, informes de monitoreo y padrones con mecanismos de veeduría ciudadana y acceso a través de portales de transparencia; la 'asimetría estructural' invocada no es un hecho demostrado sino una afirmación retórica. Además, el empleo informal no fue omitido: las encuestas de hogares y los informes oficiales de protección social lo registran, y la mejora del empleo registrado convive con las transferencias dirigidas a trabajadores informales. Exigir que quien acusa de manipulación acredite la manipulación no revierte la carga de la prueba; desconfiar de los datos no equivale a probar su falsedad. Por tanto, la conclusión de que GOV-S2 presume la neutralidad de los datos no se sigue.",
+          "score": 8,
+          "rationale": "Refuta directamente las premisas de OPP-S2 citando publicaciones de microdatos y mecanismos de transparencia, y argumenta que el empleo informal está registrado, lo que debilita la acusación de asimetría y omisión con un razonamiento lógico y nuevo."
+        },
+        {
+          "node_id": "OPP-S5_0713aa3c",
+          "agent_id": "OPP-S5",
+          "claim": "GOV-S1 no refuta a OPP-S2 porque atribuye una premisa que no está en juego: no se dice que no existan portales, sino que publicar microdatos agregados no equivale a acceso efectivo a los registros crudos, padrones territoriales y metodologías de captura que permitirían verificar inclusiones y exclusiones. La 'veeduría ciudadana' citada es convocada y administrada por el propio gobierno, sin atribuciones reales de auditoría independiente sobre los padrones. Además, que las encuestas de hogares registren empleo informal no implica que los indicadores oficiales de éxito lo incorporen en la evaluación del bienestar: la mejora del empleo registrado y las transferencias no miden la precarización ni la pérdida de ingresos de los trabajadores informales, precisamente el subregistro denunciado. Por tanto, la conclusión de que la asimetría de información es 'retórica' no se sigue: la asimetría persiste, y la exigencia de casos concretos sigue invirtiendo la carga de la prueba contra quien no controla los datos crudos.",
+          "score": 9,
+          "rationale": "El argumento expone con precisión que GOV-S1 malinterpreta la crítica sobre acceso efectivo versus existencia de portales, cuestiona la independencia de la veeduría y muestra que los datos citados no refutan el subregistro de la precarización, con una lógica aguda y un ángulo novedoso."
+        },
+        {
+          "node_id": "GOV-S5_f058d2ba",
+          "agent_id": "GOV-S5",
+          "claim": "El undercut de OPP-S5 no se sostiene: presupone exactamente lo que debe probar, que la publicación de microdatos y la veeduría ciudadana son insuficientes o simuladas porque el gobierno 'controla' los padrones. Pero que el acceso a datos crudos no sea ilimitado no equivale a ocultamiento, ni a subregistro: la transparencia exige rendición de cuentas, no la entrega de toda la base operativa a quien acusa. Además, OPP-S5 da por demostrado el 'subregistro denunciado' cuando eso es precisamente lo que está en disputa; y sostiene que las encuestas de hogares registran el empleo informal pero que los indicadores oficiales lo omiten, sin mostrar una sola medición oficial que contradiga las cifras publicadas. La carga de la prueba sigue correspondiendo a la oposición: la asimetría de información invocada no es prueba de manipulación, y exigir más transparencia no invalida los datos existentes.",
+          "score": 9,
+          "rationale": "The undercut is logically precise, directly counters the opposition's specific claims by exposing circular reasoning and shifting the burden of proof, and introduces a novel distinction between transparency and unrestricted data access to advance the debate."
+        },
+        {
+          "node_id": "GOV-S5_6cb720ab",
+          "agent_id": "GOV-S5",
+          "claim": "La conclusión de OPP-S1 sobre ocultamiento de información y deterioro real del bienestar no está respaldada por evidencia contrastable: el gobierno publicó microdatos sanitarios y laborales, habilitó veeduría ciudadana y mantuvo indicadores de estabilidad económica y cobertura social, incluidos los programas dirigidos a comunidades marginadas. OPP-S1 no aporta un solo registro manipulado, padrón excluido o cifra alternativa que demuestre el deterioro; su argumento convierte la desconfianza hacia las fuentes oficiales en prueba de ocultamiento y la ausencia de mediciones específicas en prueba de subregistro. Eso es una inferencia especulativa, no una demostración. Por tanto, la tesis de que la gestión fue inefectiva y dañó el bienestar real no se sigue de los hechos presentados.",
+          "score": 5,
+          "rationale": "El argumento repite la exigencia de evidencia concreta sin abordar las acusaciones específicas de OPP-S1 sobre insuficiencia de transferencias, cambios de criterio y falta de cobertura de vacunación, resultando un ataque genérico y poco original que apenas avanza el debate."
+        },
+        {
+          "node_id": "OPP-S4_618c5525",
+          "agent_id": "OPP-S4",
+          "claim": "GOV-S5 comete petición de principio al exigir 'un registro manipulado, padrón excluido o cifra alternativa' cuando el propio diseño de los padrones y la publicación selectiva de microdatos impide a la oposición y a las comunidades marginadas acceder a los datos crudos que permitirían documentar la exclusión. Publicar microdatos agregados o habilitar veedurías administradas por el mismo gobierno no equivale a transparencia verificable: sin acceso efectivo a padrones territoriales y metodologías de captura, la ausencia de denuncias individuales es el resultado previsible del subregistro, no su refutación. Además, la mejora del empleo registrado y las transferencias no miden la precarización de los trabajadores informales ni la pérdida real de ingresos, que es justamente el deterioro del bienestar denunciado. Por tanto, la conclusión de que OPP-S1 no demuestra ocultamiento se apoya en la neutralidad no probada de los registros oficiales, no en evidencia contrastable.",
+          "score": 8,
+          "rationale": "The argument skillfully exposes a potential circularity in demanding evidence that the government's data control renders inaccessible, while also challenging the indicators used, directly engaging and undercutting the target's core claim."
+        },
+        {
+          "node_id": "OPP-S3_e8de978d",
+          "agent_id": "OPP-S3",
+          "claim": "GOV-S5 incurre en la misma petición de principio que imputa a OPP-S5: presupone que publicar microdatos y habilitar veedurías administradas por el propio gobierno constituye transparencia verificable, cuando eso es exactamente lo que está en disputa. Que el acceso a datos crudos no sea ilimitado no refuta la asimetría: la oposición y las comunidades marginadas no pueden documentar la exclusión precisamente porque no controlan padrones territoriales ni metodologías de captura. Además, que las encuestas de hogares registren empleo informal no implica que los indicadores oficiales de éxito lo incorporen al evaluar bienestar; lo denunciado es el subregistro en la medición del deterioro real, no la existencia del dato en bruto. Por tanto, exigir que la oposición aporte una medición oficial contradictoria vuelve a invertir la carga de la prueba y su conclusión se apoya en la neutralidad no verificada de los registros gubernamentales.",
+          "score": 9,
+          "rationale": "The argument deftly flips the begging-the-question charge back onto GOV-S5, unpacks why publication alone does not guarantee verifiable transparency, and introduces the novel point that opposition’s inability to document exclusion stems precisely from lacking control over territorial registries and capture methodologies, thereby directly undercutting the target’s reliance on unverified official records."
+        },
+        {
+          "node_id": "GOV-S2_dcf9571f",
+          "agent_id": "GOV-S2",
+          "claim": "La acusación de OPP-S3 invierte la carga de la prueba y comete la misma petición de principio que denuncia: da por supuesto que la veeduría ciudadana es 'administrada por el gobierno' y por tanto no verificable, y que la oposición 'no controla los padrones' como si ello implicara ocultamiento. Pero la transparencia no exige entregar bases operativas completas a quien acusa; exige rendición de cuentas mediante microdatos públicos, informes de monitoreo y mecanismos de veeduría con participación ciudadana, que es precisamente lo que ocurrió. Que la oposición no haya documentado un solo padrón excluido o cifra inconsistente no es 'subregistro': es ausencia de prueba. Exigir la medición alternativa no revierte la carga; quien afirma ocultamiento debe acreditarlo. Por tanto, la conclusión de que GOV-S5 se apoya en la neutralidad no verificada de los registros no se sigue.",
+          "score": 7,
+          "rationale": "El argumento es lógicamente sólido y se involucra directamente con el razonamiento de OPP-S3, pero ofrece poca novedad y su fuerza persuasiva se ve atenuada por reiterar la postura oficial sin aportar evidencia adicional."
+        },
+        {
+          "node_id": "GOV-S3_bdcaba04",
+          "agent_id": "GOV-S3",
+          "claim": "El undercut de OPP-S4 a GOV-S5 vuelve a cometer la petición de principio que denuncia: da por sentado que la publicación selectiva de microdatos y las veedurías con participación ciudadana equivalen a ocultamiento, sin aportar un solo caso de padrón excluido, dato manipulado o canal de fiscalización bloqueado. Que la oposición no controle los registros crudos no demuestra subregistro: la ausencia de denuncias individuales se explica tanto por una gestión efectiva como por un supuesto ocultamiento, y OPP-S4 elige la segunda explicación sin evidencia. Además, sostener que los indicadores oficiales omiten la precarización informal es especulativo: no presenta ninguna medición alternativa ni muestra que las encuestas de hogares hayan sido ignoradas en la evaluación de bienestar. Por tanto, la afirmación de que GOV-S5 se apoya en la neutralidad no verificada de los registros no se sigue; es OPP-S4 quien presume la falta de transparencia que debería probar.",
+          "score": 7,
+          "rationale": "The undercut directly addresses OPP-S4's specific claims with logical structure, pointing out the lack of evidence and alternative explanations, though it mirrors earlier burden-of-shift arguments, limiting originality."
+        },
+        {
+          "node_id": "OPP-S1_43bf4a2e",
+          "agent_id": "OPP-S1",
+          "claim": "El undercut de GOV-S3 vuelve a invertir la carga de la prueba: exige a OPP-S4 un 'caso de padrón excluido o dato manipulado' precisamente cuando el gobierno controla los padrones y los microdatos crudos, de modo que la ausencia de denuncias individuales es el efecto previsible del subregistro, no su refutación. Que no se haya aportado una 'medición alternativa' no es especulación: es consecuencia de la asimetría estructural de información. Además, la existencia de encuestas de hogares que registran empleo informal no implica que los indicadores oficiales de bienestar las incorporen; la crítica apunta a la evaluación selectiva, no a la mera disponibilidad del dato. Por tanto, sostener que OPP-S4 presume el ocultamiento es una petición de principio basada en la autenticidad no verificada de los registros oficiales.",
+          "score": 9,
+          "rationale": "El argumento desmonta con precisión y de manera estructurada la exigencia de GOV-S3, mostrando que la ausencia de denuncias o mediciones alternativas no refuta la crítica sino que es consecuencia previsible de la asimetría de información, con lo que avanza el debate de forma original y persuasiva."
+        },
+        {
+          "node_id": "GOV-S4_2a66201e",
+          "agent_id": "GOV-S4",
+          "claim": "El undercut de OPP-S1 convierte la 'asimetría de información' en una hipótesis infalsable: si la ausencia de denuncias individuales se atribuye siempre al subregistro y nunca a una gestión efectiva, ningún mecanismo de transparencia —por abierto que sea— podría satisfacer a la oposición. OPP-S1 no identifica una sola solicitud de acceso denegada, un padrón territorial no publicado ni una metodología de captura ocultada; la asimetría estructural que invoca es una afirmación sobre presuntas intenciones, no un hecho documentado. Además, su argumento se contradice con la evidencia: el gobierno publicó microdatos sanitarios y laborales sujetos a verificación externa, y la oposición no los sometió a ningún análisis alternativo; su 'imposibilidad de acceso' es retórica, no demostración. Por tanto, OPP-S1 no prueba que GOV-S3 cometa petición de principio; es él quien presume el ocultamiento que debería acreditar, invirtiendo la carga de la prueba hacia una conclusión inmune a toda refutación.",
+          "score": 9,
+          "rationale": "El argumento ataca con precisión la acusación de 'asimetría de información' como hipótesis infalsable, señala la ausencia de evidencia concreta de ocultamiento y muestra contradicción con datos publicados verificables, lo que desarma la petición de principio denunciada de forma lógica, original y persuasiva."
+        },
+        {
+          "node_id": "OPP-S2_d5f52b2d",
+          "agent_id": "OPP-S2",
+          "claim": "GOV-S4 confunde una hipótesis difícil de contrastar desde fuera con una hipótesis infalsable. El subregistro sería falsable si se concediera a la oposición o a una veeduría independiente acceso a los padrones territoriales nominales y a las metodologías de captura; la negativa a ese acceso —no la retórica— explica que no haya 'una solicitud denegada documentada'. Además, publicar microdatos agregados sujetos a verificación externa no basta cuando las categorías censales excluyen asentamientos informales; de hecho, la oposición no los sometió a análisis alternativo precisamente porque el diseño del padrón impide reconstruir el universo. La carga de demostrar que los registros incluyen a las comunidades marginadas recae sobre quien los publica, no sobre quien denuncia su exclusión. Por tanto, la conclusión de que OPP-S1 presume el ocultamiento no se sigue.",
+          "score": 8,
+          "rationale": "The argument directly engages GOV-S4's points, explaining why lack of documented denial stems from denied access and why limited microdata fail due to exclusionary census categories, thus providing a coherent and novel undercut."
+        },
+        {
+          "node_id": "GOV-S1_bacb15c7",
+          "agent_id": "GOV-S1",
+          "claim": "El undercut de OPP-S2 se apoya en dos premisas no demostradas: que hubo 'negativa a ese acceso' y que las categorías censales excluyen asentamientos informales. El gobierno habilitó portales de transparencia, microdatos anonimizados, informes metodológicos y veedurías ciudadanas con participación de organizaciones sociales, incluidos asentamientos periféricos; la exigencia de padrones nominales no es condición de transparencia, sino un estándar que ni siquiera se aplica internacionalmente por protección de datos. Además, OPP-S2 no identifica un solo asentamiento omitido ni muestra una solicitud formal denegada; su afirmación de que el 'diseño del padrón impide reconstruir el universo' es una conjetura no verificable que vuelve infalsable su propia hipótesis de subregistro. La carga de probar la exclusión recae sobre quien la denuncia, y publicar datos verificables no exige entregar el operativo crudo a quien acusa. Por tanto, la conclusión de que GOV-S4 confunde hipótesis difícil de contrastar con hipótesis infalsable no se sigue.",
+          "score": 8,
+          "rationale": "It directly dismantles OPP-S2's premises by citing concrete transparency measures, challenges the demand for nominal registries with international data protection norms, and exposes the opponent's claim as itself unfalsifiable, thus advancing the debate with a novel burden-of-proof reversal."
+        },
+        {
+          "node_id": "GOV-S5_34c1e174",
+          "agent_id": "GOV-S5",
+          "claim": "La afirmación de OPP-S1 sobre el deterioro real del bienestar no se sigue de la evidencia: se apoya en la supuesta exclusión de asentamientos informales de los padrones, pero no identifica un solo indicador —empleo, ingreso, consumo o acceso a servicios— que haya empeorado de manera verificable. Que una categoría censal tenga limitaciones metodológicas no equivale a una caída del bienestar; sin demostrar el efecto material, la conclusión de deterioro es una inferencia especulativa. La carga de probar el deterioro recae en quien lo denuncia, y la crítica al diseño del padrón no la satisface.",
+          "score": 7,
+          "rationale": "El undercut señala de forma lógica que inferir deterioro material a partir de limitaciones metodológicas es especulativo, aunque pasa por alto que OPP-S1 mencionó explícitamente la caída de ingresos y el aumento de pobreza, lo cual reduce algo su precisión en la confrontación."
+        }
+      ],
+      "glm-5.2": [
+        {
+          "node_id": "GOV-S5_cbbb0a72",
+          "agent_id": "GOV-S5",
+          "claim": "La gestión gubernamental de la crisis sanitaria fue efectiva, como lo evidencian la estabilidad económica mantenida, la transparencia en la publicación de datos sanitarios y las políticas de inclusión social dirigidas a los sectores más vulnerables.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S4_cd3e12d9",
+          "agent_id": "OPP-S4",
+          "claim": "Las tres evidencias citadas son engañosas: la estabilidad económica solo reflejó indicadores macro mientras millones perdieron empleo e ingresos; la transparencia en datos fue selectiva y omitió el subregistro de contagios y muertes; y las políticas de inclusión social no alcanzaron a las comunidades marginadas, que quedaron sin cobertura sanitaria real. Por lo tanto, la conclusión de efectividad no se sostiene.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S4_0ef0400d",
+          "agent_id": "GOV-S4",
+          "claim": "La conclusión opositora de inefectividad no se sostiene: la estabilidad macro se acompañó de transferencias directas y protección del ingreso familiar, los datos sanitarios se publicaron con metodología abierta y actualización diaria, y los operativos de vacunación casa por casa ampliaron la cobertura en comunidades marginadas. La acusación de ocultamiento y exclusión es una lectura selectiva que ignora esas políticas verificables.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S1_d2978f56",
+          "agent_id": "OPP-S1",
+          "claim": "La réplica del gobierno no refuta el fondo de la crítica: las transferencias directas fueron insuficientes frente a la caída masiva de ingresos y el aumento de la pobreza; la metodología abierta convivió con cambios en los criterios de conteo que redujeron las cifras oficiales de contagios y muertes; y los operativos de vacunación 'casa por casa' no alcanzaron a asentamientos informales ni zonas rurales marginadas. Por lo tanto, esas políticas verificables no demuestran efectividad real ni desmienten el ocultamiento selectivo y la exclusión sanitaria.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S1_2ea76ef1",
+          "agent_id": "GOV-S1",
+          "claim": "La acusación de OPP-S1 carece de sustento empírico: las transferencias directas alcanzaron a millones de hogares y evitaron un colapso de la pobreza extrema, según los registros oficiales de protección social; los ajustes metodológicos en el conteo de casos fueron públicos, alineados con estándares internacionales y no implicaron ocultamiento del subregistro; y los operativos de vacunación casa por casa, con registro nominal, alcanzaron a asentamientos informales y zonas rurales marginadas con coberturas superiores al 85%. Por tanto, la conclusión de inefectividad y ocultamiento es especulativa y contradice la evidencia verificable.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S2_84704b35",
+          "agent_id": "OPP-S2",
+          "claim": "El argumento de GOV-S1 se apoya en cifras oficiales no auditadas de forma independiente: la cobertura de vacunación superior al 85% proviene de padrones incompletos que excluyen asentamientos informales y zonas sin registro nominal; las transferencias directas se miden sobre beneficiarios censados, no sobre la caída real del ingreso de trabajadores informales; y los ajustes metodológicos 'alineados con estándares internacionales' redujeron los conteos oficiales, precisamente el subregistro denunciado. Por tanto, afirmar que toda esa evidencia es verificable y desmiente el ocultamiento es una petición de principio, no una refutación empírica.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S2_d6b7140d",
+          "agent_id": "GOV-S2",
+          "claim": "El ataque de OPP-S2 es especulativo y comete la misma petición de principio que denuncia: exigir una auditoría independiente no demuestra que los datos oficiales sean falsos. Los padrones nominales de vacunación y los registros de transferencias fueron publicados y auditables, y la cobertura del 85% fue corroborada por monitoreo territorial y encuestas. Afirmar que los padrones son 'incompletos' o que hubo 'subregistro' sin presentar cifras alternativas ni casos concretos es una suposición, no una refutación empírica. Por tanto, su conclusión de que el argumento del gobierno no desmiente el ocultamiento es infundada.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S3_724021b9",
+          "agent_id": "OPP-S3",
+          "claim": "GOV-S2 incurre en la misma petición de principio que denuncia: que los registros sean 'publicados y auditables' no los hace auditados ni correctos, y validar padrones oficiales con monitoreo oficial es una verificación circular. La exigencia de cifras alternativas invierte la carga de prueba; los padrones incompletos que excluyen asentamientos informales son ya un caso concreto de subregistro. Por tanto, su conclusión de que la crítica de OPP-S2 es infundada no se sigue.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S3_44347d94",
+          "agent_id": "GOV-S3",
+          "claim": "La crítica de OPP-S3 también incurre en petición de principio: afirmar que los padrones son 'incompletos' o que la verificación es 'circular' no presenta ningún caso concreto de persona excluida ni documentación de un solo registro falso. Que un registro sea auditable no implica que no haya sido auditado: los datos fueron sometidos a monitoreo territorial y revisión de organismos técnicos. Además, exigir cifras alternativas a quien acusa de ocultamiento es legítimo: una acusación de subregistro sin datos ni casos verificables no puede sostener la conclusión de inefectividad. Por tanto, el argumento de OPP-S3 no demuestra que la respuesta de GOV-S2 sea infundada.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S5_b4e9ca2b",
+          "agent_id": "OPP-S5",
+          "claim": "La exigencia de GOV-S3 de presentar 'casos concretos' invierte la carga de la prueba: los padrones nominales, el monitoreo territorial y la revisión de organismos técnicos que cita son instrumentos controlados por el propio gobierno, no auditorías independientes, y las comunidades marginadas no tienen canales efectivos para documentar su exclusión. Que no se aporten denuncias individuales no demuestra inclusión; evidencia la asimetría de información que facilita el subregistro selectivo. Además, calificar de 'petición de principio' la crítica de OPP-S3 es una petición de principio porque asume que los registros oficiales son completos precisamente para exigir pruebas de lo contrario. Por tanto, la conclusión de GOV-S3 no refuta el argumento de OPP-S3.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S5_51e00f63",
+          "agent_id": "GOV-S5",
+          "claim": "El argumento de OPP-S5 no refuta a GOV-S3: convierte la ausencia de denuncias individuales en prueba de subregistro, pero eso es una inferencia especulativa — la falta de casos documentados no demuestra exclusión. Afirmar que los padrones y monitoreos son 'controlados por el gobierno' presupone mala fe sin evidencia, e ignora los mecanismos de participación comunitaria y auditoría ciudadana existentes. Además, la carga de la prueba recae en quien acusa de ocultamiento: OPP-S5 no presenta un solo padrón incompleto verificado ni una comunidad excluida documentada, por lo que su conclusión de 'subregistro selectivo' es una hipótesis no demostrada. Por tanto, el ataque a GOV-S3 no se sostiene.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S4_8bc70cd8",
+          "agent_id": "OPP-S4",
+          "claim": "GOV-S5 invierte la carga de la prueba de manera interesada: no es exigible a comunidades marginadas producir denuncias individuales cuando el propio diseño de los padrones nominales y la verificación territorial depende de un registro administrativo que las excluye; la ausencia de denuncias es el resultado previsible del subregistro, no su refutación. Además, los 'mecanismos de participación comunitaria y auditoría ciudadana' que invoca fueron creados por el mismo gobierno y no tienen capacidad sancionatoria ni acceso a los datos crudos; citarlos sin evaluar su funcionamiento replica la verificación circular ya señalada. Por tanto, la conclusión de que el ataque de OPP-S5 no se sostiene es una petición de principio apoyada en la presunción de completitud de los registros oficiales.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S3_9dbc38e0",
+          "agent_id": "GOV-S3",
+          "claim": "El ataque de OPP-S4 a GOV-S5 no se sostiene: afirma que los padrones excluyen asentamientos informales y que los mecanismos de auditoría no tienen capacidad sancionatoria sin citar un solo caso documentado, un dato crudo ni un informe técnico verificable. La ausencia de denuncias individuales no demuestra subregistro: exigir al gobierno probar una negativa —que no hubo exclusión— es lógicamente inviable, y la carga de la prueba recae en quien acusa de ocultamiento. Además, descalificar los mecanismos de participación comunitaria por haber sido creados por el gobierno es una falacia genética: su independencia se evalúa por su funcionamiento y resultados, no por su origen institucional. Por tanto, OPP-S4 no demuestra que la respuesta de GOV-S5 sea circular; simplemente presume el subregistro que debería probar.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S3_489dfab6",
+          "agent_id": "GOV-S3",
+          "claim": "La afirmación de OPP-S4 de que las tres evidencias son 'engañosas' es una aseveración sin sustento: los indicadores macroeconómicos citados (control de inflación, nivel de reservas, empleo registrado) están publicados y son verificables, y la estabilidad económica se complementó con transferencias que ampliaron la cobertura social durante la crisis. Descalificar los datos por provenir de fuentes oficiales es una falacia genética; quien los acusa de engañosos debe presentar mediciones alternativas o casos concretos de manipulación, no meras sospechas. Por tanto, la objeción de OPP-S4 no invalida la evidencia del gobierno.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S3_4deb7d2a",
+          "agent_id": "GOV-S3",
+          "claim": "El argumento de OPP-S1 no desvirtúa la política de inclusión social: afirmar que las transferencias fueron insuficientes sin presentar mediciones de pobreza, canastas básicas ni casos concretos es una conclusión sin respaldo. Los datos de cobertura y los padrones auditados muestran que las ayudas llegaron a la población vulnerable, y la estabilidad macroeconómica (control de inflación, reservas, empleo registrado) es un hecho verificable. Exigir una 'evaluación independiente' sin ofrecer evidencia de manipulación confunde desconfianza con prueba; la carga de demostrar el deterioro real del bienestar recae en quien lo afirma. Por tanto, la objeción de OPP-S1 no refuta la efectividad de la gestión gubernamental.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S3_97bd4780",
+          "agent_id": "GOV-S3",
+          "claim": "La asimetría de información que invoca OPP-S5 es una afirmación especulativa: no documenta ningún caso de padrón incompleto, comunidad excluida o canal de denuncia bloqueado. Que los registros sean gubernamentales no los invalida; su fiabilidad se evalúa por resultados verificables y por la participación ciudadana en su monitoreo. Interpretar la ausencia de denuncias como subregistro presupone exactamente la exclusión que se pretende probar, lo que es una petición de principio. Por tanto, OPP-S5 no demuestra que GOV-S3 haya invertido la carga de la prueba.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S1_a5cfe0d5",
+          "agent_id": "OPP-S1",
+          "claim": "GOV-S3 no refuta la objeción: invoca 'padrones auditados' como prueba de cobertura, pero esa auditoría fue interna, sin acceso público a los datos crudos, por lo que su fiabilidad es exactamente el punto en disputa. Además, los indicadores macro que cita (control de inflación, reservas, empleo registrado) omiten el empleo informal, que fue el que concentró la pérdida de ingresos de los hogares vulnerables durante la crisis. Y pretender que la carga de la prueba recae en la oposición ignora que el gobierno controla los registros y modificó criterios de conteo: la asimetría de información es estructural, no una sospecha. Por tanto, la conclusión de que la objeción no desvirtúa la política es una petición de principio basada en la autenticidad de los datos oficiales.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S4_b9e0a40d",
+          "agent_id": "GOV-S4",
+          "claim": "El undercut de OPP-S1 no se sostiene: calificar la auditoría como 'interna' sin acceso a datos crudos es una aseveración no documentada, y omite los mecanismos de veeduría ciudadana, publicación periódica de microdatos sanitarios y auditoría social que el gobierno dispuso. La referencia al empleo informal no demuestra exclusión: los programas de transferencias y los registros de monitoreo se diseñaron para alcanzar también a trabajadores no registrados, y no se cita un solo caso de padrón que los haya dejado fuera. Invocar una 'asimetría estructural de información' sin acreditar manipulación concreta de cifras convierte la desconfianza en prueba y revierte la carga de la evidencia sin justificación. Por tanto, OPP-S1 no demuestra que GOV-S3 haya cometido petición de principio; simplemente presume la falta de transparencia que debería probar.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S4_80c11ae6",
+          "agent_id": "GOV-S4",
+          "claim": "La tesis de OPP-S1 de ocultamiento de información, deterioro real del bienestar y fallas en cobertura de comunidades marginadas es una afirmación global sin respaldo empírico: no identifica un solo dato manipulado, no presenta mediciones alternativas de pobreza o bienestar, y no documenta un asentamiento excluido de los operativos sanitarios. Por el contrario, los datos oficiales de cobertura de vacunación, transferencias y empleo registrado están publicados y fueron auditados con participación ciudadana; la estabilidad macroeconómica y la ampliación de la protección social durante la crisis contradicen la conclusión de deterioro real. Sin evidencia concreta, la acusación de ocultamiento es una inferencia interesada, no un hecho demostrado.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S3_69b420cd",
+          "agent_id": "OPP-S3",
+          "claim": "GOV-S4 incurre en petición de principio: da por válidos los datos oficiales y su 'auditoría con participación ciudadana' precisamente cuando eso es lo que la oposición cuestiona, y exige a la oposición documentar 'casos concretos' de manipulación o exclusión a pesar de que el gobierno controla los registros y los padrones. Que no se citen casos individuales no demuestra que no existan: la exclusión de asentamientos informales de los padrones y la omisión del empleo informal en las mediciones macro son patrones estructurales, no meras sospechas. Además, los datos de empleo registrado ignoran la precarización generalizada, y las transferencias no sustituyen el deterioro real del bienestar. Por tanto, la conclusión de que la acusación de ocultamiento es 'una inferencia interesada' no se sigue y revierte injustamente la carga de la prueba.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S2_890b6735",
+          "agent_id": "GOV-S2",
+          "claim": "El undercut de OPP-S3 incurre en la misma petición de principio que denuncia: presume que el gobierno 'controla los registros y padrones' para invalidarlos, sin presentar un solo dato manipulado, padrón excluido o canal de denuncia bloqueado. La exclusión de asentamientos informales y la omisión del empleo informal son hipótesis estructurales, no evidencia; y la ausencia de casos concretos no demuestra subregistro, solo indica que no se ha acreditado. Las transferencias no se presentan como sustituto del bienestar, sino como parte de una estrategia verificable de protección social junto con la cobertura sanitaria y la estabilidad macroeconómica. Exigir evidencia de ocultamiento no revierte la carga de la prueba: quien acusa de manipulación debe acreditar la manipulación, y la desconfianza no equivale a prueba. Por tanto, OPP-S3 no demuestra que GOV-S4 haya cometido petición de principio.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S2_32f74a0f",
+          "agent_id": "OPP-S2",
+          "claim": "GOV-S2 invierte la carga de la prueba al tratar la asimetría de información como una simple sospecha. El gobierno controla padrones, define criterios de inclusión y ajusta metodologías; la oposición no tiene acceso a los datos crudos ni a los padrones censales, por lo que exigir 'casos concretos' de manipulación desde documentos oficiales es pedir prueba a quien está excluido de la información. Que el empleo registrado mejore mientras el empleo informal concentra la pérdida de ingresos no es una hipótesis: es un hecho medible con encuestas de hogares, y su omisión en los indicadores oficiales es precisamente el subregistro denunciado. Por tanto, la conclusión de que OPP-S3 no demuestra petición de principio se apoya en la neutralidad no probada de los datos gubernamentales.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S1_b8bb0d1a",
+          "agent_id": "GOV-S1",
+          "claim": "El undercut de OPP-S2 se apoya en una premisa falsa: la oposición no está excluida de los datos. El gobierno publicó microdatos sanitarios y de empleo, informes de monitoreo y padrones con mecanismos de veeduría ciudadana y acceso a través de portales de transparencia; la 'asimetría estructural' invocada no es un hecho demostrado sino una afirmación retórica. Además, el empleo informal no fue omitido: las encuestas de hogares y los informes oficiales de protección social lo registran, y la mejora del empleo registrado convive con las transferencias dirigidas a trabajadores informales. Exigir que quien acusa de manipulación acredite la manipulación no revierte la carga de la prueba; desconfiar de los datos no equivale a probar su falsedad. Por tanto, la conclusión de que GOV-S2 presume la neutralidad de los datos no se sigue.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S5_0713aa3c",
+          "agent_id": "OPP-S5",
+          "claim": "GOV-S1 no refuta a OPP-S2 porque atribuye una premisa que no está en juego: no se dice que no existan portales, sino que publicar microdatos agregados no equivale a acceso efectivo a los registros crudos, padrones territoriales y metodologías de captura que permitirían verificar inclusiones y exclusiones. La 'veeduría ciudadana' citada es convocada y administrada por el propio gobierno, sin atribuciones reales de auditoría independiente sobre los padrones. Además, que las encuestas de hogares registren empleo informal no implica que los indicadores oficiales de éxito lo incorporen en la evaluación del bienestar: la mejora del empleo registrado y las transferencias no miden la precarización ni la pérdida de ingresos de los trabajadores informales, precisamente el subregistro denunciado. Por tanto, la conclusión de que la asimetría de información es 'retórica' no se sigue: la asimetría persiste, y la exigencia de casos concretos sigue invirtiendo la carga de la prueba contra quien no controla los datos crudos.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S5_f058d2ba",
+          "agent_id": "GOV-S5",
+          "claim": "El undercut de OPP-S5 no se sostiene: presupone exactamente lo que debe probar, que la publicación de microdatos y la veeduría ciudadana son insuficientes o simuladas porque el gobierno 'controla' los padrones. Pero que el acceso a datos crudos no sea ilimitado no equivale a ocultamiento, ni a subregistro: la transparencia exige rendición de cuentas, no la entrega de toda la base operativa a quien acusa. Además, OPP-S5 da por demostrado el 'subregistro denunciado' cuando eso es precisamente lo que está en disputa; y sostiene que las encuestas de hogares registran el empleo informal pero que los indicadores oficiales lo omiten, sin mostrar una sola medición oficial que contradiga las cifras publicadas. La carga de la prueba sigue correspondiendo a la oposición: la asimetría de información invocada no es prueba de manipulación, y exigir más transparencia no invalida los datos existentes.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S5_6cb720ab",
+          "agent_id": "GOV-S5",
+          "claim": "La conclusión de OPP-S1 sobre ocultamiento de información y deterioro real del bienestar no está respaldada por evidencia contrastable: el gobierno publicó microdatos sanitarios y laborales, habilitó veeduría ciudadana y mantuvo indicadores de estabilidad económica y cobertura social, incluidos los programas dirigidos a comunidades marginadas. OPP-S1 no aporta un solo registro manipulado, padrón excluido o cifra alternativa que demuestre el deterioro; su argumento convierte la desconfianza hacia las fuentes oficiales en prueba de ocultamiento y la ausencia de mediciones específicas en prueba de subregistro. Eso es una inferencia especulativa, no una demostración. Por tanto, la tesis de que la gestión fue inefectiva y dañó el bienestar real no se sigue de los hechos presentados.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S4_618c5525",
+          "agent_id": "OPP-S4",
+          "claim": "GOV-S5 comete petición de principio al exigir 'un registro manipulado, padrón excluido o cifra alternativa' cuando el propio diseño de los padrones y la publicación selectiva de microdatos impide a la oposición y a las comunidades marginadas acceder a los datos crudos que permitirían documentar la exclusión. Publicar microdatos agregados o habilitar veedurías administradas por el mismo gobierno no equivale a transparencia verificable: sin acceso efectivo a padrones territoriales y metodologías de captura, la ausencia de denuncias individuales es el resultado previsible del subregistro, no su refutación. Además, la mejora del empleo registrado y las transferencias no miden la precarización de los trabajadores informales ni la pérdida real de ingresos, que es justamente el deterioro del bienestar denunciado. Por tanto, la conclusión de que OPP-S1 no demuestra ocultamiento se apoya en la neutralidad no probada de los registros oficiales, no en evidencia contrastable.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S3_e8de978d",
+          "agent_id": "OPP-S3",
+          "claim": "GOV-S5 incurre en la misma petición de principio que imputa a OPP-S5: presupone que publicar microdatos y habilitar veedurías administradas por el propio gobierno constituye transparencia verificable, cuando eso es exactamente lo que está en disputa. Que el acceso a datos crudos no sea ilimitado no refuta la asimetría: la oposición y las comunidades marginadas no pueden documentar la exclusión precisamente porque no controlan padrones territoriales ni metodologías de captura. Además, que las encuestas de hogares registren empleo informal no implica que los indicadores oficiales de éxito lo incorporen al evaluar bienestar; lo denunciado es el subregistro en la medición del deterioro real, no la existencia del dato en bruto. Por tanto, exigir que la oposición aporte una medición oficial contradictoria vuelve a invertir la carga de la prueba y su conclusión se apoya en la neutralidad no verificada de los registros gubernamentales.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S2_dcf9571f",
+          "agent_id": "GOV-S2",
+          "claim": "La acusación de OPP-S3 invierte la carga de la prueba y comete la misma petición de principio que denuncia: da por supuesto que la veeduría ciudadana es 'administrada por el gobierno' y por tanto no verificable, y que la oposición 'no controla los padrones' como si ello implicara ocultamiento. Pero la transparencia no exige entregar bases operativas completas a quien acusa; exige rendición de cuentas mediante microdatos públicos, informes de monitoreo y mecanismos de veeduría con participación ciudadana, que es precisamente lo que ocurrió. Que la oposición no haya documentado un solo padrón excluido o cifra inconsistente no es 'subregistro': es ausencia de prueba. Exigir la medición alternativa no revierte la carga; quien afirma ocultamiento debe acreditarlo. Por tanto, la conclusión de que GOV-S5 se apoya en la neutralidad no verificada de los registros no se sigue.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S3_bdcaba04",
+          "agent_id": "GOV-S3",
+          "claim": "El undercut de OPP-S4 a GOV-S5 vuelve a cometer la petición de principio que denuncia: da por sentado que la publicación selectiva de microdatos y las veedurías con participación ciudadana equivalen a ocultamiento, sin aportar un solo caso de padrón excluido, dato manipulado o canal de fiscalización bloqueado. Que la oposición no controle los registros crudos no demuestra subregistro: la ausencia de denuncias individuales se explica tanto por una gestión efectiva como por un supuesto ocultamiento, y OPP-S4 elige la segunda explicación sin evidencia. Además, sostener que los indicadores oficiales omiten la precarización informal es especulativo: no presenta ninguna medición alternativa ni muestra que las encuestas de hogares hayan sido ignoradas en la evaluación de bienestar. Por tanto, la afirmación de que GOV-S5 se apoya en la neutralidad no verificada de los registros no se sigue; es OPP-S4 quien presume la falta de transparencia que debería probar.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S1_43bf4a2e",
+          "agent_id": "OPP-S1",
+          "claim": "El undercut de GOV-S3 vuelve a invertir la carga de la prueba: exige a OPP-S4 un 'caso de padrón excluido o dato manipulado' precisamente cuando el gobierno controla los padrones y los microdatos crudos, de modo que la ausencia de denuncias individuales es el efecto previsible del subregistro, no su refutación. Que no se haya aportado una 'medición alternativa' no es especulación: es consecuencia de la asimetría estructural de información. Además, la existencia de encuestas de hogares que registran empleo informal no implica que los indicadores oficiales de bienestar las incorporen; la crítica apunta a la evaluación selectiva, no a la mera disponibilidad del dato. Por tanto, sostener que OPP-S4 presume el ocultamiento es una petición de principio basada en la autenticidad no verificada de los registros oficiales.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S4_2a66201e",
+          "agent_id": "GOV-S4",
+          "claim": "El undercut de OPP-S1 convierte la 'asimetría de información' en una hipótesis infalsable: si la ausencia de denuncias individuales se atribuye siempre al subregistro y nunca a una gestión efectiva, ningún mecanismo de transparencia —por abierto que sea— podría satisfacer a la oposición. OPP-S1 no identifica una sola solicitud de acceso denegada, un padrón territorial no publicado ni una metodología de captura ocultada; la asimetría estructural que invoca es una afirmación sobre presuntas intenciones, no un hecho documentado. Además, su argumento se contradice con la evidencia: el gobierno publicó microdatos sanitarios y laborales sujetos a verificación externa, y la oposición no los sometió a ningún análisis alternativo; su 'imposibilidad de acceso' es retórica, no demostración. Por tanto, OPP-S1 no prueba que GOV-S3 cometa petición de principio; es él quien presume el ocultamiento que debería acreditar, invirtiendo la carga de la prueba hacia una conclusión inmune a toda refutación.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "OPP-S2_d5f52b2d",
+          "agent_id": "OPP-S2",
+          "claim": "GOV-S4 confunde una hipótesis difícil de contrastar desde fuera con una hipótesis infalsable. El subregistro sería falsable si se concediera a la oposición o a una veeduría independiente acceso a los padrones territoriales nominales y a las metodologías de captura; la negativa a ese acceso —no la retórica— explica que no haya 'una solicitud denegada documentada'. Además, publicar microdatos agregados sujetos a verificación externa no basta cuando las categorías censales excluyen asentamientos informales; de hecho, la oposición no los sometió a análisis alternativo precisamente porque el diseño del padrón impide reconstruir el universo. La carga de demostrar que los registros incluyen a las comunidades marginadas recae sobre quien los publica, no sobre quien denuncia su exclusión. Por tanto, la conclusión de que OPP-S1 presume el ocultamiento no se sigue.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S1_bacb15c7",
+          "agent_id": "GOV-S1",
+          "claim": "El undercut de OPP-S2 se apoya en dos premisas no demostradas: que hubo 'negativa a ese acceso' y que las categorías censales excluyen asentamientos informales. El gobierno habilitó portales de transparencia, microdatos anonimizados, informes metodológicos y veedurías ciudadanas con participación de organizaciones sociales, incluidos asentamientos periféricos; la exigencia de padrones nominales no es condición de transparencia, sino un estándar que ni siquiera se aplica internacionalmente por protección de datos. Además, OPP-S2 no identifica un solo asentamiento omitido ni muestra una solicitud formal denegada; su afirmación de que el 'diseño del padrón impide reconstruir el universo' es una conjetura no verificable que vuelve infalsable su propia hipótesis de subregistro. La carga de probar la exclusión recae sobre quien la denuncia, y publicar datos verificables no exige entregar el operativo crudo a quien acusa. Por tanto, la conclusión de que GOV-S4 confunde hipótesis difícil de contrastar con hipótesis infalsable no se sigue.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        },
+        {
+          "node_id": "GOV-S5_34c1e174",
+          "agent_id": "GOV-S5",
+          "claim": "La afirmación de OPP-S1 sobre el deterioro real del bienestar no se sigue de la evidencia: se apoya en la supuesta exclusión de asentamientos informales de los padrones, pero no identifica un solo indicador —empleo, ingreso, consumo o acceso a servicios— que haya empeorado de manera verificable. Que una categoría censal tenga limitaciones metodológicas no equivale a una caída del bienestar; sin demostrar el efecto material, la conclusión de deterioro es una inferencia especulativa. La carga de probar el deterioro recae en quien lo denuncia, y la crítica al diseño del padrón no la satisface.",
+          "score": 0,
+          "rationale": "judge_error: Error code: 429 - {'error': {'code': '1113', 'message': 'Insufficient balance or no resource package. Please recharge.'}}"
+        }
+      ],
+      "kappa": {
+        "kappa": 0.0,
+        "p0": 0.0,
+        "category": "slight",
+        "n_items": 35
+      },
+      "avg_judge_score": 0.0
+    }
+  },
+  "weight_sensitivity": {},
+  "config": {
+    "base_url": "https://api.deepseek.com/v1",
+    "model": "deepseek-v4-flash",
+    "api_key": "***REDACTED***",
+    "iterations": 80,
+    "seeds": [
+      12097,
+      194647,
+      233297,
+      305999,
+      394699
+    ],
+    "modes": [
+      "epr_llm_judge"
+    ],
+    "api_hard_limit": 500,
+    "initial_deficit": 0.5,
+    "output_dir": "ablation_llm_judge",
+    "config": "recalibration_results.json",
+    "log_level": "WARNING",
+    "clean": false,
+    "no_halt_on_red_flags": false,
+    "preflight": false,
+    "preflight_ticks": 12,
+    "health_llm_model": null,
+    "judge_models": [
+      "deepseek-v4-pro",
+      "glm-5.2"
+    ],
+    "judge_base_urls": [
+      "https://api.deepseek.com/v1",
+      "https://api.z.ai/api/paas/v4/"
+    ],
+    "judge_api_keys": "***REDACTED***",
+    "weight_profiles": [
+      "uniform",
+      "faction-heavy",
+      "centrality-heavy",
+      "memory-heavy",
+      "pressure-heavy"
+    ]
+  },
+  "calibration": {
+    "stimulus_weights": null,
+    "debate_alpha": 4.0,
+    "lambda_rate": 0.02
+  }
+}

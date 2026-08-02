@@ -204,6 +204,10 @@ def _run_mode(
     debate_alpha: float = 2.0,
     lambda_rate: float = 0.05,
     run_checkpoint_path: Path | None = None,
+    judge_model: str | None = None,
+    judge_base_url: str | None = None,
+    judge_api_key: str | None = None,
+    judge_seed: int | None = None,
 ) -> tuple[list[SimulationLog], float, SotopiaEnvironment]:
     """Run simulation for the given mode. Returns (logs, elapsed_seconds, env).
 
@@ -226,6 +230,10 @@ def _run_mode(
         stimulus_weights=stimulus_weights,
         debate_alpha=debate_alpha,
         lambda_rate=lambda_rate,
+        judge_model=judge_model,
+        judge_base_url=judge_base_url,
+        judge_api_key=judge_api_key,
+        judge_seed=judge_seed,
     )
     start_tick = 1
     if run_checkpoint_path is not None:
@@ -1449,6 +1457,10 @@ def _run_preflight(args: argparse.Namespace, cal: dict[str, Any]) -> int:
             debate_alpha=cal_debate_alpha,
             lambda_rate=cal_lambda_rate,
             run_checkpoint_path=None,
+            judge_model=judge_model,
+            judge_base_url=judge_base_url,
+            judge_api_key=judge_api_key,
+            judge_seed=judge_seed,
         )
         metrics = _compute_metrics(logs, env.graph)
         temporal = _compute_temporal_metrics(logs, env.graph, n_windows=min(3, max(1, len([l for l in logs if l.action == "DEBATE" and l.claim]))))
@@ -1518,11 +1530,13 @@ def main() -> None:
     )
     parser.add_argument(
         "--modes", nargs="+", default=DEFAULT_MODES,
-        choices=["epr", "epr_q", "epr_sham", "langgraph"],
+        choices=["epr", "epr_q", "epr_sham", "epr_no_div", "epr_llm_judge", "langgraph"],
         help="Orchestration modes to benchmark. 'epr' (Ecuación Pro-Acción Reducida) "
              "is the primary condition: endogenous homeostatic activation without Q-learning. "
              "'epr_q' is EPR + Q-learning (ablation: does the Q-learner help?). "
              "'epr_sham' controls for sigmoid shape with random δ. "
+             "'epr_no_div' is EPR with the diversity term removed from g (post-hoc ablation). "
+             "'epr_llm_judge' is EPR with g computed by an LLM judge online (post-hoc ablation). "
              "'langgraph' is the exogenous baseline: LLM router with access to "
              "the same structural features EPR uses internally.",
     )
@@ -1621,6 +1635,16 @@ def main() -> None:
     cal_debate_alpha = cal.get("debate_alpha", 2.0)
     cal_lambda_rate = cal.get("lambda_rate", 0.05)
 
+    # Judge config for epr_llm_judge ablation
+    judge_api_keys = args.judge_api_keys or [
+        os.getenv("DEEPSEEK_API_KEY", ""),
+        os.getenv("ZAI_API_KEY", ""),
+    ]
+    judge_model = args.judge_models[0] if args.judge_models else "deepseek-v4-pro"
+    judge_base_url = args.judge_base_urls[0] if args.judge_base_urls else "https://api.deepseek.com/v1"
+    judge_api_key = judge_api_keys[0] if judge_api_keys else ""
+    judge_seed = 42
+
     if args.preflight:
         raise SystemExit(_run_preflight(args, cal))
 
@@ -1666,6 +1690,10 @@ def main() -> None:
                     debate_alpha=cal_debate_alpha,
                     lambda_rate=cal_lambda_rate,
                     run_checkpoint_path=run_ck_path,
+                    judge_model=judge_model,
+                    judge_base_url=judge_base_url,
+                    judge_api_key=judge_api_key,
+                    judge_seed=judge_seed,
                 )
             except Exception as exc:
                 _save_bm_checkpoint(checkpoint_path, completed)

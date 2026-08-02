@@ -1,0 +1,163 @@
+E S C U E L A S U D A M E R I C A N A D E N L P 2 0 2 6 · P O S T E R
+Activación Endógena mediante
+Homeostasis Epistémica en Sistemas
+Multi-Agente Basados en LLMs
+¿Puede la coherencia en un debate multi-agente sostenerse endógenamente — no impuesta por un planificador, sino emergente del estado regulatorio de cada agente?
+Patricio Julián Gerpe · Universidad de Buenos Aires
+Los frameworks contemporáneos (AutoGen, MetaGPT, LangGraph) externalizan la activación: un orquestador decide cuándo habla cada agente. Esto desacopla la participación de la presión epistémica que el agente acumula. ¿Qué pasa si la activación
+emerge del estado interno del agente — como la homeostasis biológica — en vez de ser programada externamente? Presentamos EPR (Ecuación Pro-Acción Reducida), la reducción escalar del operador Pro-Action Γ (n=1), sin Q-learning.
+El problema: colapso de contexto
+En deliberación adversarial extendida, los agentes LLM pierden registro de argumentos previos, repiten puntos o producen
+monólogos desconectados — el colapso de contexto. En debates competitivos cada argumento presupone los anteriores:
+esta pérdida no degrada el debate, lo invalida.
+Los orquestadores exógenos (LangGraph, AutoGen) rutean turnos según el estado del flujo, no seg&u;n la presión epistémica
+del agente. Un agente que acumula contra-argumentos sin responder espera pasivamente hasta que el scheduler lo elige.
+Ashby's law: un regulador debe modelar la variedad de lo que controla. La activación exógena no ve el estado interno del
+agente.
+Motivación: homeostasis epistémica
+La biología describe cómo los sistemas regulan desequilibrios sin control externo: variables internas acumulan tensión,
+desencadenan respuesta y retornan al equilibrio (homeostasis, Sterling & Eyer 1988). HRRL (Keramati & Gutkin 2014)
+formalizó esto derivando la recompensa como reducción de impulso.
+Analogía estructural: donde un organismo acumula hambre y actúa para reducirla, un agente deliberativo acumula déficit
+epistémico — tensión por argumentos no respondidos, información no procesada, presión competitiva — y actúa para
+reducirlo.
+La frecuencia de participación no se fija ni se rutea: emerge del estado regulatorio de cada agente.
+Background: orquestación exógena
+AutoGen (Wu et al. 2023), CAMEL (Li et al. 2023) y MetaGPT (Hong et al. 2023) estructuran interacciones mediante grafos
+de control y enrutadores centralizados. LangGraph añadió estado durable y transiciones condicionales, dando al orquestador
+mayor expresividad.
+El paradigma heartbeat (OpenClaw 2025) incorporó persistencia temporal mediante activación periódica con memoria entre
+latidos. D2A (Wang et al. 2025) reconoce que el estado interno debería importar, pero no cierra el lazo: carece de señal
+explícita de calidad que module la activación.
+En todos estos casos, la decisión de cuándo participa cada agente queda fijada por el diseñador, no emerge del agente
+mismo.
+Axiomas de Autonomía Homeostática (AAH)
+Los supuestos sobre el agente que el experimento requiere para ser interpretable.
+A1 · Autonomía
+Aut(ai) ⇔ ∃δi: πi = πi(δi(t))
+La política del agente depende de su estado
+interno.
+A2 · Impulso
+D(ε)=0, D'(δi)>0, pi = σ(D(δi(t)))
+Un impulso interno que crece con el desvío del
+equilibrio y determina monótonamente la
+probabilidad de activación.
+A3 · Compuerta de calidad
+Δδi = −α·g(e(t),e(t+1)), α>0
+Un cambio efectivo g en el estado del entorno
+regulado; el impulso decrece proporcionalmente a
+ese cambio.
+Operador Pro-Acción reducido: EPR = Γ(n=1)
+EPR es la reducción escalar del operador Pro-Action Γ (Gerpe 2026): un solo subsistema (n=1), sin Q-learning, sin cross-coupling. Un termostato epistémico que mantiene el déficit δ en un rango viable.
+δi(t+1) = δi(t) + λ − α · gi(t)
+λ = 0.02 decaimiento basal · α = 4.0 saciacion por debate · g = señal de calidad estructural (engagement × novelty + diversity)
+pi(t) = σ(k · (δi(t) − θ))
+k = 10 · θ = 0.7 · σ = sigmoide logística
+δ crece
+(basal λ) → σ(δ−θ) > umbral
+activación → RSVI verbaliza δ
+al prompt del LLM → LLM elige
+acción → g sacia δ
+(feedback)
+RSVI (Regulatory State Verbalized Interoception): el estado regulatorio se inyecta al prompt como contexto descriptivo — no prescriptivo. El LLM puede seguir o ignorar la señal. A diferencia de Γ (6 subsistemas), EPR tiene un solo δ escalar.
+Diseño experimental
+10
+Agentes VSM
+(2 × 5 subsist.)
+80
+Ticks / corrida
+(budget-matched)
+5
+Seeds pareadas
+(4 lotes)
+4
+Condiciones
+experimentales
+Condición 	Activación 	RSVI 	Propósito
+EPR 	Endógena (sigmoid + drive) 	Sí 	Condición principal
+EPR_Q 	Endógena + Q-learning 	Sí 	Ablación: ¿Q-learner aporta?
+EPR_SHAM 	δ aleatorio (sigmoid roto) 	No 	Ablación: ¿el loop importa?
+LANGGRAPH 	Exógena (LLM router) 	No 	Baseline exógeno
+Ablación limpia: EPR y LangGraph difieren sólo en el locus de control (endógeno vs exógeno) y la presencia de RSVI. Mismo LLM, mismos agentes,
+mismo grafo, mismo throughput (1 agente/tick). Hiperparámetros calibrados con seed independiente (grid 3×3, α∈{3,4,5}, λ∈{0.02,0.03,0.05}).
+Configuración de reproducibilidad
+Rol 	Modelo 	Temp 	Seed
+Agentes (10) 	DeepSeek V4-Flash 	0.0 	Por agente (SeedFactory)
+Router LG 	DeepSeek V4-Flash 	0.0 	router_llm (SeedFactory)
+Juez 1 	DeepSeek V4-Pro 	0.0 	JUDGE_SEED (fijo)
+Juez 2 	GLM-5.2 (Z.AI) 	do_sample=False 	JUDGE_SEED (fijo)
+Embeddings 	text-embedding-3-small (OpenAI) 	— 	—
+Master seed: 20260308. SeedFactory deriva primos únicos por componente (agentes, router, simulación) via SHA-256. Calibración: grid 3×3, α∈{3,4,5},
+λ∈{0.02,0.03,0.05}, seed 196379. Seleccionado: α=4.0, λ=0.02.
+RSVI: el déficit δ se inyecta al prompt como contexto descriptivo. LangGraph no recibe RSVI. Código y logs:
+github.com/codewithpatelo/langclaw_experiment.
+deficit = 0.82 (high = epistemic pressure)
+→ "Your epistemic deficit is HIGH. You have not
+contributed to the debate recently."
+Resultados preliminares — 2ª seed de cada lote (8/20 seeds)
+Métrica 	EPR 	Q 	SHAM 	LG
+Debates 	38.2 	43.2 	36.5 	62.8
+Max-share 	0.118 	0.110 	0.211 	0.249
+Max deficit 	1.13 	0.96 	3.73 	2.47
+Avg Δφ* 	0.468 	0.456 	0.452 	0.444
+Anomalías 	0 	0 	3 	3
+Media de 4 corridas (lotes 1-4, 2ª seed de cada lote). α=4.0, λ=0.02, k=10, θ=0.7, T=80.
+Colapso de contexto: Δφ* por ventana
+Ventana 	EPR 	Q 	SHAM 	LG
+Ticks 0-15 	0.493 	0.501 	0.453 	0.487
+Ticks 16-31 	0.490 	0.480 	0.494 	0.454
+Ticks 32-47 	0.456 	0.448 	0.454 	0.436
+Ticks 48-63 	0.458 	0.441 	0.428 	0.429
+Ticks 64-79 	0.450 	0.423 	0.432 	0.420
+Degrad. 	8.8% 	15.6% 	3.9%* 	13.9%
+(A) DISTRIBUCIÓN DE TURNOS
+EPR: max-share 0.118 vs LangGraph 0.249 (2.1×). Sin monopolización (0/4 lotes >0.25). LangGraph monopoliza en 2/4 lotes (hasta 0.284). La activación
+endógena distribuye turnos orgánicamente.
+(B) ABLACIÓN SHAM — EL LOOP IMPORTA
+SHAM produce deficit explosivo (3.73 vs 1.13) en 3/4 lotes. La sigmoide sola no basta: el loop homeostático es lo que controla el deficit. Además degrada la
+equidad (max-share 0.211 vs 0.118).
+(C) Q-LEARNING NO APORTA Y PODRÍA PERJUDICAR
+EPR_Q (43.2 debates, deficit 0.96) vs EPR (38.2, 1.13): mejora marginal en deficit, pero degrada más rápido (slope -0.019 vs -0.012, 15.6% vs 8.8%). El Q-
+learning añade complejidad sin beneficio claro.
+(D) LANGGRAPH: MÁS VOLUMEN, MENOS EQUIDAD
+62.8 debates vs 38.2, pero mayor concentración (0.249 vs 0.118) y mayor deficit (2.47 vs 1.13). Además no mantiene consistencia de rol (IR=0.00 vs 1.00).
+(E) COLAPSO DE CONTEXTO — H1
+Todos los modos degradan Δφ* temporalmente, pero a distintas tasas. EPR degrada menos (8.8%, slope -0.012) vs LangGraph (13.9%, -0.016): el loop
+homeostático modula el colapso. EPR_Q degrada más (15.6%): el Q-learning no amortigua y podría amplificarlo. SHAM (3.9%*) con alta varianza (rango -5.5%
+a 14.8%): trayectorias erráticas. Conclusión: el colapso de contexto es parcialmente endógeno — el mecanismo de activación lo modula pero no lo elimina. El
+loop homeostático es necesario pero no suficiente; falta un mecanismo de gestión de memoria a largo plazo.
+Resultados preliminares: 2ª seed de cada lote (8/20 seeds). Experimento completo: 20 seeds × 4 modos × 80 ticks en curso. Análisis estadístico (Wilcoxon signed-rank, Bonferroni α=0.0167) pendiente. *SHAM: degradación media con alta varianza (rango -5.5% a 14.8%).
+Limitaciones 	Trabajo futuro y contribuciones
+1 · Reframe. Tratar la activación como un proceso endógeno regulado — no una decisión de scheduling externa. Nombra un
+gap estructural en el paradigma de orquestación actual.
+2 · Mechanism. EPR (Γ(n=1), sin Q-learning) + RSVI exponen el estado regulatorio al LLM como superficie de control
+inspeccionable — sin prescribir qué acción tomar.
+3 · Evidence. 8/20 seeds muestran distribución de turnos 2.1× más equitativa que LangGraph, la ablación sham confirma que
+el loop homeostático — no sólo la forma del gate — es lo que produce el efecto, y la degradación temporal de Δφ* (colapso de
+contexto) es menor bajo EPR (8.8%) que bajo LangGraph (13.9%).
+Extensiones planificadas: (1) Reasoning effort modulado por deficit (δ → reasoning_effort en DeepSeek V4-Flash); (2) Drive metabólico para regular
+consumo de API (Γ(n=2)); (3) Replicación multi-LLM (GLM-5.2, Claude); (4) Jueces LLM duales con Cohen's κ + validación humana (Spearman ρ); (5)
+Integración formal de DeLP.
+Referencias
+1	2
+3	4
+5
+6	7
+8
+9
+Proveedor único: DeepSeek V4-Flash para todos los agentes. Efectos dependientes del modelo no controlados. Replicación multi-LLM pendiente.	▸
+Tópico único: "Gestión gubernamental de la crisis sanitaria y sus consecuencias económicas". Efectos de tópico no controlados.	▸
+N preliminar: 8/20 seeds completadas (2ª seed de cada lote). 20 seeds en curso. Poder estadístico limitado hasta completar el experimento.	▸
+Pesos calibrados: StimulusEvaluator con perfil faction-dominant calibrado con seed independiente (grid 3×3, α∈{3,4,5}, λ∈{0.02,0.03,0.05}).
+Diferente calibración podría cambiar el comportamiento, aunque el perfil fue seleccionado por estabilidad.
+▸
+RSVI integrado, no confundido: RSVI verbaliza δi que drivea la activación endógena. Sin loop homeostático no hay δi que verbalizar. Inyectar
+RSVI en LangGraph sería enviar estado ficticio que no drivea ninguna decisión — ruido, no control. La comparación es entre arquitecturas
+completas, no entre factores independientes.
+▸
+80 ticks: Puede ser demasiado corto para comportamiento asintótico.	▸
+10
+·
+
+-- 1 of 1 --
+
