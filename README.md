@@ -700,8 +700,27 @@ un validador simbólico (verificación determinista de claims contra el
 grafo) acoplado a un LLM razonador que interprete los resultados, sin
 que el LLM sea el evaluador único.
 
-> Resultados preliminares (9/20 semillas completas, corrida en
-> progreso).
+**Resultados (20/20 semillas pareadas EPR vs LangGraph vs LLM_JUDGE):**
+
+| Métrica                | EPR    | LangGraph | LLM_JUDGE |
+|------------------------|--------|-----------|-----------|
+| Debates totales        | 43.5   | 60.6      | 60.9      |
+| `g` máximo             | 0.640  | 0.663     | 0.910     |
+| `g` medio              | 0.463  | 0.442     | 0.547     |
+| Share máx. por agente  | 0.119  | 0.276     | 0.144     |
+| Eventos `g` negativo   | 0.0    | 0.0       | 4.1       |
+
+**Tendencia:** atar `g` directamente a la evaluación de colapso vía
+juez LLM produce un volumen de debate similar a LangGraph (60.9 vs
+60.6) y una equidad intermedia (max-share 0.144 vs 0.276 de LangGraph
+y 0.119 de EPR). El juez detecta colapso —4.1 eventos de `g` negativo
+por semilla, donde el agente se depleta en lugar de saciarse— pero
+esto no mejora la equidad respecto a EPR; al contrario, la empeora
+levemente. La señal `g` aparece inflada (max 0.91, +42% sobre EPR),
+consistente con el riesgo de circularidad: el juez comparte sesgos
+con los agentes y sobreestima calidad. Este chequeo se retoma como
+**trabajo futuro** con un validador simbólico + LLM razonador que
+evite que el evaluador y el evaluado compartan arquitectura.
 
 ---
 
