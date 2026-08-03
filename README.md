@@ -710,17 +710,16 @@ que el LLM sea el evaluador único.
 | Share máx. por agente  | 0.119  | 0.276     | 0.144     |
 | Eventos `g` negativo   | 0.0    | 0.0       | 4.1       |
 
-**Tendencia:** atar `g` directamente a la evaluación de colapso vía
-juez LLM produce un volumen de debate similar a LangGraph (60.9 vs
-60.6) y una equidad intermedia (max-share 0.144 vs 0.276 de LangGraph
-y 0.119 de EPR). El juez detecta colapso —4.1 eventos de `g` negativo
-por semilla, donde el agente se depleta en lugar de saciarse— pero
-esto no mejora la equidad respecto a EPR; al contrario, la empeora
-levemente. La señal `g` aparece inflada (max 0.91, +42% sobre EPR),
-consistente con el riesgo de circularidad: el juez comparte sesgos
-con los agentes y sobreestima calidad. Este chequeo se retoma como
-**trabajo futuro** con un validador simbólico + LLM razonador que
-evite que el evaluador y el evaluado compartan arquitectura.
+**Tendencia:** atar `g` a evaluación de colapso vía juez LLM produce
+volumen de debate similar a LangGraph (60.9 vs 60.6) y equidad
+intermedia (max-share 0.144 vs 0.276 LangGraph y 0.119 EPR). El juez
+detecta colapso (4.1 eventos de `g` negativo por semilla) y la señal
+`g` aparece inflada (max 0.91, +42% sobre EPR), consistente con el
+riesgo de circularidad. Queda pendiente la evaluación de colapso de
+contexto con jueces ciegos post-hoc (como se hizo para EPR y
+LangGraph) para determinar si la regulación vía juez reduce la tasa
+de fallas de fidelidad. Este chequeo se retoma como **trabajo
+futuro** con un validador simbólico + LLM razonador.
 
 ---
 
