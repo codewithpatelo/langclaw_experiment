@@ -710,16 +710,36 @@ que el LLM sea el evaluador único.
 | Share máx. por agente  | 0.119  | 0.276     | 0.144     |
 | Eventos `g` negativo   | 0.0    | 0.0       | 4.1       |
 
-**Tendencia:** atar `g` a evaluación de colapso vía juez LLM produce
-volumen de debate similar a LangGraph (60.9 vs 60.6) y equidad
-intermedia (max-share 0.144 vs 0.276 LangGraph y 0.119 EPR). El juez
-detecta colapso (4.1 eventos de `g` negativo por semilla) y la señal
-`g` aparece inflada (max 0.91, +42% sobre EPR), consistente con el
-riesgo de circularidad. Queda pendiente la evaluación de colapso de
-contexto con jueces ciegos post-hoc (como se hizo para EPR y
-LangGraph) para determinar si la regulación vía juez reduce la tasa
-de fallas de fidelidad. Este chequeo se retoma como **trabajo
-futuro** con un validador simbólico + LLM razonador.
+**Tendencia (participación):** atar `g` a evaluación de colapso vía
+juez LLM produce volumen de debate similar a LangGraph (60.9 vs 60.6)
+y equidad intermedia (max-share 0.144 vs 0.276 LangGraph y 0.119
+EPR). El juez detecta colapso (4.1 eventos de `g` negativo por
+semilla) y la señal `g` aparece inflada (max 0.91, +42% sobre EPR).
+
+**Evaluación de colapso post-hoc (juez ciego DeepSeek V4-Pro):**
+
+| Ventana       | EPR    | LangGraph | LLM_JUDGE |
+|---------------|--------|-----------|-----------|
+| w0 (p0-15)    | 0.081  | 0.000     | **0.500** |
+| w1 (p16-31)   | 0.075  | 0.075     | **0.538** |
+| w2 (p32-47)   | 0.125  | 0.125     | **0.447** |
+| w3 (p48-63)   | 0.175  | 0.150     | **0.553** |
+| w4 (p64-79)   | 0.200  | 0.025     | **0.500** |
+| Pendiente (p) | 0.145  | 0.544     | 0.809     |
+
+**Hallazgo contraintuitivo:** LLM_JUDGE quintuplica la tasa de
+colapso respecto a EPR (~50% vs 8-20%). El juez en línea detecta
+colapso y depleta agentes, pero esto no reduce las fallas de
+fidelidad — las multiplica. La tasa es plana (p=0.809, sin
+degradación temporal), lo que sugiere que el juez mantiene el colapso
+en un equilibrio alto pero estable. La fluidez también se degrada
+significativamente (p=0.016), a diferencia de EPR y LangGraph donde
+se mantiene alta. El modo de falla dominante es distorsión del
+objetivo (30%→42%), el único que crece; amnesia desaparece (7.5%→0%).
+El proxy estructural de EPR —que ni siquiera mide fidelidad—
+indirectamente produce menos colapso que un juez diseñado para
+detectarlo. Este resultado no tiene una interpretación cerrada y se
+retoma como **trabajo futuro**.
 
 ---
 

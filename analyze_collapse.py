@@ -40,7 +40,7 @@ BASE_DIR = Path(__file__).parent
 DEFAULT_RESULTS = BASE_DIR / "collapse_judge_results.json"
 DEFAULT_OUTPUT = BASE_DIR / "collapse_analysis.json"
 
-MODES = ["epr", "epr_q", "epr_sham", "langgraph"]
+MODES = ["epr_llm_judge"]
 N_WINDOWS = 5
 
 # Internal keys are those emitted by the judging prompt and must stay stable so
@@ -301,24 +301,25 @@ def main() -> int:
             for m in MODES
         }
 
-        others = [m for m in MODES if m != "epr" and slopes[m]]
-        alpha = 0.05 / max(1, len(others))
-        print(f"\nWilcoxon pareado vs. EPR (Bonferroni alpha={alpha:.4f})")
-        tests: dict[str, Any] = {}
-        for mode in others:
-            t = paired_test(slopes["epr"], slopes[mode])
-            if "note" in t:
-                print(f"  epr vs {mode:<12} {t['note']}")
-                continue
-            t["significant"] = bool(t["p_value"] < alpha)
-            tests[f"epr_vs_{mode}"] = t
-            print(
-                f"  epr vs {mode:<12} {t['median_a']:>+9.4f} vs {t['median_b']:>+9.4f}"
-                f"  p={t['p_value']:<10.3g}"
-                f"{'SIG' if t['significant'] else 'no sig'}"
-                f"  ({t['seeds_a_lower']}/{t['n_pairs']} semillas EPR menor)"
-            )
-        panel["paired_tests_vs_epr"] = tests
+        if "epr" in slopes:
+            others = [m for m in MODES if m != "epr" and slopes[m]]
+            alpha = 0.05 / max(1, len(others))
+            print(f"\nWilcoxon pareado vs. EPR (Bonferroni alpha={alpha:.4f})")
+            tests: dict[str, Any] = {}
+            for mode in others:
+                t = paired_test(slopes["epr"], slopes[mode])
+                if "note" in t:
+                    print(f"  epr vs {mode:<12} {t['note']}")
+                    continue
+                t["significant"] = bool(t["p_value"] < alpha)
+                tests[f"epr_vs_{mode}"] = t
+                print(
+                    f"  epr vs {mode:<12} {t['median_a']:>+9.4f} vs {t['median_b']:>+9.4f}"
+                    f"  p={t['p_value']:<10.3g}"
+                    f"{'SIG' if t['significant'] else 'no sig'}"
+                    f"  ({t['seeds_a_lower']}/{t['n_pairs']} semillas EPR menor)"
+                )
+            panel["paired_tests_vs_epr"] = tests
         panels[field] = panel
 
     # Breakdown of individual failure modes, consensus reading.
