@@ -69,18 +69,46 @@ from typing import Any
 
 from run_judge_smoke import (
     KeyRotator,
+    SEEDS_PER_LOT,
     get_completed_seeds,
     load_env,
     load_logs_for_seed,
 )
 
 BASE_DIR = Path(__file__).parent
-MODES = ["epr", "epr_q", "epr_sham", "langgraph"]
+ABLATION_DIR = BASE_DIR / "ablation_llm_judge"
+MODES = ["epr_llm_judge"]
+
+# Override: for epr_llm_judge, read checkpoints from ablation_llm_judge/
+_original_get_completed_seeds = get_completed_seeds
+
+# Seed-to-lot mapping for LLM_JUDGE ablation
+_LLM_JUDGE_LOT_SEEDS = {
+    "lot1": [12097, 194647, 233297, 305999, 394699],
+    "lot2": [139987, 252079, 291077, 759223, 869321],
+    "lot3": [504521, 507919, 555743, 597307, 632813],
+    "lot4": [113497, 114967, 160579, 656939, 719821],
+}
+
+def _get_completed_seeds_llm_judge(lot: str) -> list[int]:
+    # Check lot-specific checkpoint first, then root checkpoint
+    all_seeds = set()
+    for ck_path in [ABLATION_DIR / lot / "benchmark_checkpoint.json",
+                    ABLATION_DIR / "benchmark_checkpoint.json"]:
+        if ck_path.exists():
+            with open(ck_path, "r", encoding="utf-8") as f:
+                entries = json.load(f)
+            all_seeds.update(e["_seed"] for e in entries)
+    # Filter to seeds that belong to this lot
+    lot_seeds = [s for s in _LLM_JUDGE_LOT_SEEDS.get(lot, []) if s in all_seeds]
+    return sorted(lot_seeds)[:SEEDS_PER_LOT]
+
+get_completed_seeds = _get_completed_seeds_llm_judge
 LOTS = ["lot1", "lot2", "lot3", "lot4"]
 TOTAL_TICKS = 80
 N_WINDOWS = 5
-CHECKPOINT_PATH = BASE_DIR / "collapse_judge_checkpoint.json"
-RESULTS_PATH = BASE_DIR / "collapse_judge_results.json"
+CHECKPOINT_PATH = BASE_DIR / "collapse_judge_llm_judge_checkpoint.json"
+RESULTS_PATH = BASE_DIR / "collapse_judge_llm_judge_results.json"
 DEFAULT_CONCURRENCY = 16
 DEFAULT_PER_CELL = 2
 CHECKPOINT_EVERY = 10
@@ -407,13 +435,12 @@ def main() -> int:
     za = [env.get(k, "") for k in ("ZAI_API_KEY", "ZAI_API_KEY_2", "ZAI_API_KEY_3", "ZAI_API_KEY_4")]
     ds = [k for k in ds if k]
     za = [k for k in za if k]
-    if not ds or not za:
-        print("ERROR: faltan claves de API")
+    if not ds:
+        print("ERROR: faltan claves de API DeepSeek")
         return 1
 
     judges = [
         {"model": "deepseek-v4-pro", "base_url": "https://api.deepseek.com/v1", "key_rotator": KeyRotator(ds)},
-        {"model": "glm-5.2", "base_url": "https://api.z.ai/api/paas/v4/", "key_rotator": KeyRotator(za)},
     ]
 
     checkpoint: dict = {}

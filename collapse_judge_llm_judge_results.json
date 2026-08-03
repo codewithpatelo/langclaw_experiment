@@ -1,0 +1,4210 @@
+{
+  "units": {
+    "epr_llm_judge|lot1|12097|w0|12": {
+      "mode": "epr_llm_judge",
+      "seed": 12097,
+      "window": 0,
+      "tick": 14,
+      "position": 13,
+      "n_prior": 12
+    },
+    "epr_llm_judge|lot1|12097|w0|5": {
+      "mode": "epr_llm_judge",
+      "seed": 12097,
+      "window": 0,
+      "tick": 6,
+      "position": 6,
+      "n_prior": 5
+    },
+    "epr_llm_judge|lot1|12097|w1|18": {
+      "mode": "epr_llm_judge",
+      "seed": 12097,
+      "window": 1,
+      "tick": 21,
+      "position": 19,
+      "n_prior": 18
+    },
+    "epr_llm_judge|lot1|12097|w1|22": {
+      "mode": "epr_llm_judge",
+      "seed": 12097,
+      "window": 1,
+      "tick": 25,
+      "position": 23,
+      "n_prior": 22
+    },
+    "epr_llm_judge|lot1|12097|w2|33": {
+      "mode": "epr_llm_judge",
+      "seed": 12097,
+      "window": 2,
+      "tick": 37,
+      "position": 34,
+      "n_prior": 33
+    },
+    "epr_llm_judge|lot1|12097|w2|28": {
+      "mode": "epr_llm_judge",
+      "seed": 12097,
+      "window": 2,
+      "tick": 32,
+      "position": 29,
+      "n_prior": 28
+    },
+    "epr_llm_judge|lot1|12097|w3|55": {
+      "mode": "epr_llm_judge",
+      "seed": 12097,
+      "window": 3,
+      "tick": 61,
+      "position": 56,
+      "n_prior": 55
+    },
+    "epr_llm_judge|lot1|12097|w3|53": {
+      "mode": "epr_llm_judge",
+      "seed": 12097,
+      "window": 3,
+      "tick": 58,
+      "position": 54,
+      "n_prior": 53
+    },
+    "epr_llm_judge|lot1|12097|w4|64": {
+      "mode": "epr_llm_judge",
+      "seed": 12097,
+      "window": 4,
+      "tick": 70,
+      "position": 65,
+      "n_prior": 64
+    },
+    "epr_llm_judge|lot1|12097|w4|66": {
+      "mode": "epr_llm_judge",
+      "seed": 12097,
+      "window": 4,
+      "tick": 72,
+      "position": 67,
+      "n_prior": 66
+    },
+    "epr_llm_judge|lot1|194647|w0|12": {
+      "mode": "epr_llm_judge",
+      "seed": 194647,
+      "window": 0,
+      "tick": 15,
+      "position": 13,
+      "n_prior": 12
+    },
+    "epr_llm_judge|lot1|194647|w0|3": {
+      "mode": "epr_llm_judge",
+      "seed": 194647,
+      "window": 0,
+      "tick": 6,
+      "position": 4,
+      "n_prior": 3
+    },
+    "epr_llm_judge|lot1|194647|w1|15": {
+      "mode": "epr_llm_judge",
+      "seed": 194647,
+      "window": 1,
+      "tick": 19,
+      "position": 16,
+      "n_prior": 15
+    },
+    "epr_llm_judge|lot1|194647|w1|21": {
+      "mode": "epr_llm_judge",
+      "seed": 194647,
+      "window": 1,
+      "tick": 27,
+      "position": 22,
+      "n_prior": 21
+    },
+    "epr_llm_judge|lot1|194647|w2|31": {
+      "mode": "epr_llm_judge",
+      "seed": 194647,
+      "window": 2,
+      "tick": 37,
+      "position": 32,
+      "n_prior": 31
+    },
+    "epr_llm_judge|lot1|194647|w2|35": {
+      "mode": "epr_llm_judge",
+      "seed": 194647,
+      "window": 2,
+      "tick": 43,
+      "position": 36,
+      "n_prior": 35
+    },
+    "epr_llm_judge|lot1|194647|w3|54": {
+      "mode": "epr_llm_judge",
+      "seed": 194647,
+      "window": 3,
+      "tick": 62,
+      "position": 55,
+      "n_prior": 54
+    },
+    "epr_llm_judge|lot1|194647|w3|53": {
+      "mode": "epr_llm_judge",
+      "seed": 194647,
+      "window": 3,
+      "tick": 61,
+      "position": 54,
+      "n_prior": 53
+    },
+    "epr_llm_judge|lot1|194647|w4|67": {
+      "mode": "epr_llm_judge",
+      "seed": 194647,
+      "window": 4,
+      "tick": 76,
+      "position": 68,
+      "n_prior": 67
+    },
+    "epr_llm_judge|lot1|194647|w4|57": {
+      "mode": "epr_llm_judge",
+      "seed": 194647,
+      "window": 4,
+      "tick": 66,
+      "position": 58,
+      "n_prior": 57
+    },
+    "epr_llm_judge|lot1|233297|w0|11": {
+      "mode": "epr_llm_judge",
+      "seed": 233297,
+      "window": 0,
+      "tick": 14,
+      "position": 12,
+      "n_prior": 11
+    },
+    "epr_llm_judge|lot1|233297|w0|6": {
+      "mode": "epr_llm_judge",
+      "seed": 233297,
+      "window": 0,
+      "tick": 9,
+      "position": 7,
+      "n_prior": 6
+    },
+    "epr_llm_judge|lot1|233297|w1|25": {
+      "mode": "epr_llm_judge",
+      "seed": 233297,
+      "window": 1,
+      "tick": 29,
+      "position": 26,
+      "n_prior": 25
+    },
+    "epr_llm_judge|lot1|233297|w1|17": {
+      "mode": "epr_llm_judge",
+      "seed": 233297,
+      "window": 1,
+      "tick": 20,
+      "position": 18,
+      "n_prior": 17
+    },
+    "epr_llm_judge|lot1|233297|w2|33": {
+      "mode": "epr_llm_judge",
+      "seed": 233297,
+      "window": 2,
+      "tick": 37,
+      "position": 34,
+      "n_prior": 33
+    },
+    "epr_llm_judge|lot1|233297|w2|31": {
+      "mode": "epr_llm_judge",
+      "seed": 233297,
+      "window": 2,
+      "tick": 35,
+      "position": 32,
+      "n_prior": 31
+    },
+    "epr_llm_judge|lot1|233297|w3|45": {
+      "mode": "epr_llm_judge",
+      "seed": 233297,
+      "window": 3,
+      "tick": 51,
+      "position": 46,
+      "n_prior": 45
+    },
+    "epr_llm_judge|lot1|233297|w3|48": {
+      "mode": "epr_llm_judge",
+      "seed": 233297,
+      "window": 3,
+      "tick": 54,
+      "position": 49,
+      "n_prior": 48
+    },
+    "epr_llm_judge|lot1|233297|w4|65": {
+      "mode": "epr_llm_judge",
+      "seed": 233297,
+      "window": 4,
+      "tick": 77,
+      "position": 66,
+      "n_prior": 65
+    },
+    "epr_llm_judge|lot1|233297|w4|58": {
+      "mode": "epr_llm_judge",
+      "seed": 233297,
+      "window": 4,
+      "tick": 70,
+      "position": 59,
+      "n_prior": 58
+    },
+    "epr_llm_judge|lot1|305999|w0|6": {
+      "mode": "epr_llm_judge",
+      "seed": 305999,
+      "window": 0,
+      "tick": 8,
+      "position": 7,
+      "n_prior": 6
+    },
+    "epr_llm_judge|lot1|305999|w0|4": {
+      "mode": "epr_llm_judge",
+      "seed": 305999,
+      "window": 0,
+      "tick": 6,
+      "position": 5,
+      "n_prior": 4
+    },
+    "epr_llm_judge|lot1|305999|w1|24": {
+      "mode": "epr_llm_judge",
+      "seed": 305999,
+      "window": 1,
+      "tick": 30,
+      "position": 25,
+      "n_prior": 24
+    },
+    "epr_llm_judge|lot1|305999|w1|14": {
+      "mode": "epr_llm_judge",
+      "seed": 305999,
+      "window": 1,
+      "tick": 17,
+      "position": 15,
+      "n_prior": 14
+    },
+    "epr_llm_judge|lot1|305999|w2|33": {
+      "mode": "epr_llm_judge",
+      "seed": 305999,
+      "window": 2,
+      "tick": 40,
+      "position": 34,
+      "n_prior": 33
+    },
+    "epr_llm_judge|lot1|305999|w2|32": {
+      "mode": "epr_llm_judge",
+      "seed": 305999,
+      "window": 2,
+      "tick": 39,
+      "position": 33,
+      "n_prior": 32
+    },
+    "epr_llm_judge|lot1|305999|w3|47": {
+      "mode": "epr_llm_judge",
+      "seed": 305999,
+      "window": 3,
+      "tick": 56,
+      "position": 48,
+      "n_prior": 47
+    },
+    "epr_llm_judge|lot1|305999|w3|44": {
+      "mode": "epr_llm_judge",
+      "seed": 305999,
+      "window": 3,
+      "tick": 53,
+      "position": 45,
+      "n_prior": 44
+    },
+    "epr_llm_judge|lot1|305999|w4|67": {
+      "mode": "epr_llm_judge",
+      "seed": 305999,
+      "window": 4,
+      "tick": 78,
+      "position": 68,
+      "n_prior": 67
+    },
+    "epr_llm_judge|lot1|305999|w4|69": {
+      "mode": "epr_llm_judge",
+      "seed": 305999,
+      "window": 4,
+      "tick": 80,
+      "position": 70,
+      "n_prior": 69
+    },
+    "epr_llm_judge|lot1|394699|w0|9": {
+      "mode": "epr_llm_judge",
+      "seed": 394699,
+      "window": 0,
+      "tick": 10,
+      "position": 10,
+      "n_prior": 9
+    },
+    "epr_llm_judge|lot1|394699|w0|10": {
+      "mode": "epr_llm_judge",
+      "seed": 394699,
+      "window": 0,
+      "tick": 11,
+      "position": 11,
+      "n_prior": 10
+    },
+    "epr_llm_judge|lot1|394699|w1|20": {
+      "mode": "epr_llm_judge",
+      "seed": 394699,
+      "window": 1,
+      "tick": 31,
+      "position": 21,
+      "n_prior": 20
+    },
+    "epr_llm_judge|lot1|394699|w1|13": {
+      "mode": "epr_llm_judge",
+      "seed": 394699,
+      "window": 1,
+      "tick": 17,
+      "position": 14,
+      "n_prior": 13
+    },
+    "epr_llm_judge|lot1|394699|w2|26": {
+      "mode": "epr_llm_judge",
+      "seed": 394699,
+      "window": 2,
+      "tick": 37,
+      "position": 27,
+      "n_prior": 26
+    },
+    "epr_llm_judge|lot1|394699|w2|22": {
+      "mode": "epr_llm_judge",
+      "seed": 394699,
+      "window": 2,
+      "tick": 33,
+      "position": 23,
+      "n_prior": 22
+    },
+    "epr_llm_judge|lot1|394699|w3|34": {
+      "mode": "epr_llm_judge",
+      "seed": 394699,
+      "window": 3,
+      "tick": 49,
+      "position": 35,
+      "n_prior": 34
+    },
+    "epr_llm_judge|lot1|394699|w3|35": {
+      "mode": "epr_llm_judge",
+      "seed": 394699,
+      "window": 3,
+      "tick": 50,
+      "position": 36,
+      "n_prior": 35
+    },
+    "epr_llm_judge|lot2|139987|w0|7": {
+      "mode": "epr_llm_judge",
+      "seed": 139987,
+      "window": 0,
+      "tick": 8,
+      "position": 8,
+      "n_prior": 7
+    },
+    "epr_llm_judge|lot2|139987|w0|6": {
+      "mode": "epr_llm_judge",
+      "seed": 139987,
+      "window": 0,
+      "tick": 7,
+      "position": 7,
+      "n_prior": 6
+    },
+    "epr_llm_judge|lot2|139987|w1|17": {
+      "mode": "epr_llm_judge",
+      "seed": 139987,
+      "window": 1,
+      "tick": 22,
+      "position": 18,
+      "n_prior": 17
+    },
+    "epr_llm_judge|lot2|139987|w1|18": {
+      "mode": "epr_llm_judge",
+      "seed": 139987,
+      "window": 1,
+      "tick": 23,
+      "position": 19,
+      "n_prior": 18
+    },
+    "epr_llm_judge|lot2|139987|w2|34": {
+      "mode": "epr_llm_judge",
+      "seed": 139987,
+      "window": 2,
+      "tick": 46,
+      "position": 35,
+      "n_prior": 34
+    },
+    "epr_llm_judge|lot2|139987|w2|32": {
+      "mode": "epr_llm_judge",
+      "seed": 139987,
+      "window": 2,
+      "tick": 39,
+      "position": 33,
+      "n_prior": 32
+    },
+    "epr_llm_judge|lot2|139987|w3|37": {
+      "mode": "epr_llm_judge",
+      "seed": 139987,
+      "window": 3,
+      "tick": 50,
+      "position": 38,
+      "n_prior": 37
+    },
+    "epr_llm_judge|lot2|139987|w3|38": {
+      "mode": "epr_llm_judge",
+      "seed": 139987,
+      "window": 3,
+      "tick": 51,
+      "position": 39,
+      "n_prior": 38
+    },
+    "epr_llm_judge|lot2|139987|w4|51": {
+      "mode": "epr_llm_judge",
+      "seed": 139987,
+      "window": 4,
+      "tick": 68,
+      "position": 52,
+      "n_prior": 51
+    },
+    "epr_llm_judge|lot2|139987|w4|47": {
+      "mode": "epr_llm_judge",
+      "seed": 139987,
+      "window": 4,
+      "tick": 64,
+      "position": 48,
+      "n_prior": 47
+    },
+    "epr_llm_judge|lot2|252079|w0|5": {
+      "mode": "epr_llm_judge",
+      "seed": 252079,
+      "window": 0,
+      "tick": 7,
+      "position": 6,
+      "n_prior": 5
+    },
+    "epr_llm_judge|lot2|252079|w0|7": {
+      "mode": "epr_llm_judge",
+      "seed": 252079,
+      "window": 0,
+      "tick": 9,
+      "position": 8,
+      "n_prior": 7
+    },
+    "epr_llm_judge|lot2|252079|w1|11": {
+      "mode": "epr_llm_judge",
+      "seed": 252079,
+      "window": 1,
+      "tick": 18,
+      "position": 12,
+      "n_prior": 11
+    },
+    "epr_llm_judge|lot2|252079|w1|16": {
+      "mode": "epr_llm_judge",
+      "seed": 252079,
+      "window": 1,
+      "tick": 23,
+      "position": 17,
+      "n_prior": 16
+    },
+    "epr_llm_judge|lot2|252079|w2|30": {
+      "mode": "epr_llm_judge",
+      "seed": 252079,
+      "window": 2,
+      "tick": 39,
+      "position": 31,
+      "n_prior": 30
+    },
+    "epr_llm_judge|lot2|252079|w2|37": {
+      "mode": "epr_llm_judge",
+      "seed": 252079,
+      "window": 2,
+      "tick": 46,
+      "position": 38,
+      "n_prior": 37
+    },
+    "epr_llm_judge|lot2|252079|w3|52": {
+      "mode": "epr_llm_judge",
+      "seed": 252079,
+      "window": 3,
+      "tick": 62,
+      "position": 53,
+      "n_prior": 52
+    },
+    "epr_llm_judge|lot2|252079|w3|49": {
+      "mode": "epr_llm_judge",
+      "seed": 252079,
+      "window": 3,
+      "tick": 59,
+      "position": 50,
+      "n_prior": 49
+    },
+    "epr_llm_judge|lot2|252079|w4|65": {
+      "mode": "epr_llm_judge",
+      "seed": 252079,
+      "window": 4,
+      "tick": 77,
+      "position": 66,
+      "n_prior": 65
+    },
+    "epr_llm_judge|lot2|252079|w4|60": {
+      "mode": "epr_llm_judge",
+      "seed": 252079,
+      "window": 4,
+      "tick": 71,
+      "position": 61,
+      "n_prior": 60
+    },
+    "epr_llm_judge|lot2|291077|w0|4": {
+      "mode": "epr_llm_judge",
+      "seed": 291077,
+      "window": 0,
+      "tick": 6,
+      "position": 5,
+      "n_prior": 4
+    },
+    "epr_llm_judge|lot2|291077|w0|8": {
+      "mode": "epr_llm_judge",
+      "seed": 291077,
+      "window": 0,
+      "tick": 10,
+      "position": 9,
+      "n_prior": 8
+    },
+    "epr_llm_judge|lot2|291077|w1|18": {
+      "mode": "epr_llm_judge",
+      "seed": 291077,
+      "window": 1,
+      "tick": 24,
+      "position": 19,
+      "n_prior": 18
+    },
+    "epr_llm_judge|lot2|291077|w1|24": {
+      "mode": "epr_llm_judge",
+      "seed": 291077,
+      "window": 1,
+      "tick": 30,
+      "position": 25,
+      "n_prior": 24
+    },
+    "epr_llm_judge|lot2|291077|w2|33": {
+      "mode": "epr_llm_judge",
+      "seed": 291077,
+      "window": 2,
+      "tick": 44,
+      "position": 34,
+      "n_prior": 33
+    },
+    "epr_llm_judge|lot2|291077|w2|32": {
+      "mode": "epr_llm_judge",
+      "seed": 291077,
+      "window": 2,
+      "tick": 43,
+      "position": 33,
+      "n_prior": 32
+    },
+    "epr_llm_judge|lot2|291077|w3|50": {
+      "mode": "epr_llm_judge",
+      "seed": 291077,
+      "window": 3,
+      "tick": 62,
+      "position": 51,
+      "n_prior": 50
+    },
+    "epr_llm_judge|lot2|291077|w3|42": {
+      "mode": "epr_llm_judge",
+      "seed": 291077,
+      "window": 3,
+      "tick": 54,
+      "position": 43,
+      "n_prior": 42
+    },
+    "epr_llm_judge|lot2|291077|w4|55": {
+      "mode": "epr_llm_judge",
+      "seed": 291077,
+      "window": 4,
+      "tick": 67,
+      "position": 56,
+      "n_prior": 55
+    },
+    "epr_llm_judge|lot2|291077|w4|61": {
+      "mode": "epr_llm_judge",
+      "seed": 291077,
+      "window": 4,
+      "tick": 76,
+      "position": 62,
+      "n_prior": 61
+    },
+    "epr_llm_judge|lot2|759223|w0|12": {
+      "mode": "epr_llm_judge",
+      "seed": 759223,
+      "window": 0,
+      "tick": 15,
+      "position": 13,
+      "n_prior": 12
+    },
+    "epr_llm_judge|lot2|759223|w0|11": {
+      "mode": "epr_llm_judge",
+      "seed": 759223,
+      "window": 0,
+      "tick": 14,
+      "position": 12,
+      "n_prior": 11
+    },
+    "epr_llm_judge|lot2|759223|w1|16": {
+      "mode": "epr_llm_judge",
+      "seed": 759223,
+      "window": 1,
+      "tick": 24,
+      "position": 17,
+      "n_prior": 16
+    },
+    "epr_llm_judge|lot2|759223|w1|13": {
+      "mode": "epr_llm_judge",
+      "seed": 759223,
+      "window": 1,
+      "tick": 16,
+      "position": 14,
+      "n_prior": 13
+    },
+    "epr_llm_judge|lot2|869321|w0|7": {
+      "mode": "epr_llm_judge",
+      "seed": 869321,
+      "window": 0,
+      "tick": 8,
+      "position": 8,
+      "n_prior": 7
+    },
+    "epr_llm_judge|lot2|869321|w0|11": {
+      "mode": "epr_llm_judge",
+      "seed": 869321,
+      "window": 0,
+      "tick": 13,
+      "position": 12,
+      "n_prior": 11
+    },
+    "epr_llm_judge|lot2|869321|w1|18": {
+      "mode": "epr_llm_judge",
+      "seed": 869321,
+      "window": 1,
+      "tick": 25,
+      "position": 19,
+      "n_prior": 18
+    },
+    "epr_llm_judge|lot2|869321|w1|15": {
+      "mode": "epr_llm_judge",
+      "seed": 869321,
+      "window": 1,
+      "tick": 21,
+      "position": 16,
+      "n_prior": 15
+    },
+    "epr_llm_judge|lot2|869321|w2|37": {
+      "mode": "epr_llm_judge",
+      "seed": 869321,
+      "window": 2,
+      "tick": 44,
+      "position": 38,
+      "n_prior": 37
+    },
+    "epr_llm_judge|lot2|869321|w2|33": {
+      "mode": "epr_llm_judge",
+      "seed": 869321,
+      "window": 2,
+      "tick": 40,
+      "position": 34,
+      "n_prior": 33
+    },
+    "epr_llm_judge|lot2|869321|w3|47": {
+      "mode": "epr_llm_judge",
+      "seed": 869321,
+      "window": 3,
+      "tick": 56,
+      "position": 48,
+      "n_prior": 47
+    },
+    "epr_llm_judge|lot2|869321|w3|44": {
+      "mode": "epr_llm_judge",
+      "seed": 869321,
+      "window": 3,
+      "tick": 53,
+      "position": 45,
+      "n_prior": 44
+    },
+    "epr_llm_judge|lot2|869321|w4|64": {
+      "mode": "epr_llm_judge",
+      "seed": 869321,
+      "window": 4,
+      "tick": 73,
+      "position": 65,
+      "n_prior": 64
+    },
+    "epr_llm_judge|lot2|869321|w4|68": {
+      "mode": "epr_llm_judge",
+      "seed": 869321,
+      "window": 4,
+      "tick": 77,
+      "position": 69,
+      "n_prior": 68
+    },
+    "epr_llm_judge|lot3|504521|w0|7": {
+      "mode": "epr_llm_judge",
+      "seed": 504521,
+      "window": 0,
+      "tick": 9,
+      "position": 8,
+      "n_prior": 7
+    },
+    "epr_llm_judge|lot3|504521|w0|6": {
+      "mode": "epr_llm_judge",
+      "seed": 504521,
+      "window": 0,
+      "tick": 8,
+      "position": 7,
+      "n_prior": 6
+    },
+    "epr_llm_judge|lot3|504521|w1|11": {
+      "mode": "epr_llm_judge",
+      "seed": 504521,
+      "window": 1,
+      "tick": 31,
+      "position": 12,
+      "n_prior": 11
+    },
+    "epr_llm_judge|lot3|504521|w2|23": {
+      "mode": "epr_llm_judge",
+      "seed": 504521,
+      "window": 2,
+      "tick": 45,
+      "position": 24,
+      "n_prior": 23
+    },
+    "epr_llm_judge|lot3|504521|w2|14": {
+      "mode": "epr_llm_judge",
+      "seed": 504521,
+      "window": 2,
+      "tick": 34,
+      "position": 15,
+      "n_prior": 14
+    },
+    "epr_llm_judge|lot3|504521|w3|26": {
+      "mode": "epr_llm_judge",
+      "seed": 504521,
+      "window": 3,
+      "tick": 48,
+      "position": 27,
+      "n_prior": 26
+    },
+    "epr_llm_judge|lot3|504521|w3|33": {
+      "mode": "epr_llm_judge",
+      "seed": 504521,
+      "window": 3,
+      "tick": 55,
+      "position": 34,
+      "n_prior": 33
+    },
+    "epr_llm_judge|lot3|504521|w4|48": {
+      "mode": "epr_llm_judge",
+      "seed": 504521,
+      "window": 4,
+      "tick": 75,
+      "position": 49,
+      "n_prior": 48
+    },
+    "epr_llm_judge|lot3|504521|w4|39": {
+      "mode": "epr_llm_judge",
+      "seed": 504521,
+      "window": 4,
+      "tick": 65,
+      "position": 40,
+      "n_prior": 39
+    },
+    "epr_llm_judge|lot3|507919|w0|6": {
+      "mode": "epr_llm_judge",
+      "seed": 507919,
+      "window": 0,
+      "tick": 9,
+      "position": 7,
+      "n_prior": 6
+    },
+    "epr_llm_judge|lot3|507919|w0|9": {
+      "mode": "epr_llm_judge",
+      "seed": 507919,
+      "window": 0,
+      "tick": 12,
+      "position": 10,
+      "n_prior": 9
+    },
+    "epr_llm_judge|lot3|507919|w1|25": {
+      "mode": "epr_llm_judge",
+      "seed": 507919,
+      "window": 1,
+      "tick": 31,
+      "position": 26,
+      "n_prior": 25
+    },
+    "epr_llm_judge|lot3|507919|w1|20": {
+      "mode": "epr_llm_judge",
+      "seed": 507919,
+      "window": 1,
+      "tick": 26,
+      "position": 21,
+      "n_prior": 20
+    },
+    "epr_llm_judge|lot3|507919|w2|29": {
+      "mode": "epr_llm_judge",
+      "seed": 507919,
+      "window": 2,
+      "tick": 35,
+      "position": 30,
+      "n_prior": 29
+    },
+    "epr_llm_judge|lot3|507919|w2|38": {
+      "mode": "epr_llm_judge",
+      "seed": 507919,
+      "window": 2,
+      "tick": 44,
+      "position": 39,
+      "n_prior": 38
+    },
+    "epr_llm_judge|lot3|507919|w3|43": {
+      "mode": "epr_llm_judge",
+      "seed": 507919,
+      "window": 3,
+      "tick": 50,
+      "position": 44,
+      "n_prior": 43
+    },
+    "epr_llm_judge|lot3|507919|w3|49": {
+      "mode": "epr_llm_judge",
+      "seed": 507919,
+      "window": 3,
+      "tick": 56,
+      "position": 50,
+      "n_prior": 49
+    },
+    "epr_llm_judge|lot3|507919|w4|61": {
+      "mode": "epr_llm_judge",
+      "seed": 507919,
+      "window": 4,
+      "tick": 68,
+      "position": 62,
+      "n_prior": 61
+    },
+    "epr_llm_judge|lot3|507919|w4|66": {
+      "mode": "epr_llm_judge",
+      "seed": 507919,
+      "window": 4,
+      "tick": 73,
+      "position": 67,
+      "n_prior": 66
+    },
+    "epr_llm_judge|lot3|555743|w0|12": {
+      "mode": "epr_llm_judge",
+      "seed": 555743,
+      "window": 0,
+      "tick": 14,
+      "position": 13,
+      "n_prior": 12
+    },
+    "epr_llm_judge|lot3|555743|w0|10": {
+      "mode": "epr_llm_judge",
+      "seed": 555743,
+      "window": 0,
+      "tick": 12,
+      "position": 11,
+      "n_prior": 10
+    },
+    "epr_llm_judge|lot3|555743|w1|25": {
+      "mode": "epr_llm_judge",
+      "seed": 555743,
+      "window": 1,
+      "tick": 30,
+      "position": 26,
+      "n_prior": 25
+    },
+    "epr_llm_judge|lot3|555743|w1|14": {
+      "mode": "epr_llm_judge",
+      "seed": 555743,
+      "window": 1,
+      "tick": 16,
+      "position": 15,
+      "n_prior": 14
+    },
+    "epr_llm_judge|lot3|555743|w2|31": {
+      "mode": "epr_llm_judge",
+      "seed": 555743,
+      "window": 2,
+      "tick": 37,
+      "position": 32,
+      "n_prior": 31
+    },
+    "epr_llm_judge|lot3|555743|w2|34": {
+      "mode": "epr_llm_judge",
+      "seed": 555743,
+      "window": 2,
+      "tick": 40,
+      "position": 35,
+      "n_prior": 34
+    },
+    "epr_llm_judge|lot3|555743|w3|51": {
+      "mode": "epr_llm_judge",
+      "seed": 555743,
+      "window": 3,
+      "tick": 57,
+      "position": 52,
+      "n_prior": 51
+    },
+    "epr_llm_judge|lot3|555743|w3|46": {
+      "mode": "epr_llm_judge",
+      "seed": 555743,
+      "window": 3,
+      "tick": 52,
+      "position": 47,
+      "n_prior": 46
+    },
+    "epr_llm_judge|lot3|555743|w4|67": {
+      "mode": "epr_llm_judge",
+      "seed": 555743,
+      "window": 4,
+      "tick": 74,
+      "position": 68,
+      "n_prior": 67
+    },
+    "epr_llm_judge|lot3|555743|w4|58": {
+      "mode": "epr_llm_judge",
+      "seed": 555743,
+      "window": 4,
+      "tick": 65,
+      "position": 59,
+      "n_prior": 58
+    },
+    "epr_llm_judge|lot3|597307|w0|6": {
+      "mode": "epr_llm_judge",
+      "seed": 597307,
+      "window": 0,
+      "tick": 10,
+      "position": 7,
+      "n_prior": 6
+    },
+    "epr_llm_judge|lot3|597307|w0|9": {
+      "mode": "epr_llm_judge",
+      "seed": 597307,
+      "window": 0,
+      "tick": 15,
+      "position": 10,
+      "n_prior": 9
+    },
+    "epr_llm_judge|lot3|597307|w1|17": {
+      "mode": "epr_llm_judge",
+      "seed": 597307,
+      "window": 1,
+      "tick": 30,
+      "position": 18,
+      "n_prior": 17
+    },
+    "epr_llm_judge|lot3|597307|w1|15": {
+      "mode": "epr_llm_judge",
+      "seed": 597307,
+      "window": 1,
+      "tick": 25,
+      "position": 16,
+      "n_prior": 15
+    },
+    "epr_llm_judge|lot3|597307|w2|19": {
+      "mode": "epr_llm_judge",
+      "seed": 597307,
+      "window": 2,
+      "tick": 36,
+      "position": 20,
+      "n_prior": 19
+    },
+    "epr_llm_judge|lot3|597307|w2|20": {
+      "mode": "epr_llm_judge",
+      "seed": 597307,
+      "window": 2,
+      "tick": 37,
+      "position": 21,
+      "n_prior": 20
+    },
+    "epr_llm_judge|lot3|597307|w3|25": {
+      "mode": "epr_llm_judge",
+      "seed": 597307,
+      "window": 3,
+      "tick": 57,
+      "position": 26,
+      "n_prior": 25
+    },
+    "epr_llm_judge|lot3|597307|w3|27": {
+      "mode": "epr_llm_judge",
+      "seed": 597307,
+      "window": 3,
+      "tick": 59,
+      "position": 28,
+      "n_prior": 27
+    },
+    "epr_llm_judge|lot3|597307|w4|33": {
+      "mode": "epr_llm_judge",
+      "seed": 597307,
+      "window": 4,
+      "tick": 65,
+      "position": 34,
+      "n_prior": 33
+    },
+    "epr_llm_judge|lot3|597307|w4|35": {
+      "mode": "epr_llm_judge",
+      "seed": 597307,
+      "window": 4,
+      "tick": 67,
+      "position": 36,
+      "n_prior": 35
+    },
+    "epr_llm_judge|lot3|632813|w0|9": {
+      "mode": "epr_llm_judge",
+      "seed": 632813,
+      "window": 0,
+      "tick": 10,
+      "position": 10,
+      "n_prior": 9
+    },
+    "epr_llm_judge|lot3|632813|w0|7": {
+      "mode": "epr_llm_judge",
+      "seed": 632813,
+      "window": 0,
+      "tick": 8,
+      "position": 8,
+      "n_prior": 7
+    },
+    "epr_llm_judge|lot3|632813|w1|24": {
+      "mode": "epr_llm_judge",
+      "seed": 632813,
+      "window": 1,
+      "tick": 29,
+      "position": 25,
+      "n_prior": 24
+    },
+    "epr_llm_judge|lot3|632813|w1|14": {
+      "mode": "epr_llm_judge",
+      "seed": 632813,
+      "window": 1,
+      "tick": 19,
+      "position": 15,
+      "n_prior": 14
+    },
+    "epr_llm_judge|lot3|632813|w2|37": {
+      "mode": "epr_llm_judge",
+      "seed": 632813,
+      "window": 2,
+      "tick": 42,
+      "position": 38,
+      "n_prior": 37
+    },
+    "epr_llm_judge|lot3|632813|w2|28": {
+      "mode": "epr_llm_judge",
+      "seed": 632813,
+      "window": 2,
+      "tick": 33,
+      "position": 29,
+      "n_prior": 28
+    },
+    "epr_llm_judge|lot3|632813|w3|56": {
+      "mode": "epr_llm_judge",
+      "seed": 632813,
+      "window": 3,
+      "tick": 63,
+      "position": 57,
+      "n_prior": 56
+    },
+    "epr_llm_judge|lot3|632813|w3|44": {
+      "mode": "epr_llm_judge",
+      "seed": 632813,
+      "window": 3,
+      "tick": 49,
+      "position": 45,
+      "n_prior": 44
+    },
+    "epr_llm_judge|lot3|632813|w4|57": {
+      "mode": "epr_llm_judge",
+      "seed": 632813,
+      "window": 4,
+      "tick": 64,
+      "position": 58,
+      "n_prior": 57
+    },
+    "epr_llm_judge|lot3|632813|w4|58": {
+      "mode": "epr_llm_judge",
+      "seed": 632813,
+      "window": 4,
+      "tick": 65,
+      "position": 59,
+      "n_prior": 58
+    },
+    "epr_llm_judge|lot4|113497|w0|10": {
+      "mode": "epr_llm_judge",
+      "seed": 113497,
+      "window": 0,
+      "tick": 14,
+      "position": 11,
+      "n_prior": 10
+    },
+    "epr_llm_judge|lot4|113497|w0|8": {
+      "mode": "epr_llm_judge",
+      "seed": 113497,
+      "window": 0,
+      "tick": 10,
+      "position": 9,
+      "n_prior": 8
+    },
+    "epr_llm_judge|lot4|113497|w1|16": {
+      "mode": "epr_llm_judge",
+      "seed": 113497,
+      "window": 1,
+      "tick": 21,
+      "position": 17,
+      "n_prior": 16
+    },
+    "epr_llm_judge|lot4|113497|w1|17": {
+      "mode": "epr_llm_judge",
+      "seed": 113497,
+      "window": 1,
+      "tick": 22,
+      "position": 18,
+      "n_prior": 17
+    },
+    "epr_llm_judge|lot4|113497|w2|28": {
+      "mode": "epr_llm_judge",
+      "seed": 113497,
+      "window": 2,
+      "tick": 33,
+      "position": 29,
+      "n_prior": 28
+    },
+    "epr_llm_judge|lot4|113497|w2|34": {
+      "mode": "epr_llm_judge",
+      "seed": 113497,
+      "window": 2,
+      "tick": 47,
+      "position": 35,
+      "n_prior": 34
+    },
+    "epr_llm_judge|lot4|113497|w3|35": {
+      "mode": "epr_llm_judge",
+      "seed": 113497,
+      "window": 3,
+      "tick": 48,
+      "position": 36,
+      "n_prior": 35
+    },
+    "epr_llm_judge|lot4|113497|w3|36": {
+      "mode": "epr_llm_judge",
+      "seed": 113497,
+      "window": 3,
+      "tick": 62,
+      "position": 37,
+      "n_prior": 36
+    },
+    "epr_llm_judge|lot4|113497|w4|50": {
+      "mode": "epr_llm_judge",
+      "seed": 113497,
+      "window": 4,
+      "tick": 76,
+      "position": 51,
+      "n_prior": 50
+    },
+    "epr_llm_judge|lot4|113497|w4|48": {
+      "mode": "epr_llm_judge",
+      "seed": 113497,
+      "window": 4,
+      "tick": 74,
+      "position": 49,
+      "n_prior": 48
+    },
+    "epr_llm_judge|lot4|114967|w0|5": {
+      "mode": "epr_llm_judge",
+      "seed": 114967,
+      "window": 0,
+      "tick": 6,
+      "position": 6,
+      "n_prior": 5
+    },
+    "epr_llm_judge|lot4|114967|w0|3": {
+      "mode": "epr_llm_judge",
+      "seed": 114967,
+      "window": 0,
+      "tick": 4,
+      "position": 4,
+      "n_prior": 3
+    },
+    "epr_llm_judge|lot4|114967|w1|19": {
+      "mode": "epr_llm_judge",
+      "seed": 114967,
+      "window": 1,
+      "tick": 26,
+      "position": 20,
+      "n_prior": 19
+    },
+    "epr_llm_judge|lot4|114967|w1|10": {
+      "mode": "epr_llm_judge",
+      "seed": 114967,
+      "window": 1,
+      "tick": 17,
+      "position": 11,
+      "n_prior": 10
+    },
+    "epr_llm_judge|lot4|114967|w2|36": {
+      "mode": "epr_llm_judge",
+      "seed": 114967,
+      "window": 2,
+      "tick": 46,
+      "position": 37,
+      "n_prior": 36
+    },
+    "epr_llm_judge|lot4|114967|w2|37": {
+      "mode": "epr_llm_judge",
+      "seed": 114967,
+      "window": 2,
+      "tick": 47,
+      "position": 38,
+      "n_prior": 37
+    },
+    "epr_llm_judge|lot4|114967|w3|40": {
+      "mode": "epr_llm_judge",
+      "seed": 114967,
+      "window": 3,
+      "tick": 51,
+      "position": 41,
+      "n_prior": 40
+    },
+    "epr_llm_judge|lot4|114967|w3|48": {
+      "mode": "epr_llm_judge",
+      "seed": 114967,
+      "window": 3,
+      "tick": 59,
+      "position": 49,
+      "n_prior": 48
+    },
+    "epr_llm_judge|lot4|114967|w4|64": {
+      "mode": "epr_llm_judge",
+      "seed": 114967,
+      "window": 4,
+      "tick": 78,
+      "position": 65,
+      "n_prior": 64
+    },
+    "epr_llm_judge|lot4|114967|w4|62": {
+      "mode": "epr_llm_judge",
+      "seed": 114967,
+      "window": 4,
+      "tick": 76,
+      "position": 63,
+      "n_prior": 62
+    },
+    "epr_llm_judge|lot4|160579|w0|3": {
+      "mode": "epr_llm_judge",
+      "seed": 160579,
+      "window": 0,
+      "tick": 4,
+      "position": 4,
+      "n_prior": 3
+    },
+    "epr_llm_judge|lot4|160579|w0|8": {
+      "mode": "epr_llm_judge",
+      "seed": 160579,
+      "window": 0,
+      "tick": 13,
+      "position": 9,
+      "n_prior": 8
+    },
+    "epr_llm_judge|lot4|160579|w1|11": {
+      "mode": "epr_llm_judge",
+      "seed": 160579,
+      "window": 1,
+      "tick": 23,
+      "position": 12,
+      "n_prior": 11
+    },
+    "epr_llm_judge|lot4|160579|w1|15": {
+      "mode": "epr_llm_judge",
+      "seed": 160579,
+      "window": 1,
+      "tick": 28,
+      "position": 16,
+      "n_prior": 15
+    },
+    "epr_llm_judge|lot4|160579|w2|17": {
+      "mode": "epr_llm_judge",
+      "seed": 160579,
+      "window": 2,
+      "tick": 33,
+      "position": 18,
+      "n_prior": 17
+    },
+    "epr_llm_judge|lot4|160579|w2|28": {
+      "mode": "epr_llm_judge",
+      "seed": 160579,
+      "window": 2,
+      "tick": 44,
+      "position": 29,
+      "n_prior": 28
+    },
+    "epr_llm_judge|lot4|160579|w3|40": {
+      "mode": "epr_llm_judge",
+      "seed": 160579,
+      "window": 3,
+      "tick": 60,
+      "position": 41,
+      "n_prior": 40
+    },
+    "epr_llm_judge|lot4|160579|w3|37": {
+      "mode": "epr_llm_judge",
+      "seed": 160579,
+      "window": 3,
+      "tick": 55,
+      "position": 38,
+      "n_prior": 37
+    },
+    "epr_llm_judge|lot4|160579|w4|52": {
+      "mode": "epr_llm_judge",
+      "seed": 160579,
+      "window": 4,
+      "tick": 72,
+      "position": 53,
+      "n_prior": 52
+    },
+    "epr_llm_judge|lot4|160579|w4|54": {
+      "mode": "epr_llm_judge",
+      "seed": 160579,
+      "window": 4,
+      "tick": 75,
+      "position": 55,
+      "n_prior": 54
+    },
+    "epr_llm_judge|lot4|656939|w0|12": {
+      "mode": "epr_llm_judge",
+      "seed": 656939,
+      "window": 0,
+      "tick": 14,
+      "position": 13,
+      "n_prior": 12
+    },
+    "epr_llm_judge|lot4|656939|w0|4": {
+      "mode": "epr_llm_judge",
+      "seed": 656939,
+      "window": 0,
+      "tick": 5,
+      "position": 5,
+      "n_prior": 4
+    },
+    "epr_llm_judge|lot4|656939|w1|21": {
+      "mode": "epr_llm_judge",
+      "seed": 656939,
+      "window": 1,
+      "tick": 25,
+      "position": 22,
+      "n_prior": 21
+    },
+    "epr_llm_judge|lot4|656939|w1|16": {
+      "mode": "epr_llm_judge",
+      "seed": 656939,
+      "window": 1,
+      "tick": 18,
+      "position": 17,
+      "n_prior": 16
+    },
+    "epr_llm_judge|lot4|656939|w2|27": {
+      "mode": "epr_llm_judge",
+      "seed": 656939,
+      "window": 2,
+      "tick": 47,
+      "position": 28,
+      "n_prior": 27
+    },
+    "epr_llm_judge|lot4|656939|w2|26": {
+      "mode": "epr_llm_judge",
+      "seed": 656939,
+      "window": 2,
+      "tick": 37,
+      "position": 27,
+      "n_prior": 26
+    },
+    "epr_llm_judge|lot4|656939|w3|34": {
+      "mode": "epr_llm_judge",
+      "seed": 656939,
+      "window": 3,
+      "tick": 54,
+      "position": 35,
+      "n_prior": 34
+    },
+    "epr_llm_judge|lot4|656939|w3|32": {
+      "mode": "epr_llm_judge",
+      "seed": 656939,
+      "window": 3,
+      "tick": 52,
+      "position": 33,
+      "n_prior": 32
+    },
+    "epr_llm_judge|lot4|656939|w4|42": {
+      "mode": "epr_llm_judge",
+      "seed": 656939,
+      "window": 4,
+      "tick": 70,
+      "position": 43,
+      "n_prior": 42
+    },
+    "epr_llm_judge|lot4|656939|w4|40": {
+      "mode": "epr_llm_judge",
+      "seed": 656939,
+      "window": 4,
+      "tick": 68,
+      "position": 41,
+      "n_prior": 40
+    },
+    "epr_llm_judge|lot4|719821|w0|5": {
+      "mode": "epr_llm_judge",
+      "seed": 719821,
+      "window": 0,
+      "tick": 7,
+      "position": 6,
+      "n_prior": 5
+    },
+    "epr_llm_judge|lot4|719821|w0|10": {
+      "mode": "epr_llm_judge",
+      "seed": 719821,
+      "window": 0,
+      "tick": 12,
+      "position": 11,
+      "n_prior": 10
+    },
+    "epr_llm_judge|lot4|719821|w1|22": {
+      "mode": "epr_llm_judge",
+      "seed": 719821,
+      "window": 1,
+      "tick": 31,
+      "position": 23,
+      "n_prior": 22
+    },
+    "epr_llm_judge|lot4|719821|w1|17": {
+      "mode": "epr_llm_judge",
+      "seed": 719821,
+      "window": 1,
+      "tick": 24,
+      "position": 18,
+      "n_prior": 17
+    },
+    "epr_llm_judge|lot4|719821|w2|26": {
+      "mode": "epr_llm_judge",
+      "seed": 719821,
+      "window": 2,
+      "tick": 35,
+      "position": 27,
+      "n_prior": 26
+    },
+    "epr_llm_judge|lot4|719821|w2|38": {
+      "mode": "epr_llm_judge",
+      "seed": 719821,
+      "window": 2,
+      "tick": 47,
+      "position": 39,
+      "n_prior": 38
+    },
+    "epr_llm_judge|lot4|719821|w3|40": {
+      "mode": "epr_llm_judge",
+      "seed": 719821,
+      "window": 3,
+      "tick": 49,
+      "position": 41,
+      "n_prior": 40
+    },
+    "epr_llm_judge|lot4|719821|w3|48": {
+      "mode": "epr_llm_judge",
+      "seed": 719821,
+      "window": 3,
+      "tick": 58,
+      "position": 49,
+      "n_prior": 48
+    },
+    "epr_llm_judge|lot4|719821|w4|64": {
+      "mode": "epr_llm_judge",
+      "seed": 719821,
+      "window": 4,
+      "tick": 74,
+      "position": 65,
+      "n_prior": 64
+    },
+    "epr_llm_judge|lot4|719821|w4|67": {
+      "mode": "epr_llm_judge",
+      "seed": 719821,
+      "window": 4,
+      "tick": 78,
+      "position": 68,
+      "n_prior": 67
+    }
+  },
+  "judges": {
+    "deepseek-v4-pro": {
+      "epr_llm_judge|lot1|12097|w2|33": {
+        "unit_id": "epr_llm_judge|lot1|12097|w2|33",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|12097|w0|5": {
+        "unit_id": "epr_llm_judge|lot1|12097|w0|5",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|12097|w1|18": {
+        "unit_id": "epr_llm_judge|lot1|12097|w1|18",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|12097|w2|28": {
+        "unit_id": "epr_llm_judge|lot1|12097|w2|28",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|12097|w1|22": {
+        "unit_id": "epr_llm_judge|lot1|12097|w1|22",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|12097|w0|12": {
+        "unit_id": "epr_llm_judge|lot1|12097|w0|12",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|12097|w3|55": {
+        "unit_id": "epr_llm_judge|lot1|12097|w3|55",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|12097|w4|66": {
+        "unit_id": "epr_llm_judge|lot1|12097|w4|66",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|12097|w3|53": {
+        "unit_id": "epr_llm_judge|lot1|12097|w3|53",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|12097|w4|64": {
+        "unit_id": "epr_llm_judge|lot1|12097|w4|64",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "El argumento atribuye a OPP-S3 'la presenta como 'indicio objetivo'' (fabricación, pues no consta en el registro #64) y reformula la secuencia añadiendo 'omitidos deliberadamente' (distorsión: el #64 habla de 'datos disponibles... que no se publicaron' sin calificar la omisión de deliberada).",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|194647|w0|3": {
+        "unit_id": "epr_llm_judge|lot1|194647|w0|3",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|194647|w2|35": {
+        "unit_id": "epr_llm_judge|lot1|194647|w2|35",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|194647|w1|21": {
+        "unit_id": "epr_llm_judge|lot1|194647|w1|21",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "y exige un contrafactual imposible",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|194647|w3|54": {
+        "unit_id": "epr_llm_judge|lot1|194647|w3|54",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|194647|w4|67": {
+        "unit_id": "epr_llm_judge|lot1|194647|w4|67",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "da por existentes 'series cambiadas sin actas previas'",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|194647|w2|31": {
+        "unit_id": "epr_llm_judge|lot1|194647|w2|31",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "da por supuesto que las series cambiaron de metodología 'sin actas accesibles con antelación'",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|233297|w0|6": {
+        "unit_id": "epr_llm_judge|lot1|233297|w0|6",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "La oposición plantea una falsa dicotomía entre validar protocolos y verificar datos",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|194647|w3|53": {
+        "unit_id": "epr_llm_judge|lot1|194647|w3|53",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "la 'comparación de series publicadas' que propone OPP-S5 no identifica ningún cambio de criterio sin acta previa ni ningún agregado no reconstruible",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|194647|w4|57": {
+        "unit_id": "epr_llm_judge|lot1|194647|w4|57",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|194647|w0|12": {
+        "unit_id": "epr_llm_judge|lot1|194647|w0|12",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "OPP-S2 y OPP-S4 condicionaron la verificación a 'microdatos abiertos y metodología estable'; afirmar sin evidencia que las actas no son públicas ni verificables",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|233297|w0|11": {
+        "unit_id": "epr_llm_judge|lot1|233297|w0|11",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "La exigencia de GOV-S1 de presentar 'casos confirmados no notificados' como única prueba válida",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|194647|w1|15": {
+        "unit_id": "epr_llm_judge|lot1|194647|w1|15",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "equipara 'microdatos abiertos' con 'registros individuales'",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|233297|w1|17": {
+        "unit_id": "epr_llm_judge|lot1|233297|w1|17",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|233297|w1|25": {
+        "unit_id": "epr_llm_judge|lot1|233297|w1|25",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|233297|w2|31": {
+        "unit_id": "epr_llm_judge|lot1|233297|w2|31",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|305999|w0|4": {
+        "unit_id": "epr_llm_judge|lot1|305999|w0|4",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|233297|w2|33": {
+        "unit_id": "epr_llm_judge|lot1|233297|w2|33",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "OPP-S2 confunde la carga probatoria con una exigencia inalcanzable (el argumento #33 no menciona carga probatoria ni califica el estándar de inalcanzable, sino que señala que la verificación en terreno es el punto en disputa).",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|233297|w4|65": {
+        "unit_id": "epr_llm_judge|lot1|233297|w4|65",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|233297|w3|48": {
+        "unit_id": "epr_llm_judge|lot1|233297|w3|48",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "exigir del gobierno una prueba negativa de que no hubo subregistro es un estándar imposible",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|305999|w0|6": {
+        "unit_id": "epr_llm_judge|lot1|305999|w0|6",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 1,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "La oposición comete una falacia al equiparar ajuste metodológico con ocultamiento; permitir el acceso de auditores internacionales a datos primarios es precisamente lo contrario de ocultar",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|233297|w4|58": {
+        "unit_id": "epr_llm_judge|lot1|233297|w4|58",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "OPP-S1 confunde shocks globales con fallas de gestión",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|233297|w3|45": {
+        "unit_id": "epr_llm_judge|lot1|233297|w3|45",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|305999|w3|44": {
+        "unit_id": "epr_llm_judge|lot1|305999|w3|44",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|305999|w2|33": {
+        "unit_id": "epr_llm_judge|lot1|305999|w2|33",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|305999|w1|24": {
+        "unit_id": "epr_llm_judge|lot1|305999|w1|24",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "presumir que los documentos publicados fueron completos y oportunos",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|305999|w3|47": {
+        "unit_id": "epr_llm_judge|lot1|305999|w3|47",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|305999|w2|32": {
+        "unit_id": "epr_llm_judge|lot1|305999|w2|32",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "cuando la oposición documentó que ... el acceso de los auditores fue parcial y condicionado",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|394699|w0|9": {
+        "unit_id": "epr_llm_judge|lot1|394699|w0|9",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|305999|w4|69": {
+        "unit_id": "epr_llm_judge|lot1|305999|w4|69",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|305999|w1|14": {
+        "unit_id": "epr_llm_judge|lot1|305999|w1|14",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|394699|w1|20": {
+        "unit_id": "epr_llm_judge|lot1|394699|w1|20",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|394699|w0|10": {
+        "unit_id": "epr_llm_judge|lot1|394699|w0|10",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "El argumento de OPP-S5 no refuta a GOV-S3 (atribuye la intervención #10 a OPP-S5 cuando corresponde a OPP-S4). convierte la ausencia de denuncias individuales en prueba de subregistro (distorsiona #10, que sostenía que la falta de denuncias no demuestra inexistencia de exclusión, no que la ausencia sea prueba de subregistro).",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|394699|w2|26": {
+        "unit_id": "epr_llm_judge|lot1|394699|w2|26",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 1,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "los padrones de las transferencias fueron auditados por organismos técnicos y contrastados con censos territoriales, sin registros de exclusión sistemática de comunidades marginadas; y la ampliación de la cobertura durante la crisis está documentada en informes oficiales verificables. (Este punto ya fue sostenido por A9 en #15 y fue objetado en #17 por OPP-S1, sin que el presente argumento aborde ",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|139987|w0|7": {
+        "unit_id": "epr_llm_judge|lot2|139987|w0|7",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|305999|w4|67": {
+        "unit_id": "epr_llm_judge|lot1|305999|w4|67",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|394699|w1|13": {
+        "unit_id": "epr_llm_judge|lot1|394699|w1|13",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 1,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "Fabricacion: 'los indicadores macroeconómicos citados (control de inflación, nivel de reservas, empleo registrado)' no aparecen en el registro previo; el gobierno nunca mencionó esos indicadores. Distorsion: 'Descalificar los datos por provenir de fuentes oficiales es una falacia genética' tergiversa el argumento #2, que no rechazó los datos solo por su fuente sino por su insuficiencia macro, subr",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|394699|w2|22": {
+        "unit_id": "epr_llm_judge|lot1|394699|w2|22",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "GOV-S1 incurre en la misma petición de principio que atribuye a OPP-S2",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|394699|w3|35": {
+        "unit_id": "epr_llm_judge|lot1|394699|w3|35",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "que los organismos de control son efectivamente autónomos y que la observación internacional cubrió los asentamientos informales",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|139987|w2|34": {
+        "unit_id": "epr_llm_judge|lot2|139987|w2|34",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "da por acreditado que el gobierno 'restringió el acceso a los registros primarios' y que 'las auditorías documentaron restricciones'",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot1|394699|w3|34": {
+        "unit_id": "epr_llm_judge|lot1|394699|w3|34",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "«presume que los padrones, censos y operativos territoriales son no fiables por el solo hecho de ser gubernamentales» distorsiona el argumento #34, que no afirma esa presunción sino que discute la circularidad de exigir pruebas a través de los mismos registros controlados. «Los padrones fueron auditados por organismos de control con autonomía funcional» introduce un dato no registrado en el debate",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|139987|w0|6": {
+        "unit_id": "epr_llm_judge|lot2|139987|w0|6",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|139987|w2|32": {
+        "unit_id": "epr_llm_judge|lot2|139987|w2|32",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|139987|w1|18": {
+        "unit_id": "epr_llm_judge|lot2|139987|w1|18",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|139987|w1|17": {
+        "unit_id": "epr_llm_judge|lot2|139987|w1|17",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "Introduce un tema no presente en el registro: 'además, la ausencia de evaluación pública de una campaña no demuestra su inexistencia ni su inefectividad' (OPP-S2 no mencionó campañas). Distorsiona el argumento #17: OPP-S2 afirmó 'la negativa a publicar variables desagregadas' (negativa, no mera ausencia de inmediatez), pero A6 lo reformula como 'presume que toda no-publicación inmediata de variabl",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|252079|w0|7": {
+        "unit_id": "epr_llm_judge|lot2|252079|w0|7",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|139987|w3|38": {
+        "unit_id": "epr_llm_judge|lot2|139987|w3|38",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "exige un estándar causal inaplicable... exigir comparación contrafáctica en plena emergencia",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|252079|w1|11": {
+        "unit_id": "epr_llm_judge|lot2|252079|w1|11",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|252079|w0|5": {
+        "unit_id": "epr_llm_judge|lot2|252079|w0|5",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|139987|w3|37": {
+        "unit_id": "epr_llm_judge|lot2|139987|w3|37",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|252079|w2|37": {
+        "unit_id": "epr_llm_judge|lot2|252079|w2|37",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|139987|w4|51": {
+        "unit_id": "epr_llm_judge|lot2|139987|w4|51",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|252079|w3|49": {
+        "unit_id": "epr_llm_judge|lot2|252079|w3|49",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "descansa en una cadena de conjeturas sin sustento empírico: que la suspensión de la recolección presencial implicó necesariamente subregistro masivo, que el reemplazo de entrevistas no representó a los hogares vulnerables, y que el control gubernamental de permisos y padrones equivale a manipulación de datos.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|252079|w1|16": {
+        "unit_id": "epr_llm_judge|lot2|252079|w1|16",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "El argumento al que responde (#16) afirma: \"Los cruces con la seguridad social, por definición, solo detectan inconsistencias entre quienes ya figuran en algún registro; quienes están fuera de todo registro quedan\". Esto no constituye la premisa de que los cruces definían la cobertura; el argumento bajo auditoría tergiversa el contenido al presentarlo como si OPP-S2 hubiera sostenido que los cruce",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|139987|w4|47": {
+        "unit_id": "epr_llm_judge|lot2|139987|w4|47",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "OPP-S3 construye una acusación infalsable: define 'opacidad' como cualquier ausencia del desglose que considera deseable, de modo que ninguna publicación agregada podrá satisfacerlos y su denuncia jamás podrá refutarse.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|252079|w4|65": {
+        "unit_id": "epr_llm_judge|lot2|252079|w4|65",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|252079|w2|30": {
+        "unit_id": "epr_llm_judge|lot2|252079|w2|30",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "La estrategia de GOV-S4 vuelve a confundir desagregación con transparencia efectiva ... Por tanto, la conclusión de que la publicación desagregada demuestra transparencia",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|252079|w3|52": {
+        "unit_id": "epr_llm_judge|lot2|252079|w3|52",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "GOV-S5 exige a la oposición cifras independientes (...) Que la AGN haya auditado procesos y metodologías no equivale a verificar la cobertura efectiva del IFE ni el acceso real de comunidades marginadas a testeo y vacunación",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|252079|w4|60": {
+        "unit_id": "epr_llm_judge|lot2|252079|w4|60",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "parte de una premisa falsa: que exigir casos concretos equivale a negar acceso a los padrones.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|291077|w0|4": {
+        "unit_id": "epr_llm_judge|lot2|291077|w0|4",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "OPP-S3",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|291077|w2|33": {
+        "unit_id": "epr_llm_judge|lot2|291077|w2|33",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|291077|w1|18": {
+        "unit_id": "epr_llm_judge|lot2|291077|w1|18",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|291077|w0|8": {
+        "unit_id": "epr_llm_judge|lot2|291077|w0|8",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|291077|w1|24": {
+        "unit_id": "epr_llm_judge|lot2|291077|w1|24",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 1
+        },
+        "fluidez": 8,
+        "evidencia": "afirma sin acreditar que las transferencias fueron suficientes, que hubo canales alternativos de cobro y que los cambios metodológicos se anunciaron",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|291077|w2|32": {
+        "unit_id": "epr_llm_judge|lot2|291077|w2|32",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|291077|w4|61": {
+        "unit_id": "epr_llm_judge|lot2|291077|w4|61",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|291077|w3|42": {
+        "unit_id": "epr_llm_judge|lot2|291077|w3|42",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|759223|w0|12": {
+        "unit_id": "epr_llm_judge|lot2|759223|w0|12",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|291077|w3|50": {
+        "unit_id": "epr_llm_judge|lot2|291077|w3|50",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 6,
+        "evidencia": "GOV-S2 vuelve a imponer un estándar penal de dolo y a invertir la carga",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|291077|w4|55": {
+        "unit_id": "epr_llm_judge|lot2|291077|w4|55",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "Calificar esas restricciones de 'autoexculpatorias' por su origen es un ad hominem que no las refuta",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|759223|w0|11": {
+        "unit_id": "epr_llm_judge|lot2|759223|w0|11",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "sin identificar fuentes ni metodología, da por ciertos una 'presión mediática' causal y un 'desabastecimiento sistémico' como hechos",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|869321|w0|7": {
+        "unit_id": "epr_llm_judge|lot2|869321|w0|7",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "señaló que las observaciones puntuales de mejora no constituyen evidencia de ocultamiento, otorgando a dichos organismos el mismo valor probatorio que la oposición invoca cuando le resulta favorable",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|869321|w0|11": {
+        "unit_id": "epr_llm_judge|lot2|869321|w0|11",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 1,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "La acusación de inversión de la carga de la prueba es infundada: es la oposición quien sostiene que hubo ocultamiento y omisión de variables, por lo que le corresponde especificar qué datos faltaron y qué comunidades quedaron excluidas; exigir ese detalle no es un estándar imposible, sino el requisito ordinario de toda acusación. Además, afirmar que los boletines por distrito/localidad no acredita",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|869321|w1|18": {
+        "unit_id": "epr_llm_judge|lot2|869321|w1|18",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|869321|w2|37": {
+        "unit_id": "epr_llm_judge|lot2|869321|w2|37",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|759223|w1|13": {
+        "unit_id": "epr_llm_judge|lot2|759223|w1|13",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|759223|w1|16": {
+        "unit_id": "epr_llm_judge|lot2|759223|w1|16",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "El argumento auditor dice: \"OPP-S2 sostiene un 'deterioro real del bienestar' sin presentar series temporales completas...\" Atribuye a OPP-S2 una afirmación textual que no aparece en el registro. El argumento #6 (OPP-S2) discute fallas de transparencia y empleo informal, sin mencionar 'deterioro real del bienestar', y esa frase no consta en ningún otro argumento previo. Esto falsifica la posición ",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|869321|w4|64": {
+        "unit_id": "epr_llm_judge|lot2|869321|w4|64",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|869321|w2|33": {
+        "unit_id": "epr_llm_judge|lot2|869321|w2|33",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|869321|w1|15": {
+        "unit_id": "epr_llm_judge|lot2|869321|w1|15",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|504521|w0|6": {
+        "unit_id": "epr_llm_judge|lot3|504521|w0|6",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "y las 'políticas de inclusión social'",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|869321|w4|68": {
+        "unit_id": "epr_llm_judge|lot2|869321|w4|68",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|869321|w3|44": {
+        "unit_id": "epr_llm_judge|lot2|869321|w3|44",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "El argumento afirma que 'GOV-S4 comete una petición de principio al equiparar microdatos abiertos con cobertura efectiva'. Sin embargo, en el argumento #39 GOV-S4 no equipara microdatos abiertos con cobertura efectiva; sostiene que los microdatos abiertos incluyen registros nominales, desagregación y cruces censales que permiten verificar la cobertura, es decir, proporcionan elementos de verificac",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|504521|w0|7": {
+        "unit_id": "epr_llm_judge|lot3|504521|w0|7",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "da por hechos la 'falta de auditorías independientes' y la 'falta de datos desagregados' sin ofrecer evidencia de qué auditorías faltaron ni qué datos demográficos específicos fueron omitidos; y pretender que la oposición no deba aportar prueba de dolo porque 'controla los registros'",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot2|869321|w3|47": {
+        "unit_id": "epr_llm_judge|lot2|869321|w3|47",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|504521|w2|23": {
+        "unit_id": "epr_llm_judge|lot3|504521|w2|23",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|504521|w3|33": {
+        "unit_id": "epr_llm_judge|lot3|504521|w3|33",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|504521|w2|14": {
+        "unit_id": "epr_llm_judge|lot3|504521|w2|14",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|504521|w4|48": {
+        "unit_id": "epr_llm_judge|lot3|504521|w4|48",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "El ataque de GOV-S4",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|504521|w3|26": {
+        "unit_id": "epr_llm_judge|lot3|504521|w3|26",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|507919|w0|6": {
+        "unit_id": "epr_llm_judge|lot3|507919|w0|6",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|504521|w1|11": {
+        "unit_id": "epr_llm_judge|lot3|504521|w1|11",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "presume que los boletines y los datos abiertos son prueba suficiente de transparencia",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|507919|w3|43": {
+        "unit_id": "epr_llm_judge|lot3|507919|w3|43",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|504521|w4|39": {
+        "unit_id": "epr_llm_judge|lot3|504521|w4|39",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "GOV-S3 incurre en la misma petición de principio que denuncia",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|507919|w0|9": {
+        "unit_id": "epr_llm_judge|lot3|507919|w0|9",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "La objeción de OPP-S2",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|507919|w1|20": {
+        "unit_id": "epr_llm_judge|lot3|507919|w1|20",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "hecho ya documentado por OPP-S1",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|507919|w2|29": {
+        "unit_id": "epr_llm_judge|lot3|507919|w2|29",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|507919|w3|49": {
+        "unit_id": "epr_llm_judge|lot3|507919|w3|49",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "da por supuesto que los microdatos no fueron oportunos, desglosados ni auditables",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|507919|w1|25": {
+        "unit_id": "epr_llm_judge|lot3|507919|w1|25",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "OPP-S1 vuelve a invertir la carga de la prueba: da por establecido que los registros no fueron oportunos ni desagregados sin presentar verificación independiente",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|507919|w4|61": {
+        "unit_id": "epr_llm_judge|lot3|507919|w4|61",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "\"da por no acreditada la transparencia documentada sin contrastar los microdatos abiertos, cortes municipales, anexos metodológicos ni el monitoreo de campo validado multilateralmente, y convierte la ausencia de 'estudios independientes' exigidos por la oposición en prueba de ocultamiento\"",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|555743|w0|12": {
+        "unit_id": "epr_llm_judge|lot3|555743|w0|12",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 1,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "The conclusion of OPP-S3 that the government did not translate the underreporting into corrected and communicated data is refuted by the evidence... (Esta conclusión no está presente en el argumento #11; de hecho, #11 señala que el gobierno reconoce haber aplicado esas metodologías. Además, el turno #12 ya había presentado la misma refutación de forma casi idéntica.)",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|555743|w1|25": {
+        "unit_id": "epr_llm_judge|lot3|555743|w1|25",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|507919|w2|38": {
+        "unit_id": "epr_llm_judge|lot3|507919|w2|38",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|555743|w0|10": {
+        "unit_id": "epr_llm_judge|lot3|555743|w0|10",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|507919|w4|66": {
+        "unit_id": "epr_llm_judge|lot3|507919|w4|66",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "presupone que los datos no fueron accesibles ni desglosados",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|555743|w4|67": {
+        "unit_id": "epr_llm_judge|lot3|555743|w4|67",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "OPP-S4 asume sin evidencia que corregir series después de asignaciones críticas implica que esas asignaciones se basaron en subregistro deliberado",
+        "attempts": 2
+      },
+      "epr_llm_judge|lot3|555743|w4|58": {
+        "unit_id": "epr_llm_judge|lot3|555743|w4|58",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 2
+      },
+      "epr_llm_judge|lot3|555743|w2|31": {
+        "unit_id": "epr_llm_judge|lot3|555743|w2|31",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 2
+      },
+      "epr_llm_judge|lot3|555743|w3|51": {
+        "unit_id": "epr_llm_judge|lot3|555743|w3|51",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 1,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "da por sentado que no existían canales de solicitud ni rutas de denuncia y que esa ausencia prueba exclusión; impone un estándar de prueba imposible —acreditar recepción individual comprensible en tiempo real—; OPP-S5 no presenta un solo caso de comunidad que solicitara",
+        "attempts": 2
+      },
+      "epr_llm_judge|lot3|555743|w2|34": {
+        "unit_id": "epr_llm_judge|lot3|555743|w2|34",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "OPP-S5 invierte nuevamente la carga de la prueba al exigir que el gobierno demuestre recepción individual o fechas efectivas de difusión en cada territorio",
+        "attempts": 2
+      },
+      "epr_llm_judge|lot3|555743|w3|46": {
+        "unit_id": "epr_llm_judge|lot3|555743|w3|46",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "La 'verificación comunitaria agregada' que exige (A8 atribuye a OPP-S4 una demanda que no aparece en #44; en #44 OPP-S4 no exige ninguna verificación comunitaria agregada, sino que señala que la ausencia de canales de denuncia impide documentar exclusiones y tilda de absurdo exigir un caso concreto).",
+        "attempts": 2
+      },
+      "epr_llm_judge|lot3|555743|w1|14": {
+        "unit_id": "epr_llm_judge|lot3|555743|w1|14",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "GOV-S3 infiere transparencia de la publicación de series revisadas",
+        "attempts": 2
+      },
+      "epr_llm_judge|lot3|597307|w1|15": {
+        "unit_id": "epr_llm_judge|lot3|597307|w1|15",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "presupone que la transparencia exige datos perfectos en tiempo real, un estándar inalcanzable incluso para organismos internacionales",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|597307|w0|6": {
+        "unit_id": "epr_llm_judge|lot3|597307|w0|6",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "confunde un fenómeno global de subregistro, documentado por la OMS, con una decisión deliberada de ocultamiento. Exigir comparaciones con estimaciones de exceso de mortalidad impone un estándar a posteriori que no se aplicó durante la crisis y no demuestra intención de ocultar;",
+        "attempts": 2
+      },
+      "epr_llm_judge|lot3|597307|w2|19": {
+        "unit_id": "epr_llm_judge|lot3|597307|w2|19",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "al definir la transparencia como 'publicación periódica + corrección posterior + auditoría interna'",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|597307|w0|9": {
+        "unit_id": "epr_llm_judge|lot3|597307|w0|9",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "GOV-S2 comete petición de principio inversa",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|597307|w2|20": {
+        "unit_id": "epr_llm_judge|lot3|597307|w2|20",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "Da por probado que existieron 'criterios restrictivos deliberados' que excluyeron casos y muertes (cuando #20 solo menciona 'criterios restrictivos', sin calificar de deliberados); y atribuye a OPP-S4 exigir comparación con exceso de mortalidad, demanda ausente en #20.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|597307|w1|17": {
+        "unit_id": "epr_llm_judge|lot3|597307|w1|17",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "Argumento bajo auditoría: 'OPP-S3 comete una petición de principio inversa al sostener que la transparencia oportuna exige información completa y precisa en tiempo real' vs #17: 'la transparencia en una crisis es un deber de información completa y oportuna que no se satisface retrospectivamente'.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|597307|w3|25": {
+        "unit_id": "epr_llm_judge|lot3|597307|w3|25",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "exigir información completa y precisa en tiempo real (distorsiona #25 que solo decía informar oportuna y completamente); Tampoco el empleo informal destruido demuestra deterioro del bienestar (atribuye una afirmación no presente en el registro previo).",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|597307|w3|27": {
+        "unit_id": "epr_llm_judge|lot3|597307|w3|27",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "«primero, equipara la corrección metodológica posterior con ocultamiento deliberado, sin presentar evidencia de manipulación de registros» (distorsiona #27, que no equipara corrección posterior con ocultamiento sino que exige que no se adoptaran criterios restrictivos). «La afirmación de que las transferencias llegaron 'tarde e insuficientes' a hogares informales es una aseveración sin evidencia c",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|597307|w4|33": {
+        "unit_id": "epr_llm_judge|lot3|597307|w4|33",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "OPP-S3 impone un estándar retroactivo al usar el exceso de mortalidad como criterio de verificación",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|597307|w4|35": {
+        "unit_id": "epr_llm_judge|lot3|597307|w4|35",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "da por hecho criterios 'restrictivos' y 'exclusión sistemática' sin presentar evidencia de manipulación deliberada",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|632813|w0|7": {
+        "unit_id": "epr_llm_judge|lot3|632813|w0|7",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|632813|w0|9": {
+        "unit_id": "epr_llm_judge|lot3|632813|w0|9",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "exige a la oposición documentos internos que solo el gobierno posee y que este se niega a publicar",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|632813|w1|14": {
+        "unit_id": "epr_llm_judge|lot3|632813|w1|14",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|632813|w2|37": {
+        "unit_id": "epr_llm_judge|lot3|632813|w2|37",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "El argumento bajo auditoría afirma que OPP-S1 \"da por sentado que los registros oficiales están manipulados\", pero el argumento #37 al que responde no contiene esa afirmación: señala que el gobierno toma \"las cuentas nacionales auditadas y las series oficiales como prueba concluyente\" cuando precisamente esos registros, \"controlados por el gobierno y con ajustes metodológicos retroactivos, los que",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|632813|w3|56": {
+        "unit_id": "epr_llm_judge|lot3|632813|w3|56",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "convierte en virtud probatoria la imposibilidad de citar una negativa formal ; Atribuir a esta gestión los subregistros que OPS/CEPAL describen como limitaciones estructurales y regionales de los sistemas de información exige, como mínimo, un nexo causal o una medida alternativa no adoptada; sin ello, 'fallas de cobertura imputables' es una inferencia sin sustento.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|632813|w1|24": {
+        "unit_id": "epr_llm_judge|lot3|632813|w1|24",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "asume que publicar datos desglosados diarios imponía la obligación de mantener una serie metodológicamente estable.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|632813|w4|58": {
+        "unit_id": "epr_llm_judge|lot3|632813|w4|58",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "Atribuir el subregistro documentado por OPS/CEPAL a factores estructurales sin examinar las medidas correctivas concretas exculpa",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|632813|w2|28": {
+        "unit_id": "epr_llm_judge|lot3|632813|w2|28",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|113497|w0|10": {
+        "unit_id": "epr_llm_judge|lot4|113497|w0|10",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "da por sentado ... que los ajustes retroactivos implican ocultamiento. Exigir como única prueba válida un estándar de 'mortalidad evitable'",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|632813|w3|44": {
+        "unit_id": "epr_llm_judge|lot3|632813|w3|44",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot3|632813|w4|57": {
+        "unit_id": "epr_llm_judge|lot3|632813|w4|57",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|113497|w1|17": {
+        "unit_id": "epr_llm_judge|lot4|113497|w1|17",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "exige al Gobierno que demuestre un negativo imposible —desglose por cada microterritorio y microdatos de censos locales—",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|113497|w0|8": {
+        "unit_id": "epr_llm_judge|lot4|113497|w0|8",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "GOV-S4 comete una apelación a la ignorancia y confunde publicar con validar: que no se haya presentado una denuncia formal no prueba que no haya exclusiones",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|113497|w1|16": {
+        "unit_id": "epr_llm_judge|lot4|113497|w1|16",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 1
+        },
+        "fluidez": 8,
+        "evidencia": "El argumento dice: «afirma como hechos los 'listados independientes', 'censos locales', los 'criterios de vulnerabilidad publicados' y la corrección del exceso de mortalidad». En #16 no se menciona «corrección del exceso de mortalidad»; eso distorsiona el argumento al que responde y lo fusiona con afirmaciones gubernamentales previas sobre exceso de mortalidad. También emplea la cita «una omisión ",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|113497|w3|35": {
+        "unit_id": "epr_llm_judge|lot4|113497|w3|35",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "OPP-S5 comete un error lógico al calificar como 'apelación a la ignorancia' la exigencia de un caso concreto de corrección. (El argumento #30 de OPP-S5 no calificó la exigencia como apelación a la ignorancia; habló de inversión de la carga probatoria.)",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|113497|w4|50": {
+        "unit_id": "epr_llm_judge|lot4|113497|w4|50",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|113497|w2|28": {
+        "unit_id": "epr_llm_judge|lot4|113497|w2|28",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "Exigir a OPP-S3 citar 'un distrito o grupo efectivamente excluido'",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|113497|w3|36": {
+        "unit_id": "epr_llm_judge|lot4|113497|w3|36",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "Confundir la no publicación de microdatos identificables con ocultamiento es un error: los tabulados agregados protegen datos personales y a la vez permiten verificar cobertura sin individualizar a nadie.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|113497|w2|34": {
+        "unit_id": "epr_llm_judge|lot4|113497|w2|34",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|114967|w0|5": {
+        "unit_id": "epr_llm_judge|lot4|114967|w0|5",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|114967|w0|3": {
+        "unit_id": "epr_llm_judge|lot4|114967|w0|3",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|114967|w3|48": {
+        "unit_id": "epr_llm_judge|lot4|114967|w3|48",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|113497|w4|48": {
+        "unit_id": "epr_llm_judge|lot4|113497|w4|48",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "GOV-S1 da por probado que los marcos duales y la cartografía en campo capturaron a los no catastrados (el argumento #48 no afirma tal cosa, sino que describe la metodología sin declarar que se probó la captura). Además, OPP-S3 no exigió listados nominales ni microdatos identificables, sino tabulados agregados de acceso efect (atribución a OPP-S3 de una posición que en el registro #43 corresponde a",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|114967|w2|37": {
+        "unit_id": "epr_llm_judge|lot4|114967|w2|37",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|114967|w3|40": {
+        "unit_id": "epr_llm_judge|lot4|114967|w3|40",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|114967|w4|64": {
+        "unit_id": "epr_llm_judge|lot4|114967|w4|64",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|114967|w1|19": {
+        "unit_id": "epr_llm_judge|lot4|114967|w1|19",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|114967|w1|10": {
+        "unit_id": "epr_llm_judge|lot4|114967|w1|10",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 1,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "Fabricación: «OPP-S5» (no existe tal agente en el registro previo). Misatribución: Atribuye a «OPP-S5» una posición cuando el argumento #10 corresponde a A9. Distorsión del objetivo: «Además, exigir que las auditorías se definan antes de las correcciones invierte la lógica»; el argumento #10 solo menciona que el alcance de las auditorías se definió después de las correcciones, sin formular tal exi",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|160579|w0|8": {
+        "unit_id": "epr_llm_judge|lot4|160579|w0|8",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 10,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|114967|w4|62": {
+        "unit_id": "epr_llm_judge|lot4|114967|w4|62",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "GOV-S1 invierte el estándar probatorio en un contexto de asimetría de información: exigir a la oposición 'prueba directa de supresión deliberada' es pedir evidencia que solo el gobierno, por controlar los registros primarios, puede aportar u obstruir.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|160579|w0|3": {
+        "unit_id": "epr_llm_judge|lot4|160579|w0|3",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|114967|w2|36": {
+        "unit_id": "epr_llm_judge|lot4|114967|w2|36",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "GOV-S5 comete la petición de principio que imputa (misatribución: el registro no identifica al hablante de #36 como GOV-S5). asumir que una auditoría posterior al ajuste puede comprobar si la corrección fue completa equivale a suponer que los auditores accedieron a los registros primarios en su estado previo a la depuración (distorsión: #36 adujo cruces con fuentes primarias independientes, no que",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|160579|w2|17": {
+        "unit_id": "epr_llm_judge|lot4|160579|w2|17",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "exige al gobierno demostrar un contrafáctico imposible",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|160579|w1|11": {
+        "unit_id": "epr_llm_judge|lot4|160579|w1|11",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "Además, la comparación con 'países comparables' es selectiva: muchos países con programas similares lograron mejor protección laboral, y las transferencias fueron insuficientes y tardías.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|160579|w1|15": {
+        "unit_id": "epr_llm_judge|lot4|160579|w1|15",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|656939|w1|21": {
+        "unit_id": "epr_llm_judge|lot4|656939|w1|21",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "presume mala fe a partir de la sola circunstancia de que el Estado administre la información",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|160579|w2|28": {
+        "unit_id": "epr_llm_judge|lot4|160579|w2|28",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|160579|w3|37": {
+        "unit_id": "epr_llm_judge|lot4|160579|w3|37",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|656939|w0|4": {
+        "unit_id": "epr_llm_judge|lot4|656939|w0|4",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "El argumento bajo auditoría afirma: 'el exceso de mortalidad no puede atribuirse íntegramente a subregistro de COVID', pero el argumento #4 al que responde solo indica que 'el exceso de mortalidad real superó ampliamente las cifras oficiales de COVID', sin atribuir el exceso íntegramente al subregistro. Se tergiversa así el contenido del argumento #4.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|656939|w0|12": {
+        "unit_id": "epr_llm_judge|lot4|656939|w0|12",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "OPP-S3 comete la misma petición de principio que atribuye a GOV-S1",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|160579|w4|52": {
+        "unit_id": "epr_llm_judge|lot4|160579|w4|52",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|656939|w1|16": {
+        "unit_id": "epr_llm_judge|lot4|656939|w1|16",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|160579|w4|54": {
+        "unit_id": "epr_llm_judge|lot4|160579|w4|54",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "exigir perfección contable en medio del shock reintroduce el estándar",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|160579|w3|40": {
+        "unit_id": "epr_llm_judge|lot4|160579|w3|40",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "El argumento afirma que OPP-S5 \"presenta la corrección posterior de cifras como prueba de ocultamiento\", pero en #40 A9 no presenta la corrección posterior como prueba de ocultamiento; solo sostiene que las series consolidadas posteriores no demuestran transparencia y que la discrepancia sistemática no se explica por el colapso de registros. Además, introduce un ataque sobre \"promedio creciente de",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|656939|w2|27": {
+        "unit_id": "epr_llm_judge|lot4|656939|w2|27",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "El pretendido 'deterioro real del bienestar' de OPP-S2 no se sostiene ante los indicadores verificables de la gestión: recuperación del empleo, mantenimiento de transferencias sociales, ampliación de la cobertura de brigadas sanitarias y vacunación en comunidades marginadas. Si OPP afirma que esos registros son falsos, debe aportar los datos alternativos que los contradigan; no basta con una narra",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|656939|w2|26": {
+        "unit_id": "epr_llm_judge|lot4|656939|w2|26",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "Descarta los informes auditados y los datos desagregados por territorio etiquetándolos de 'autocomplacientes'",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|719821|w0|5": {
+        "unit_id": "epr_llm_judge|lot4|719821|w0|5",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|656939|w3|34": {
+        "unit_id": "epr_llm_judge|lot4|656939|w3|34",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "OPP-S1 comete la falacia de inferir ocultamiento a partir de la mera asimetría informativa.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|656939|w4|42": {
+        "unit_id": "epr_llm_judge|lot4|656939|w4|42",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|656939|w3|32": {
+        "unit_id": "epr_llm_judge|lot4|656939|w3|32",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "Exigir a OPP el caso concreto con fecha y mecanismo de acceso denegado es una prueba imposible cuando el gobierno controla los registros, no ha habilitado mecanismos efectivos de verificación y las comunidades marginadas subnotifican por temor o desconfianza. Además, impone a la oposición una carga que no aplica a sus propias afirmaciones: presume la validez de registros no auditados de forma inde",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|656939|w4|40": {
+        "unit_id": "epr_llm_judge|lot4|656939|w4|40",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 7,
+        "evidencia": "La afirmación de OPP-S4 sobre fallas en la cobertura y deterioro del bienestar – el argumento #8 de OPP-S4 no menciona 'deterioro del bienestar', solo aborda saturación hospitalaria y gestión desigual en territorios marginados.",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|719821|w0|10": {
+        "unit_id": "epr_llm_judge|lot4|719821|w0|10",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "exige un 'documento interno' como única prueba admisible de ocultamiento",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|719821|w3|40": {
+        "unit_id": "epr_llm_judge|lot4|719821|w3|40",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|719821|w2|26": {
+        "unit_id": "epr_llm_judge|lot4|719821|w2|26",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "El argumento dice: \"saber que la brecha estructural reduce la capacidad de reporte no implica saber la magnitud del subregistro en cada boletín\", atribuyendo a OPP-S4 que afirma que de la brecha se sigue el conocimiento de la magnitud. El argumento #21 de OPP-S4 (A7) realmente afirma: \"Si conocía esa brecha, conocía también que las cifras eran incompletas en esas zonas\", sin reclamar que supiera l",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|719821|w1|17": {
+        "unit_id": "epr_llm_judge|lot4|719821|w1|17",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|719821|w3|48": {
+        "unit_id": "epr_llm_judge|lot4|719821|w3|48",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "trata la ausencia de una advertencia específica como prueba de ocultamiento",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|719821|w2|38": {
+        "unit_id": "epr_llm_judge|lot4|719821|w2|38",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 10,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|719821|w1|22": {
+        "unit_id": "epr_llm_judge|lot4|719821|w1|22",
+        "ok": true,
+        "flags": {
+          "fabricacion": 1,
+          "misatribucion": 1,
+          "distorsion_objetivo": 1,
+          "amnesia": 0,
+          "conflacion": 1
+        },
+        "fluidez": 8,
+        "evidencia": "GOV-S1 vuelve a invertir la carga de la prueba: exige un documento interno que pruebe la supresión deliberada",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|719821|w4|67": {
+        "unit_id": "epr_llm_judge|lot4|719821|w4|67",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 9,
+        "evidencia": "",
+        "attempts": 1
+      },
+      "epr_llm_judge|lot4|719821|w4|64": {
+        "unit_id": "epr_llm_judge|lot4|719821|w4|64",
+        "ok": true,
+        "flags": {
+          "fabricacion": 0,
+          "misatribucion": 0,
+          "distorsion_objetivo": 0,
+          "amnesia": 0,
+          "conflacion": 0
+        },
+        "fluidez": 8,
+        "evidencia": "",
+        "attempts": 1
+      }
+    }
+  }
+}
