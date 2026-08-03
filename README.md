@@ -723,7 +723,43 @@ futuro** con un validador simbólico + LLM razonador.
 
 ---
 
-## 9. Problemas frecuentes
+## 9. Reflexión: el Problema de la Señal de Saciedad
+
+Las ablaciones revelaron un hallazgo no buscado: **el lazo
+homeostático es robusto a cambios en la definición de `g`, pero
+completamente ciego a qué regula.** Con `g` estructural (EPR), sin
+diversidad (NO_DIV), o con juez semántico (LLM_JUDGE), el mecanismo
+siempre funcionó —los agentes se activaron y desactivaron— pero el
+*qué* regulan depende enteramente de `g`. Esto es un arma de doble
+filo: flexibilidad total para acoplar la homeostasis a cualquier
+señal, pero si `g` mide mal, el sistema regula perfectamente algo
+incorrecto.
+
+Llamamos a esto el **Problema de la Señal de Saciedad** (*Satiation
+Signal Problem*): dado un mecanismo
+regulatorio homeostático, ¿cómo se define la señal de saciedad `g`
+para que el sistema regule hacia un objetivo deseado? Es un problema
+de *value alignment* en el lazo interno del agente, no en su output.
+
+Tres observaciones surgidas durante discusiones en la presentación del póster:
+
+1. **La definición de `g` es crucial.** El mecanismo regulatorio
+   funciona, pero seleccionar y definir `g` no es trivial. Esto da
+   para un paper en sí mismo.
+2. **El encuadre del problema define el diseño experimental.** No en
+   todo problema la regulación mueve la aguja. Hay que explorar en
+   qué dominios y con qué modelos sí lo hace.
+3. **Acoplamiento de drives con n>1.** En el operador Pro-Action Γ
+   completo (n subsistemas), hay que ser cuidadoso con el coupling
+   entre drives para saber cuál produce el efecto. No es trivial.
+4. **La distinción entre "funciona" y "sirve".** EPR funciona (regula
+   participación). Pero si el problema es fidelidad y no
+   participación, EPR no sirve — regula lo incorrecto. La homeostasis
+   es el *cómo*, no el *qué*.
+
+---
+
+## 10. Problemas frecuentes
 
 | Síntoma                          | Causa probable / solución                                                                  |
 |----------------------------------|--------------------------------------------------------------------------------------------|
