@@ -30,7 +30,7 @@ de feedback que regulen cuándo actuar, inhibirse o conservar recursos
 El punto de partida fue el **Operador Pro-Action (Γ)**, presentado en
 **ICML 2026** en el taller LatinX in AI, donde fue seleccionado **mejor
 paper**. Γ envuelve a un ejecutor LLM con 6 subsistemas regulatorios
-acoplados y dinámica multi-escala, construido en un problema donde la
+acoplados, construido en un problema donde la
 activación fue estrictamente por turnos (sin gate probabilístico).
 
 El **experimento de este repositorio** reduce Γ a su núcleo más simple
@@ -40,7 +40,7 @@ exógeno. Es la misma matemática, reducida a single-drive y presentada
 como póster en **SANLP 2026**.
 
 El siguiente eslabón es **Binsai**, aceptado en **Research Software
-Latinoamérica (RSLA26)** con demo virtual en agosto 2026. Binsai es el
+Latinoamérica (RSLA26)** con demo virtual a fines de agosto 2026. Binsai es el
 sustrato experimental open-source donde implementar, instrumentar y
 comparar estos mecanismos regulatorios a medida que la línea avanza.
 
@@ -53,7 +53,7 @@ administrar acción, memoria, atención y recursos, en conjunto con nuevos
 sustratos físicos de computación. La Ley de Moore tocó techo por el
 efecto túnel cuántico y la arquitectura de Von Neumann impone un cuello
 de botella energético insostenible: mientras los modelos fundacionales
-dependen de centros de datos masivos, el cerebro humano opera con ~20
+dependen de centros de datos masivos, el cerebro humano, su analogo biologico, opera con ~20
 Watts.
 
 **Trabajos próximos:** usaré datos de este mismo experimento para mi
@@ -106,12 +106,14 @@ Formalizamos este marco a través de los Axiomas de Autonomía
 Homeostática (AAH) y presentamos un diseño experimental orientado a
 aislar el comportamiento del modelo puramente homeostático frente a
 ruteadores tradicionales de LangGraph en debates de texto. Nuestros
-resultados muestran que cambiar la estrategia de activación no
-resolvió el colapso de contexto: la tasa de fallas de fidelidad se
-duplica en los cuatro regímenes (p>0.3). Ahora bien,
-la homeostasis sí produce auto-organización emergente en lo que respecta a la equidad de participación: max-share
-0.119 vs 0.276 (2.3× menor concentración, p<0.001) sin sacrificar
-calidad. La ablación SHAM confirma que el bucle homeostático —no la
+resultados muestran que **cambiar la estrategia de activación no
+resolvió el colapso de contexto**: la tasa de fallas de fidelidad se
+duplica en los cuatro regímenes sin diferencias entre condiciones
+(p>0.3). Este es el resultado principal: **negativo** para la
+pregunta de investigación original. Como hallazgo secundario no
+buscado, la homeostasis sí produce auto-organización emergente en
+la equidad de participación: max-share 0.119 vs 0.276 (2.3× menor
+concentración, p<0.001) sin sacrificar calidad. La ablación SHAM confirma que el bucle homeostático —no la
 forma del gate— controla el déficit (3.74 vs 1.02, p<0.001). El
 aprendizaje por refuerzo no aporta beneficio detectable. El trabajo
 futuro apunta a extender el bucle homeostático a la fidelidad
@@ -178,7 +180,7 @@ La simulación corre durante 80 pulsos (ticks). En cada pulso:
    (`rng < p`) son candidatos; se selecciona el de mayor `p`. En
    LangGraph, un router LLM exógeno selecciona un agente. Si ningún
    agente pasa el gate, todos pasan (PASS).
-4. **Loop cognitivo**: el agente seleccionado ejecuta el ciclo
+4. **Bucle cognitivo**: el agente seleccionado ejecuta el ciclo
    TRIAGE → THINK → PLAN → EXECUTE → OBSERVE. En TRIAGE drena los
    eventos buffered y evalúa su relevancia con el StimulusEvaluator;
    en THINK computa `p = σ(k(δ − θ))` y decide si actuar; en PLAN
@@ -197,7 +199,7 @@ Los 9 agentes no seleccionados en un pulso dado registran PASS y su
 déficit continúa acumulándose. Esto modela la tensión homeostática:
 la inactividad prolongada aumenta la presión para contribuir.
 
-Los agentes ejecutan un loop cognitivo con arquitectura basada en
+Los agentes ejecutan un bucle cognitivo con arquitectura basada en
 eventos. Cuando el gate sigmoide se activa, el agente elige una acción
 del diccionario indicativo:
 
@@ -430,6 +432,16 @@ atacaron superficialmente, no porque sea un punto profundo.
 Un argumento sin target (nodo aislado) tiene *g* = 0: no hay saciación
 homeostática para monólogos desconectados.
 
+**Validez de *g*:** se correlacionó *g* contra fluidez (calidad de
+superficie) y contra colapso (fidelidad) usando los datos del juez de
+colapso (470 argumentos matched). *g* no correlaciona con ninguna de
+las dos: Spearman ρ = 0.05 con fluidez (p = 0.28) y ρ = −0.06 con
+colapso (p = 0.20). El lazo homeostático cierra sobre una señal que
+no refleja ni calidad argumental ni fidelidad — es ortogonal a ambas.
+Esto no invalida el mecanismo (la homeostasis regula participación,
+no contenido), pero sí delimita su alcance: si el objetivo es
+fidelidad, *g* debe redefinirse.
+
 > **Nota sobre emergencia:** la equidad de turnos (max-share bajo) es
 > **emergente**: no está escrita en ninguna regla de scheduling, sino
 > que surge de la interacción entre déficits locales. Un chequeo
@@ -518,7 +530,27 @@ Cada flag debe acompañarse de cita textual del registro. Se muestrean
 temporales (pulsos 0–15, 16–31, 32–47, 48–63, 64–79). Esto permite
 medir la disociación fluidez/fidelidad: la fluidez cae 0.3 puntos
 (8.80→8.48) mientras las fallas se duplican (×1.97 DeepSeek, ×3.41
-GLM) — el *High-Functioning Compensation Effect*.
+GLM). Los argumentos colapsados puntúan apenas 0.35 puntos menos de
+fluidez que los fieles (8.25 vs 8.60, p<0.001): la degradación de
+superficie es pequeña relativa a la magnitud del colapso — el
+*High-Functioning Compensation Effect*.
+
+**Acuerdo entre jueces por modo de falla** (790 unidades compartidas,
+κ de Cohen):
+
+| Modo de falla       | Tasa DS  | Tasa GLM | Acuerdo | κ     |
+|---------------------|----------|----------|---------|-------|
+| Fabricación         | 0.104    | 0.066    | 0.899   | 0.351 |
+| Atribución errónea  | 0.017    | 0.001    | 0.982   | −0.002 |
+| Distorsión objetivo | 0.061    | 0.076    | 0.922   | 0.384 |
+| Amnesia             | 0.047    | 0.103    | 0.904   | 0.312 |
+| Fusión indebida     | 0.005    | 0.030    | 0.972   | 0.207 |
+| **Colapso (any)**   | **0.194**| **0.232**| **0.785**|**0.359**|
+
+DeepSeek es más sensible a fabricación; GLM a amnesia y fusión
+indebida. La atribución errónea tiene acuerdo nulo (κ≈0): los jueces
+no coinciden en qué constituye atribuir una posición al agente
+equivocado. La distorsión de objetivo tiene el mejor acuerdo (κ=0.384).
 
 ```bash
 python run_collapse_judge.py \
@@ -610,7 +642,10 @@ Bonferroni α = 0.0167, 3 comparaciones contra EPR):
 | Jueces LLM (1–10)          | 7.63   | 7.68   | 7.39***  | 7.82      |
 
 > `***p < 0.0167` (significativo tras Bonferroni). κ ponderado = 0.63,
-> ICC(2,1) = 0.63 sobre 3761 argumentos.
+> ICC(2,1) = 0.63 sobre 3761 argumentos. Intervalos de confianza al 95%
+> (bootstrap, 10k remuestreos): Debates — EPR [40.6, 46.4], LangGraph
+> [57.9, 63.2]; Max-share — EPR [0.116, 0.122], LangGraph [0.248, 0.304];
+> `g` medio — EPR [0.458, 0.469], LangGraph [0.436, 0.448].
 
 **Hallazgos principales:**
 
@@ -636,6 +671,18 @@ Bonferroni α = 0.0167, 3 comparaciones contra EPR):
   agentes siguen sonando bien aunque ya perdieron el hilo (*High-
   Functioning Compensation Effect*). El mecanismo regulatorio gobierna
   la participación, no la fidelidad.
+- **(E) Los roles VSM emergen funcionalmente en EPR pero no en
+  LangGraph.** Aunque los roles son solo prompt-level (indicativos, no
+  prescriptivos) y tanto Langgraph como EPR reciben la misma información, en EPR cada subsistema se especializa: S2
+  (coordinación) produce el 83% de los MESSAGE entre facción, S4
+  (inteligencia) lidera en SEARCH, S5 (estrategia) lidera en READ.
+  En LangGraph, S4+S5 acaparan el 66% de los debates (802/1212)
+  mientras S1 y S3 quedan relegados — el router LLM concentra la
+  participación en los roles de mayor nivel. En EPR_SHAM, S1
+  (operaciones) duplica sus debates (266 vs 192 en EPR): sin el bucle
+  homeostático, el agente operativo monopoliza. La homeostasis
+  distribuida balancea naturalmente la participación entre roles,
+  algo que el ruteo exógeno no logra.
 
 ---
 
@@ -727,6 +774,13 @@ semilla) y la señal `g` aparece inflada (max 0.91, +42% sobre EPR).
 | w4 (p64-79)   | 0.200  | 0.025     | **0.500** |
 | Pendiente (p) | 0.145  | 0.544     | 0.809     |
 
+**Test pareado por semilla (Wilcoxon signed-rank, n=20):** la tasa
+de colapso de LLM_JUDGE es significativamente mayor que la de EPR
+(mediana 0.500 vs 0.200, p = 0.0017, 15/20 semillas). La diferencia
+es robusta y no depende de outliers. Una semilla (759223) tiene datos
+incompletos en el juez de colapso (4/10 unidades), lo que explica
+que el test de tendencia reporte n=19.
+
 **Hallazgo contraintuitivo:** LLM_JUDGE quintuplica la tasa de
 colapso respecto a EPR (~50% vs 8-20%). El juez en línea detecta
 colapso y depleta agentes, pero esto no reduce las fallas de
@@ -745,21 +799,23 @@ retoma como **trabajo futuro**.
 
 ## 9. Reflexión: el Problema de la Señal de Saciedad
 
-Las ablaciones revelaron un hallazgo no buscado: **el lazo
-homeostático es robusto a cambios en la definición de `g`, pero
-completamente ciego a qué regula.** Con `g` estructural (EPR), sin
-diversidad (NO_DIV), o con juez semántico (LLM_JUDGE), el mecanismo
-siempre funcionó —los agentes se activaron y desactivaron— pero el
-*qué* regulan depende enteramente de `g`. Esto es un arma de doble
-filo: flexibilidad total para acoplar la homeostasis a cualquier
-señal, pero si `g` mide mal, el sistema regula perfectamente algo
-incorrecto.
+Los datos del experimento principal ya sugerían un hallazgo no
+buscado, que las discusiones durante la presentación del póster
+terminaron de articular: **el lazo homeostático es robusto a cambios
+en la definición de `g`, pero completamente ciego a qué regula.**
+Las ablaciones post-hoc lo confirmaron: con `g` estructural (EPR),
+sin diversidad (NO_DIV), o con juez semántico (LLM_JUDGE), el
+mecanismo siempre funcionó —los agentes se activaron y desactivaron—
+pero el *qué* regulan depende enteramente de `g`. Esto es un arma de
+doble filo: flexibilidad total para acoplar la homeostasis a
+cualquier señal, pero si `g` mide mal, el sistema regula perfectamente
+algo incorrecto.
 
 Llamamos a esto el **Problema de la Señal de Saciedad** (*Satiation
 Signal Problem*): dado un mecanismo
 regulatorio homeostático, ¿cómo se define la señal de saciedad `g`
 para que el sistema regule hacia un objetivo deseado? Es un problema
-de *value alignment* en el lazo interno del agente, no en su output.
+de *alineamiento de valor* en el lazo interno del agente, no en su output.
 
 Tres observaciones surgidas durante discusiones en la presentación del póster:
 
@@ -777,6 +833,25 @@ Tres observaciones surgidas durante discusiones en la presentación del póster:
    participación, EPR no sirve — regula lo incorrecto. La homeostasis
    es el *cómo*, no el *qué*.
 
+### Trabajo futuro
+
+- **Validación simbólica de fidelidad.** Un validador determinista que
+  verifique claims contra el grafo (sin LLM en el lazo de evaluación)
+  acoplado a un LLM razonador que interprete resultados. Más robusto
+  que la validación humana para este problema: el colapso de contexto
+  es verificable objetivamente contra la transcripción.
+- **Replicación multi-tema y multi-facción.** El debate actual es
+  monotemático (gestión COVID) con dos facciones fijas. Replicar con
+  otros temas, más de dos facciones, y agentes sin roles preasignados
+  para evaluar generalizabilidad.
+- **Baseline random scheduler.** Un scheduler que selecciona un agente
+  al azar en cada tick permitiría distinguir si EPR le gana a
+  cualquier ruteo exógeno o específicamente al router LLM de
+  LangGraph. En ejecución (20 semillas).
+- **Adherencia a roles VSM y dinámicas emergentes.** Análisis de si
+  los agentes siguen sus roles asignados (S1–S5) y si emergen patrones
+  de debate diferenciados según el modo de activación.
+
 ---
 
 ## 10. Problemas frecuentes
@@ -790,7 +865,7 @@ Tres observaciones surgidas durante discusiones en la presentación del póster:
 
 ---
 
-## 10. Uso de LLMs
+## 11. Uso de LLMs
 
 Todos los modelos de IA se utilizaron bajo supervisión humana
 continua. El autor retiene responsabilidad total sobre el contenido.
@@ -811,7 +886,7 @@ continua. El autor retiene responsabilidad total sobre el contenido.
 
 ---
 
-## 11. Citación
+## 12. Citación
 
 ```bibtex
 @misc{gerpe2026epr,
@@ -827,6 +902,6 @@ continua. El autor retiene responsabilidad total sobre el contenido.
 
 ---
 
-## 12. Licencia
+## 13. Licencia
 
 El código fuente se distribuye bajo los términos de [`LICENSE`](LICENSE).

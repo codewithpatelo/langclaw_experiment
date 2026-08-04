@@ -1530,7 +1530,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--modes", nargs="+", default=DEFAULT_MODES,
-        choices=["epr", "epr_q", "epr_sham", "epr_no_div", "epr_llm_judge", "langgraph"],
+        choices=["epr", "epr_q", "epr_sham", "epr_no_div", "epr_llm_judge", "langgraph", "random"],
         help="Orchestration modes to benchmark. 'epr' (Ecuación Pro-Acción Reducida) "
              "is the primary condition: endogenous homeostatic activation without Q-learning. "
              "'epr_q' is EPR + Q-learning (ablation: does the Q-learner help?). "
