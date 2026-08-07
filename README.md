@@ -65,7 +65,7 @@ probar la ecuación Pro-Action en simulación de hardware neuromórfico.
 
 ### ¿De dónde sale la idea de autorregulación?
 
-La intuición más simple viene del videojuego *The Sims*. Cada Sim tiene un rombo
+La intuición más simple se inspira en el videojuego *The Sims*. Cada Sim tiene un rombo
 sobre la cabeza que muestra sus necesidades (hambre, energía, social,
 diversión...). Esas necesidades **decaen solas** con el tiempo. Si una
 barra llega a rojo y dejás de darle órdenes, el Sim **va por su cuenta**
