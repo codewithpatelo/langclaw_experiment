@@ -138,7 +138,7 @@ futuro apunta a extender el bucle homeostático a la fidelidad
 argumental: Γ(n=2) con una necesidad de fidelidad que gobierne qué
 entra al prompt y cuánta verificación se exige antes de emitir,
 tensionada contra una necesidad metabólica que regule el esfuerzo de
-razonamiento y la ventana de contexto. También se planea replicación
+razonamiento y la ventana de contexto. Una implementación de este tipo de "necesidad metabolica" esta planificada ser demostrada en la Conferencia de Software de Investigación de Argentina 2026, donde introducimos a la librería open-source "Binsai". Finalmente, para lo que respecta a iteraciones de este experimento se planea replicación
 multi-LLM, validación humana (Spearman ρ) y un validador simbólico
 que evite la estocasticidad del LLM al juzgar calidad argumentativa.
 
