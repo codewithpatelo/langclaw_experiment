@@ -1,0 +1,123 @@
+{
+  "mode": "random",
+  "seed": 139987,
+  "status": "ok",
+  "alerts": [],
+  "summary": {
+    "total_debates": 59,
+    "aaf_acceptance_ratio": 0.1525,
+    "avg_reward": 0.0,
+    "max_abs_q_value": 0.0,
+    "median_final_deficit": 0.39
+  },
+  "recent_log_tail": [
+    {
+      "tick": 79,
+      "agent_id": "OPP-S4",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.6,
+      "q_values": {}
+    },
+    {
+      "tick": 79,
+      "agent_id": "OPP-S5",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.14,
+      "q_values": {}
+    },
+    {
+      "tick": 80,
+      "agent_id": "GOV-S1",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.14,
+      "q_values": {}
+    },
+    {
+      "tick": 80,
+      "agent_id": "GOV-S2",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 1.92,
+      "q_values": {}
+    },
+    {
+      "tick": 80,
+      "agent_id": "GOV-S3",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.58,
+      "q_values": {}
+    },
+    {
+      "tick": 80,
+      "agent_id": "GOV-S4",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.2,
+      "q_values": {}
+    },
+    {
+      "tick": 80,
+      "agent_id": "GOV-S5",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.36,
+      "q_values": {}
+    },
+    {
+      "tick": 80,
+      "agent_id": "OPP-S1",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 2.1,
+      "q_values": {}
+    },
+    {
+      "tick": 80,
+      "agent_id": "OPP-S2",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.42,
+      "q_values": {}
+    },
+    {
+      "tick": 80,
+      "agent_id": "OPP-S3",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.26,
+      "q_values": {}
+    },
+    {
+      "tick": 80,
+      "agent_id": "OPP-S4",
+      "action": "PASS",
+      "reward": 0.0,
+      "delta_phi": 0.0,
+      "deficit_after": 0.62,
+      "q_values": {}
+    },
+    {
+      "tick": 80,
+      "agent_id": "OPP-S5",
+      "action": "DEBATE",
+      "reward": 0.0,
+      "delta_phi": 0.3954,
+      "deficit_after": 0.1,
+      "q_values": {}
+    }
+  ]
+}

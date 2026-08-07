@@ -31,10 +31,10 @@ El punto de partida fue el **Operador Pro-Action (Γ)**, presentado en
 **ICML 2026** en el taller LatinX in AI, donde fue seleccionado **mejor
 paper**. Γ envuelve a un ejecutor LLM con 6 subsistemas regulatorios
 acoplados, construido en un problema donde la
-activación fue estrictamente por turnos (sin gate probabilístico).
+activación fue estrictamente por turnos (sin compuerta probabilística).
 
 El **experimento de este repositorio** reduce Γ a su núcleo más simple
-—un solo drive homeostático con gate sigmoide probabilístico— para
+—un solo drive (necesidad) homeostático con compuerta sigmoide probabilístico— para
 aislar y medir el efecto puro de la regulación endógena frente al ruteo
 exógeno. Es la misma matemática, reducida a single-drive y presentada
 como póster en **SANLP 2026**.
@@ -62,6 +62,24 @@ sobre detección temprana de estancamiento de consistencia en debates
 multi-agente mediante precursores de critical slowing down. También
 estoy en contacto con el consorcio **IA-CONSOFI** del CONICET para
 probar la ecuación Pro-Action en simulación de hardware neuromórfico.
+
+### ¿De dónde sale la idea de autorregulación?
+
+La intuición más simple viene del videojuego *The Sims*. Cada Sim tiene un rombo
+sobre la cabeza que muestra sus necesidades (hambre, energía, social,
+diversión...). Esas necesidades **decaen solas** con el tiempo. Si una
+barra llega a rojo y dejás de darle órdenes, el Sim **va por su cuenta**
+a comer, dormir o hablar con alguien. No necesita que le digas qué
+hacer: su estado interno dispara la acción.
+
+El operador Pro-Action traslada esa misma lógica a un agente LLM, pero
+con diferencias importantes. En The Sims la inteligencia está en los
+objetos —el Sim solo puntúa y elige—; acá la inteligencia está en el
+agente. No hay *smart objects* que anuncien cuánto satisfacen cada
+necesidad: el agente decide **si actuar o no** en función de su déficit
+interno, y la función de saciedad (g) determina cuánto se reduce ese
+déficit. Es un lazo cerrado: acumulás presión → actuás → la acción te
+alivia (o no) → volvés a acumular.
 
 ---
 
